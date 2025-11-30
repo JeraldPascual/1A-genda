@@ -134,7 +134,7 @@ const ContentSubmissionPanel = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Submit New Content Button */}
       <Card className="dark:!bg-transparent light:!bg-blue-600">
         <CardContent className="!p-6">
@@ -223,11 +223,15 @@ const ContentSubmissionPanel = () => {
             <span>Submit New Content</span>
           </div>
         </DialogTitle>
-        <DialogContent sx={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          color: 'var(--color-text-primary)',
-          pt: 3
-        }}>
+        <DialogContent
+          sx={{
+            backgroundColor: 'var(--color-bg-secondary)',
+            color: 'var(--color-text-primary)',
+            pt: 3,
+            maxHeight: { xs: '70vh', sm: '70vh', md: '70vh' },
+            overflowY: 'auto',
+          }}
+        >
           {submitSuccess ? (
             <div className="flex flex-col items-center justify-center py-8">
               <CheckCircle className="w-16 h-16 text-emerald-400 mb-4" />
@@ -239,7 +243,7 @@ const ContentSubmissionPanel = () => {
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               <TextField
                 select
                 label="Content Type"
@@ -281,25 +285,40 @@ const ContentSubmissionPanel = () => {
                     rows={3}
                     size="small"
                     sx={{
+                      mb: 2,
+                      width: '100%',
                       '& .MuiInputBase-root': { color: 'var(--color-text-primary)' },
                       '& .MuiInputLabel-root': { color: 'var(--color-text-muted)' },
                       '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
                     }}
                   />
+                  <TextField
+                    select
+                    label="Subject *"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    fullWidth
+                    required
+                    size="small"
+                    sx={{
+                      mb: 2,
+                      width: '100%',
+                      '& .MuiInputBase-root': { color: 'var(--color-text-primary)' },
+                      '& .MuiInputLabel-root': { color: 'var(--color-text-muted)' },
+                      '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
+                    }}
+                  >
+                    <MenuItem value="">Select a subject</MenuItem>
+                    <MenuItem value="IT 105 - Computer Programming 2">IT 105 - Computer Programming 2 (Major)</MenuItem>
+                    <MenuItem value="PAL 101 - Panitikan at Lipunan">PAL 101 - Panitikan at Lipunan</MenuItem>
+                    <MenuItem value="IT 107 - Human-Computer Interaction">IT 107 - Human-Computer Interaction (Major)</MenuItem>
+                    <MenuItem value="IT 104 - Discrete Mathematics">IT 104 - Discrete Mathematics</MenuItem>
+                    <MenuItem value="IT 106 - Platform Technologies">IT 106 - Platform Technologies (Major)</MenuItem>
+                    <MenuItem value="PE 11 - PATHFIT 2">PE 11 - PATHFIT 2</MenuItem>
+                    <MenuItem value="UTS 101 - Understanding the Self">UTS 101 - Understanding the Self</MenuItem>
+                    <MenuItem value="NSTP 11 - National Service Training Program">NSTP 11 - National Service Training Program</MenuItem>
+                  </TextField>
                   <div className="grid grid-cols-2 gap-3">
-                    <TextField
-                      label="Subject"
-                      value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      fullWidth
-                      size="small"
-                      placeholder="e.g., Math, Science"
-                      sx={{
-                        '& .MuiInputBase-root': { color: 'var(--color-text-primary)' },
-                        '& .MuiInputLabel-root': { color: 'var(--color-text-muted)' },
-                        '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
-                      }}
-                    />
                     <TextField
                       label="Due Date"
                       type="date"

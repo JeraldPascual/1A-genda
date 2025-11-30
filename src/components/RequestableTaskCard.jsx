@@ -7,6 +7,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
   const [requesting, setRequesting] = useState(false);
   const [requested, setRequested] = useState(!!existingRequest);
   const [requestStatus, setRequestStatus] = useState(existingRequest?.status || null);
+  const [reason, setReason] = useState("");
 
   const handleRequestAccess = async () => {
     setRequesting(true);
@@ -18,7 +19,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
         taskBatch: task.batch,
         taskTitle: task.title,
         taskSubject: task.subject,
-        reason: `Student from batch ${userBatch} requesting access to ${task.batch} task`,
+        reason: reason || `Student from batch ${userBatch} requesting access to ${task.batch} task`,
       });
 
       if (result.success) {
@@ -125,25 +126,42 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
         {getStatusDisplay() ? (
           getStatusDisplay()
         ) : (
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={handleRequestAccess}
-            disabled={requesting || requested}
-            startIcon={<Send className="w-4 h-4" />}
-            sx={{
-              borderColor: 'rgba(59, 130, 246, 0.5)',
-              color: '#60a5fa',
-              '&:hover': {
-                borderColor: 'rgba(59, 130, 246, 0.8)',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              },
-              textTransform: 'none',
-              fontWeight: 600,
-            }}
-          >
-            {requesting ? 'Requesting...' : 'Request Access'}
-          </Button>
+          <>
+            {/* Only show reason field for 1A2 users */}
+            {userBatch === '1A2' && (
+              <div className="mb-3">
+                <label className="block text-xs font-medium mb-1 dark:text-dark-text-muted light:text-white">Reason for requesting this task</label>
+                <textarea
+                  className="w-full rounded border border-slate-400 dark:bg-slate-800 dark:text-dark-text-primary light:bg-white light:text-black p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  rows={2}
+                  value={reason}
+                  onChange={e => setReason(e.target.value)}
+                  placeholder="Why do you need access to this task?"
+                  disabled={requesting || requested}
+                  style={{ marginBottom: 8 }}
+                />
+              </div>
+            )}
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={handleRequestAccess}
+              disabled={requesting || requested || (userBatch === '1A2' && !reason.trim())}
+              startIcon={<Send className="w-4 h-4" />}
+              sx={{
+                borderColor: 'rgba(59, 130, 246, 0.5)',
+                color: '#60a5fa',
+                '&:hover': {
+                  borderColor: 'rgba(59, 130, 246, 0.8)',
+                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                },
+                textTransform: 'none',
+                fontWeight: 600,
+              }}
+            >
+              {requesting ? 'Requesting...' : 'Request Access'}
+            </Button>
+          </>
         )}
       </CardContent>
     </Card>
