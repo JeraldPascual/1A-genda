@@ -1,0 +1,80 @@
+import { ExternalLink, FolderOpen } from 'lucide-react';
+import { Button } from '@mui/material';
+
+const ResourceLinks = () => {
+  const resources = [
+    {
+      id: 1,
+      title: 'Resources & Files',
+      description: 'Access course materials, notes, and documents',
+      icon: FolderOpen,
+      url: 'https://www.notion.so/Resources-Files-2474174c24878063a205f54ff51bf3a2', // Add your Notion resources URL here
+      color: 'dark:bg-emerald-600 light:bg-blue-600',
+      shadowColor: 'shadow-emerald-500/20',
+      hoverColor: 'hover:shadow-emerald-500/40',
+    },
+  ];
+
+  const openResource = (url) => {
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      alert('Please configure this resource URL in the code');
+    }
+  };
+
+  return (
+    <div className="mb-8">
+      <div className="flex items-center gap-3 mb-6">
+        <ExternalLink className="w-7 h-7 text-sky-400" />
+        <h2 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary">
+          Resources & Links
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {resources.map((resource) => {
+          const Icon = resource.icon;
+          return (
+            <div
+              key={resource.id}
+              className="dark:bg-slate-900/30 light:!bg-blue-600 border dark:border-slate-800/50 light:!border-blue-500 rounded-xl p-5 hover:border-sky-500/30 hover:shadow-lg hover:shadow-sky-500/10 transition-all group cursor-pointer"
+              onClick={() => openResource(resource.url)}
+            >
+              <div className="flex items-start gap-4">
+                <div
+                  className={`p-3 ${resource.color} rounded-lg ${resource.shadowColor} shadow-lg group-hover:scale-110 transition-transform`}
+                >
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold dark:text-dark-text-primary light:!text-white mb-1 flex items-center gap-2">
+                    {resource.title}
+                    <ExternalLink className="w-4 h-4 dark:text-sky-400 light:!text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-xs dark:text-dark-text-muted light:!text-white/90 leading-relaxed">
+                    {resource.description}
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="outlined"
+                size="small"
+                endIcon={<ExternalLink className="w-3 h-3" />}
+                className="!mt-4 !w-full !normal-case !text-sm !font-medium dark:!border-slate-700 light:!border-blue-400 dark:!text-sky-400 light:!text-white hover:!border-sky-500 hover:!bg-sky-500/5"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openResource(resource.url);
+                }}
+              >
+                Open in New Tab
+              </Button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default ResourceLinks;
