@@ -175,7 +175,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       title: task.title,
       description: task.description,
       subject: task.subject,
-      dueDate: task.dueDate,
+      dueDate: task.dueDate ? (typeof task.dueDate === 'string' ? Timestamp.fromDate(new Date(task.dueDate)) : task.dueDate) : null,
       priority: task.priority,
       batch: task.batch,
     });
@@ -1338,6 +1338,15 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                 <MenuItem value="medium">Medium</MenuItem>
                 <MenuItem value="high">High</MenuItem>
               </TextField>
+              <TextField
+                label="Due Date"
+                type="date"
+                fullWidth
+                value={editTaskDialog.task.dueDate ? (editTaskDialog.task.dueDate.toDate ? editTaskDialog.task.dueDate.toDate().toISOString().split('T')[0] : new Date(editTaskDialog.task.dueDate).toISOString().split('T')[0]) : ''}
+                onChange={(e) => setEditTaskDialog(prev => ({ ...prev, task: { ...prev.task, dueDate: e.target.value } }))}
+                InputLabelProps={{ shrink: true }}
+                sx={{ mb: 2.5 }}
+              />
               <TextField
                 label="Batch"
                 select

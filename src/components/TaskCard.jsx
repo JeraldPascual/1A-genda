@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Card, CardContent, Button, Chip, TextField, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { Calendar, BookOpen, CheckCircle, ArrowRight, ArrowLeft, X, Edit3, AlertCircle } from 'lucide-react';
+import { Card, CardContent, Button, Chip, TextField, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Menu } from '@mui/material';
+import { Calendar, BookOpen, CheckCircle, ArrowRight, ArrowLeft, X, Edit3, AlertCircle, Bell, MoreVertical, Trash2, Copy } from 'lucide-react';
 import gsap from 'gsap';
 import { createTaskRevisionRequest } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +12,7 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
   const [showRevisionModal, setShowRevisionModal] = useState(false);
   const [submittingRevision, setSubmittingRevision] = useState(false);
   const [revisionSuccess, setRevisionSuccess] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState(null);
   const { user } = useAuth();
 
   const [revisionForm, setRevisionForm] = useState({
@@ -92,6 +93,42 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
+  const getDeadlineWarning = () => {
+    if (!task.dueDate) return null;
+
+    const dueDate = task.dueDate.toDate ? task.dueDate.toDate() : new Date(task.dueDate);
+    const now = new Date();
+
+    // Normalize both dates to midnight for accurate day comparison
+    dueDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    // Calculate difference in days
+    const diffTime = dueDate.getTime() - now.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    console.log('Task:', task.title, 'Due Date:', dueDate, 'Now:', now, 'Diff Days:', diffDays);
+
+    if (diffDays < 0) {
+      return { type: 'overdue', message: 'Overdue!', days: Math.abs(diffDays) };
+    } else if (diffDays === 0) {
+      return { type: 'today', message: 'Due today!', days: 0 };
+    } else if (diffDays === 1) {
+      return { type: 'tomorrow', message: 'Due tomorrow!', days: 1 };
+    } else if (diffDays <= 3) {
+      return { type: 'soon', message: `Due in ${diffDays} days`, days: diffDays };
+    }
+    return null;
+  };
+
+  const handleCopyTask = () => {
+    const taskText = `${task.title}\n${task.description || ''}\nSubject: ${task.subject || 'N/A'}\nDue: ${task.dueDate ? formatDate(task.dueDate) : 'N/A'}`;
+    navigator.clipboard.writeText(taskText);
+    setMenuAnchor(null);
+  };
+
+  const deadlineWarning = getDeadlineWarning();
+
   const handleRevisionSubmit = async () => {
     if (!revisionForm.reason.trim()) {
       alert('Please provide a reason for the revision request');
@@ -167,17 +204,26 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
           <h3 className="font-semibold dark:text-dark-text-primary light:!text-white flex-1 text-sm leading-tight break-words overflow-wrap-anywhere">
             {task.title}
           </h3>
-          {task.priority && (
-            <Chip
-              label={task.priority.toUpperCase()}
+          <div className="flex items-center gap-1 shrink-0">
+            {task.priority && (
+              <Chip
+                label={task.priority.toUpperCase()}
+                size="small"
+                className={`!text-xs !font-medium ${
+                  task.priority === 'high' ? '!bg-danger-600/20 !text-danger-400 !border !border-danger-600/30' :
+                  task.priority === 'medium' ? '!bg-amber-600/20 !text-amber-400 !border !border-amber-600/30' :
+                  '!bg-success-600/20 !text-success-400 !border !border-success-600/30'
+                }`}
+              />
+            )}
+            <IconButton
               size="small"
-              className={`!text-xs !font-medium shrink-0 ${
-                task.priority === 'high' ? '!bg-danger-600/20 !text-danger-400 !border !border-danger-600/30' :
-                task.priority === 'medium' ? '!bg-amber-600/20 !text-amber-400 !border !border-amber-600/30' :
-                '!bg-success-600/20 !text-success-400 !border !border-success-600/30'
-              }`}
-            />
-          )}
+              onClick={(e) => setMenuAnchor(e.currentTarget)}
+              sx={{ color: 'var(--color-text-muted)', '&:hover': { color: 'var(--color-primary)' } }}
+            >
+              <MoreVertical className="w-4 h-4" />
+            </IconButton>
+          </div>
         </div>
 
         {task.description && (
@@ -207,6 +253,17 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
             <span className="flex items-center gap-1 px-2 py-1 dark:bg-slate-700/50 light:!bg-blue-700 rounded border dark:border-slate-600/30 light:!border-blue-500">
               <Calendar className="w-3 h-3" />
               <span>{formatDate(task.dueDate)}</span>
+            </span>
+          )}
+          {/* Deadline Warning Badge - inline with date */}
+          {deadlineWarning && (
+            <span className={`flex items-center gap-1 px-2.5 py-1.5 rounded font-bold text-xs ${
+              deadlineWarning.type === 'overdue' ? 'bg-red-500/30 border-2 border-red-500 text-red-300 animate-pulse' :
+              deadlineWarning.type === 'today' ? 'bg-orange-500/30 border-2 border-orange-500 text-orange-300 animate-pulse' :
+              'bg-amber-500/30 border-2 border-amber-500 text-amber-300 animate-pulse'
+            }`}>
+              <Bell className="w-3.5 h-3.5" />
+              <span>{deadlineWarning.message}</span>
             </span>
           )}
         </div>
@@ -259,6 +316,48 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
         )}
       </CardContent>
     </Card>
+
+    {/* Three-Dot Menu */}
+    <Menu
+      anchorEl={menuAnchor}
+      open={Boolean(menuAnchor)}
+      onClose={() => setMenuAnchor(null)}
+      PaperProps={{
+        sx: {
+          backgroundColor: 'var(--color-bg-secondary)',
+          color: 'var(--color-text-primary)',
+          border: '1px solid var(--color-border)',
+        }
+      }}
+    >
+      <MenuItem
+        onClick={handleCopyTask}
+        sx={{
+          fontSize: '0.875rem',
+          color: 'var(--color-text-primary)',
+          '&:hover': { backgroundColor: 'var(--color-bg-hover)' }
+        }}
+      >
+        <Copy className="w-4 h-4 mr-2" />
+        Copy Task Details
+      </MenuItem>
+      {!isAdmin && (
+        <MenuItem
+          onClick={() => {
+            setMenuAnchor(null);
+            setShowRevisionModal(true);
+          }}
+          sx={{
+            fontSize: '0.875rem',
+            color: 'var(--color-text-primary)',
+            '&:hover': { backgroundColor: 'var(--color-bg-hover)' }
+          }}
+        >
+          <Edit3 className="w-4 h-4 mr-2" />
+          Request Changes
+        </MenuItem>
+      )}
+    </Menu>
 
     {/* Revision Request Modal */}
     <Dialog
