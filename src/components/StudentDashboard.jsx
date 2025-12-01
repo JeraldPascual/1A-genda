@@ -31,15 +31,23 @@ const StudentDashboard = () => {
       const studentUsers = allUsers.filter(u => u.role === 'student');
 
       const studentsWithProgress = studentUsers.map(student => {
-        const studentProgress = progressData.filter(p => p.userId === student.id);
-        const completedTasks = studentProgress.filter(p => p.status === 'done').length;
-
         // Calculate total available tasks for this student's batch
         const availableTasks = globalTasks.filter(task => {
           if (!task.batch || task.batch === 'all') return true;
           return task.batch === student.batch;
         });
         const totalTasks = availableTasks.length;
+
+        // Create a map of progress by taskId for this student
+        const progressMap = {};
+        progressData.filter(p => p.userId === student.id).forEach(p => {
+          progressMap[p.taskId] = p.status;
+        });
+
+        // Count only tasks that are in availableTasks AND marked as done
+        const completedTasks = availableTasks.filter(
+          task => progressMap[task.id] === 'done'
+        ).length;
 
         const completionRate = totalTasks > 0 ? Math.round((completedTasks * 100) / totalTasks) : 0;
 

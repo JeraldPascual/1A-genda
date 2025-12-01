@@ -120,6 +120,9 @@ const StudentProgressTracker = () => {
             {students.map((student) => {
               const studentTasks = getStudentTasks(student.batch);
               const completionRate = getStudentCompletionRate(student.uid, student.batch);
+              const completedCount = studentTasks.filter(
+                task => getStudentProgress(student.uid, task.id) === 'done'
+              ).length;
 
               return (
                 <div
@@ -214,6 +217,9 @@ const StudentProgressTracker = () => {
                         {completionRate}%
                       </span>
                     </div>
+                    <p className="text-xs text-dark-text-muted">
+                      {completedCount} of {studentTasks.length} tasks
+                    </p>
                     <div className="w-full lg:w-20 h-1.5 bg-dark-bg-primary rounded-full overflow-hidden">
                       <div
                         className={`h-full transition-all duration-500 ${
