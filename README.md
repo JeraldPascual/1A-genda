@@ -10,7 +10,7 @@ A modern task management application for class administrators (P.I.O.) and stude
 
 1A-genda is a class task management system with an intuitive Kanban-style board. P.I.O. administrators create and manage tasks and announcements for batches 1A1 and 1A2, while students track their individual progress without affecting the global board state.
 
-**Live Demo:** [https://1agenda.tech](https://1agenda.tech)
+**Live Demo:** [https://www.1agenda.tech](https://www.1agenda.tech)
 
 ## Key Features
 
