@@ -30,6 +30,11 @@ const StudentAnalytics = () => {
 
       setTasks(filteredTasks);
       setProgress(progressData);
+      console.log('Analytics Data:', {
+        totalTasks: filteredTasks.length,
+        progressEntries: progressData.length,
+        completedTasks: progressData.filter(p => p.status === 'done').length
+      });
     } catch (error) {
       console.error('Error loading analytics data:', error);
     }
@@ -38,9 +43,15 @@ const StudentAnalytics = () => {
 
   // Calculate completion rate data
   const getCompletionData = () => {
-    const completed = progress.filter(p => p.status === 'done').length;
+    // Create a map of task progress
+    const progressMap = {};
+    progress.forEach(p => {
+      progressMap[p.taskId] = p.status;
+    });
+
+    // Count only tasks that are marked as 'done'
+    const completed = tasks.filter(task => progressMap[task.id] === 'done').length;
     const total = tasks.length;
-    const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
     return [
       { name: 'Completed', value: completed, color: '#10b981' },
@@ -108,9 +119,23 @@ const StudentAnalytics = () => {
   const subjectBreakdown = getSubjectBreakdown();
   const upcomingDeadlines = getUpcomingDeadlines();
 
-  const completed = progress.filter(p => p.status === 'done').length;
+  // Use the same calculation logic as getCompletionData
+  const progressMap = {};
+  progress.forEach(p => {
+    progressMap[p.taskId] = p.status;
+  });
+  const completed = tasks.filter(task => progressMap[task.id] === 'done').length;
   const total = tasks.length;
   const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  // Auto-reload: Poll for updates every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadData();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [user.uid, userData?.batch]);
 
   if (loading) {
     return (
@@ -185,7 +210,7 @@ const StudentAnalytics = () => {
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip 
+              <Tooltip
                 contentStyle={{
                   backgroundColor: 'var(--color-bg-tertiary)',
                   border: '1px solid var(--color-border)',
@@ -206,12 +231,12 @@ const StudentAnalytics = () => {
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={subjectBreakdown}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-              <XAxis 
-                dataKey="subject" 
+              <XAxis
+                dataKey="subject"
                 stroke="var(--color-text-muted)"
                 tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
               />
-              <YAxis 
+              <YAxis
                 stroke="var(--color-text-muted)"
                 tick={{ fill: 'var(--color-text-muted)' }}
               />
@@ -223,7 +248,7 @@ const StudentAnalytics = () => {
                   color: 'var(--color-text-primary)'
                 }}
               />
-              <Legend 
+              <Legend
                 wrapperStyle={{ color: 'var(--color-text-primary)' }}
               />
               <Bar dataKey="completed" stackId="a" fill="#10b981" name="Completed" />
@@ -239,7 +264,7 @@ const StudentAnalytics = () => {
           <Calendar className="w-5 h-5" />
           Upcoming Deadlines
         </h3>
-        
+
         {upcomingDeadlines.length === 0 ? (
           <div className="text-center py-8 dark:text-dark-text-muted light:text-light-text-muted">
             <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
@@ -278,7 +303,7 @@ const StudentAnalytics = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
                   <p className="text-sm font-semibold dark:text-dark-text-primary light:text-light-text-primary">
                     {task.dueDate}

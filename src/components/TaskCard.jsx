@@ -256,7 +256,7 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
             </span>
           )}
           {/* Deadline Warning Badge - inline with date */}
-          {deadlineWarning && (
+          {deadlineWarning && currentColumn !== 'done' && (
             <span className={`flex items-center gap-1 px-2.5 py-1.5 rounded font-bold text-xs ${
               deadlineWarning.type === 'overdue' ? 'bg-red-500/30 border-2 border-red-500 text-red-300 animate-pulse' :
               deadlineWarning.type === 'today' ? 'bg-orange-500/30 border-2 border-orange-500 text-orange-300 animate-pulse' :
