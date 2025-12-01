@@ -7,6 +7,18 @@
     <title>1A-genda</title>
   </head>
   <body>
+    <script>
+      // Emergency: kill service worker and force reload
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          if (registrations.length > 0) {
+            registrations.forEach(r => r.unregister());
+            caches.keys().then(names => Promise.all(names.map(name => caches.delete(name))));
+            setTimeout(() => window.location.reload(true), 100);
+          }
+        });
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
