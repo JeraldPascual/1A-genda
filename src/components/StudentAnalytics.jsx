@@ -201,7 +201,13 @@ const StudentAnalytics = () => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({name, value}) => `${name}: ${value}`}
+                label={({name, value}) => {
+                  // On mobile, show shorter labels
+                  if (window.innerWidth < 640) {
+                    return `${value}`;
+                  }
+                  return `${name}: ${value}`;
+                }}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
@@ -217,6 +223,13 @@ const StudentAnalytics = () => {
                   borderRadius: '8px',
                   color: 'var(--color-text-primary)'
                 }}
+              />
+              <Legend
+                wrapperStyle={{ paddingTop: '20px' }}
+                layout="horizontal"
+                verticalAlign="bottom"
+                align="center"
+                iconType="circle"
               />
             </PieChart>
           </ResponsiveContainer>

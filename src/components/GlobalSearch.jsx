@@ -3,13 +3,25 @@ import { Search, X, Calendar, BookOpen, Megaphone, FileText } from 'lucide-react
 import { getAllGlobalTasks, getActiveAnnouncements, getContentSubmissionRequests } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
 
-const GlobalSearch = ({ isOpen, onClose }) => {
+const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
   const { userData } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState({ tasks: [], announcements: [], submissions: [] });
   const [loading, setLoading] = useState(false);
   const [allData, setAllData] = useState({ tasks: [], announcements: [], submissions: [] });
   const inputRef = useRef(null);
+
+  const handleResultClick = (type) => {
+    if (onNavigate) {
+      // Navigate to the appropriate tab: 0=Announcements, 1=Schedule(Tasks)
+      if (type === 'task') {
+        onNavigate(1); // Schedule tab
+      } else if (type === 'announcement') {
+        onNavigate(0); // Announcements tab
+      }
+    }
+    onClose();
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -150,7 +162,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
                       <div
                         key={task.id}
                         className="p-3 rounded-lg dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary border dark:border-dark-border light:border-light-border hover:dark:border-primary-600 hover:light:border-primary-600 transition-all cursor-pointer"
-                        onClick={onClose}
+                        onClick={() => handleResultClick('task')}
                       >
                         <div className="flex items-start justify-between gap-2 mb-1">
                           <h4 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary text-sm">
@@ -203,7 +215,7 @@ const GlobalSearch = ({ isOpen, onClose }) => {
                       <div
                         key={announcement.id}
                         className="p-3 rounded-lg dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary border dark:border-dark-border light:border-light-border hover:dark:border-primary-600 hover:light:border-primary-600 transition-all cursor-pointer"
-                        onClick={onClose}
+                        onClick={() => handleResultClick('announcement')}
                       >
                         <div className="flex items-start justify-between gap-2 mb-1">
                           <h4 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary text-sm">

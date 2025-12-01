@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, Tab, Box, Collapse, IconButton } from '@mui/material';
 import { ChevronDown, ChevronUp, Calendar, Megaphone, Target, BookOpen, Send, TrendingUp, Clock } from 'lucide-react';
 import AnnouncementPanel from './AnnouncementPanel';
@@ -8,8 +8,19 @@ import ContentSubmissionPanel from './ContentSubmissionPanel';
 import StudentAnalytics from './StudentAnalytics';
 import PomodoroTimer from './PomodoroTimer';
 
-const StudentModularDashboard = ({ userBatch }) => {
+const StudentModularDashboard = ({ userBatch, onTabChange }) => {
   const [activeTab, setActiveTab] = useState(0);
+
+  // Expose setActiveTab to parent
+  useEffect(() => {
+    if (onTabChange) {
+      onTabChange(setActiveTab);
+    }
+  }, [onTabChange]);
+
+  const handleTabChange = (e, newValue) => {
+    setActiveTab(newValue);
+  };
 
   const [expandedSections, setExpandedSections] = useState({
     announcements: true,
@@ -37,7 +48,7 @@ const StudentModularDashboard = ({ userBatch }) => {
       <div className="glass-card dark:!bg-transparent light:!bg-blue-600 border-2 dark:border-slate-700 light:!border-blue-500 rounded-xl overflow-hidden">
         <Tabs
           value={activeTab}
-          onChange={(e, newValue) => setActiveTab(newValue)}
+          onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
           sx={{

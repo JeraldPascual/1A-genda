@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { getActiveAnnouncements } from '../utils/firestore';
-import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X } from 'lucide-react';
+import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X, Download } from 'lucide-react';
 import { Button } from '@mui/material';
+import { exportAnnouncementsToPDF } from '../utils/pdfExport';
 import gsap from 'gsap';
 
 const AnnouncementPanel = () => {
@@ -17,6 +18,10 @@ const AnnouncementPanel = () => {
   const loadAnnouncements = async () => {
     const data = await getActiveAnnouncements();
     setAnnouncements(data);
+  };
+
+  const handleExportAnnouncements = () => {
+    exportAnnouncementsToPDF(announcements);
   };
 
   useEffect(() => {
@@ -97,20 +102,38 @@ const AnnouncementPanel = () => {
             <span>Important Announcements</span>
           </h3>
         </div>
-        {announcements.length > 5 && (
+        <div className="flex items-center gap-2">
           <Button
             size="small"
-            onClick={() => setShowAllAnnouncements(!showAllAnnouncements)}
+            startIcon={<Download className="w-4 h-4" />}
+            onClick={handleExportAnnouncements}
             sx={{
               color: 'var(--color-primary)',
               textTransform: 'none',
               fontSize: '0.875rem',
-              fontWeight: 600
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor: 'rgba(56, 189, 248, 0.1)'
+              }
             }}
           >
-            {showAllAnnouncements ? 'Show Less' : `View All (${announcements.length})`}
+            Export PDF
           </Button>
-        )}
+          {announcements.length > 5 && (
+            <Button
+              size="small"
+              onClick={() => setShowAllAnnouncements(!showAllAnnouncements)}
+              sx={{
+                color: 'var(--color-primary)',
+                textTransform: 'none',
+                fontSize: '0.875rem',
+                fontWeight: 600
+              }}
+            >
+              {showAllAnnouncements ? 'Show Less' : `View All (${announcements.length})`}
+            </Button>
+          )}
+        </div>
       </div>
       {displayedAnnouncements.map((announcement, index) => (
         <div

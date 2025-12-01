@@ -12,9 +12,11 @@ import DailyQuote from './components/DailyQuote';
 import AdminPanel from './components/AdminPanel';
 import StudentModularDashboard from './components/StudentModularDashboard';
 import GlobalSearch from './components/GlobalSearch';
-import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon, Search } from 'lucide-react';
+import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon, Search, Download } from 'lucide-react';
 import gsap from 'gsap';
 import muiTheme from './theme/muiTheme';
+import { getAllGlobalTasks } from './utils/firestore';
+import { exportTasksToPDF } from './utils/pdfExport';
 
 function App() {
   const { user, userData, signOut, isAdmin } = useAuth();
@@ -24,7 +26,9 @@ function App() {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [showLightModeWarning, setShowLightModeWarning] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [tasks, setTasks] = useState([]);
   const headerRef = useRef(null);
+  const studentDashboardRef = useRef(null);
 
   useEffect(() => {
     if (user && headerRef.current && headerRef.current.children.length > 0) {
@@ -70,6 +74,32 @@ function App() {
   const handleRefresh = () => {
     setRefreshKey(prev => prev + 1);
   };
+
+  const handleNavigateFromSearch = (tabIndex) => {
+    if (studentDashboardRef.current) {
+      studentDashboardRef.current(tabIndex);
+    }
+  };
+
+  const loadTasks = async () => {
+    if (!isAdmin() && userData?.batch) {
+      const tasksData = await getAllGlobalTasks();
+      const filteredTasks = tasksData.filter(task =>
+        !task.batch || task.batch === 'all' || task.batch === userData.batch
+      );
+      setTasks(filteredTasks);
+    }
+  };
+
+  const handleExportTasks = () => {
+    exportTasksToPDF(tasks);
+  };
+
+  useEffect(() => {
+    if (user && !isAdmin()) {
+      loadTasks();
+    }
+  }, [user, userData, isAdmin]);
 
   const handleThemeToggle = () => {
     // If switching to light mode (currently dark), show warning
@@ -218,7 +248,10 @@ function App() {
         ) : (
           <div className="space-y-8">
             {/* Modular Dashboard with Tabs */}
-            <StudentModularDashboard userBatch={userData?.batch} />
+            <StudentModularDashboard
+              userBatch={userData?.batch}
+              onTabChange={(handler) => studentDashboardRef.current = handler}
+            />
 
             {/* Task Board */}
             <div>
@@ -227,14 +260,32 @@ function App() {
                   <Target className="w-8 h-8 text-sky-400" />
                   <span>My Task Board</span>
                 </h2>
-                <Button
-                  onClick={handleRefresh}
-                  startIcon={<RefreshCw className="w-4 h-4" />}
-                  variant="contained"
-                  className="!normal-case !font-semibold !px-5 !py-2.5 !rounded-xl !shadow-lg !shadow-sky-600/30 hover:!shadow-xl hover:!shadow-sky-600/40 hover:!scale-105"
-                >
-                  Refresh
-                </Button>
+                <div className="flex items-center gap-3">
+                  <Button
+                    size="small"
+                    startIcon={<Download className="w-4 h-4" />}
+                    onClick={handleExportTasks}
+                    sx={{
+                      color: 'var(--color-primary)',
+                      textTransform: 'none',
+                      fontSize: '0.875rem',
+                      fontWeight: 600,
+                      '&:hover': {
+                        backgroundColor: 'rgba(56, 189, 248, 0.1)'
+                      }
+                    }}
+                  >
+                    Export PDF
+                  </Button>
+                  <Button
+                    onClick={handleRefresh}
+                    startIcon={<RefreshCw className="w-4 h-4" />}
+                    variant="contained"
+                    className="!normal-case !font-semibold !px-5 !py-2.5 !rounded-xl !shadow-lg !shadow-sky-600/30 hover:!shadow-xl hover:!shadow-sky-600/40 hover:!scale-105"
+                  >
+                    Refresh
+                  </Button>
+                </div>
               </div>
               <KanbanBoard key={refreshKey} />
             </div>
@@ -370,7 +421,11 @@ function App() {
       </Dialog>
 
       {/* Global Search */}
-      <GlobalSearch isOpen={showSearch} onClose={() => setShowSearch(false)} />
+      <GlobalSearch
+        isOpen={showSearch}
+        onClose={() => setShowSearch(false)}
+        onNavigate={handleNavigateFromSearch}
+      />
     </ThemeProvider>
   );
 }

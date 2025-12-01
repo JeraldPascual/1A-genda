@@ -1,14 +1,14 @@
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
-// Export all tasks to PDF
+// Export all tasks to PDF (simple version)
 export const exportTasksToPDF = (tasks) => {
   const doc = new jsPDF();
   const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
   // Header
   doc.setFontSize(20);
-  doc.setTextColor(59, 130, 246); // Blue color
+  doc.setTextColor(59, 130, 246);
   doc.text('1A-genda Task Report', 14, 20);
 
   doc.setFontSize(10);
@@ -16,56 +16,46 @@ export const exportTasksToPDF = (tasks) => {
   doc.text(`Generated: ${date}`, 14, 28);
   doc.text(`Total Tasks: ${tasks.length}`, 14, 34);
 
-  // Prepare table data
-  const tableData = tasks.map(task => {
+  let yPos = 45;
+
+  tasks.forEach((task, index) => {
+    // Check if we need a new page
+    if (yPos > 270) {
+      doc.addPage();
+      yPos = 20;
+    }
+
+    // Task number
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, 'bold');
+    doc.text(`${index + 1}. ${task.title || 'Untitled'}`, 14, yPos);
+    yPos += 7;
+
+    // Task details
+    doc.setFontSize(9);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(60, 60, 60);
+
     const dueDate = task.dueDate
       ? (task.dueDate.toDate ? task.dueDate.toDate().toLocaleDateString() : new Date(task.dueDate).toLocaleDateString())
       : 'No due date';
 
-    return [
-      task.title || 'Untitled',
-      task.subject || 'N/A',
-      task.batch || 'All',
-      task.priority ? task.priority.toUpperCase() : 'N/A',
-      dueDate,
-      task.description ? (task.description.length > 50 ? task.description.substring(0, 50) + '...' : task.description) : 'No description'
-    ];
-  });
+    doc.text(`Subject: ${task.subject || 'N/A'}  |  Batch: ${task.batch || 'All'}  |  Priority: ${task.priority || 'N/A'}  |  Due: ${dueDate}`, 14, yPos);
+    yPos += 6;
 
-  // Generate table
-  doc.autoTable({
-    startY: 40,
-    head: [['Title', 'Subject', 'Batch', 'Priority', 'Due Date', 'Description']],
-    body: tableData,
-    theme: 'grid',
-    headStyles: {
-      fillColor: [59, 130, 246],
-      textColor: [255, 255, 255],
-      fontStyle: 'bold'
-    },
-    styles: {
-      fontSize: 8,
-      cellPadding: 3
-    },
-    columnStyles: {
-      0: { cellWidth: 35 },
-      1: { cellWidth: 25 },
-      2: { cellWidth: 15 },
-      3: { cellWidth: 20 },
-      4: { cellWidth: 25 },
-      5: { cellWidth: 60 }
+    // Description
+    if (task.description) {
+      doc.setTextColor(80, 80, 80);
+      const lines = doc.splitTextToSize(task.description, 180);
+      doc.text(lines, 14, yPos);
+      yPos += (lines.length * 5) + 8;
+    } else {
+      yPos += 8;
     }
   });
 
-  // Footer
-  const pageCount = doc.internal.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFontSize(8);
-    doc.setTextColor(150);
-    doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, { align: 'center' });
-  }
-
+  // Save PDF
   doc.save(`tasks_export_${new Date().toISOString().split('T')[0]}.pdf`);
 };
 
@@ -166,31 +156,40 @@ export const exportAnnouncementsToPDF = (announcements) => {
   doc.text(`Total Announcements: ${announcements.length}`, 14, 34);
 
   let yPosition = 45;
+  const pageHeight = doc.internal.pageSize.height;
+  const marginBottom = 25;
 
   announcements.forEach((announcement, index) => {
-    // Check if we need a new page
-    if (yPosition > 260) {
-      doc.addPage();
-      yPosition = 20;
-    }
-
     // Type badge color
     let typeColor = [59, 130, 246]; // Blue for info
     if (announcement.type === 'urgent') typeColor = [239, 68, 68]; // Red
     if (announcement.type === 'celebration') typeColor = [34, 197, 94]; // Green
 
+    // Calculate space needed with proper text wrapping (max width: 165 for content area)
+    const maxWidth = 165; // Reduced from 180 to add more right margin
+    const titleLines = doc.splitTextToSize(announcement.title, 135); // Reduced from 150
+    const messageLines = doc.splitTextToSize(announcement.message, maxWidth);
+    const spaceNeeded = 15 + (titleLines.length * 6) + (messageLines.length * 5.5) + 15;
+
+    // Check if we need a new page
+    if (yPosition + spaceNeeded > pageHeight - marginBottom) {
+      doc.addPage();
+      yPosition = 20;
+    }
+
     // Type badge
     doc.setFillColor(...typeColor);
-    doc.rect(14, yPosition - 4, 20, 6, 'F');
+    doc.roundedRect(14, yPosition - 4, 22, 7, 1, 1, 'F');
     doc.setFontSize(8);
     doc.setTextColor(255, 255, 255);
-    doc.text(announcement.type.toUpperCase(), 24, yPosition, { align: 'center' });
+    doc.setFont(undefined, 'bold');
+    doc.text(announcement.type.toUpperCase(), 25, yPosition + 1, { align: 'center' });
 
-    // Title
-    doc.setFontSize(12);
+    // Title (multi-line support with word wrap)
+    doc.setFontSize(11);
     doc.setTextColor(0, 0, 0);
     doc.setFont(undefined, 'bold');
-    doc.text(announcement.title, 38, yPosition);
+    doc.text(titleLines, 40, yPosition);
 
     // Date
     const announcementDate = announcement.createdAt
@@ -199,21 +198,35 @@ export const exportAnnouncementsToPDF = (announcements) => {
     doc.setFontSize(8);
     doc.setTextColor(100, 100, 100);
     doc.setFont(undefined, 'normal');
-    doc.text(announcementDate, 190, yPosition, { align: 'right' });
+    doc.text(announcementDate, 180, yPosition, { align: 'right' }); // Adjusted from 190 to 180
 
-    // Message
-    yPosition += 8;
+    // Message (with proper line spacing and wrapping)
+    yPosition += (titleLines.length * 6) + 5;
     doc.setFontSize(9);
-    doc.setTextColor(60, 60, 60);
-    const splitMessage = doc.splitTextToSize(announcement.message, 180);
-    doc.text(splitMessage, 14, yPosition);
+    doc.setTextColor(40, 40, 40);
+    doc.setFont(undefined, 'normal');
 
-    yPosition += splitMessage.length * 5 + 10;
+    // Manually render each line to control spacing better
+    messageLines.forEach((line, idx) => {
+      if (yPosition > pageHeight - marginBottom) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      doc.text(line, 14, yPosition);
+      yPosition += 5.5; // Consistent line height
+    });
 
-    // Divider
-    doc.setDrawColor(200, 200, 200);
-    doc.line(14, yPosition, 196, yPosition);
-    yPosition += 10;
+    yPosition += 5;
+
+    // Divider (only if not last item on page)
+    if (yPosition + 20 < pageHeight - marginBottom) {
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.5);
+      doc.line(14, yPosition, 180, yPosition); // Adjusted from 196 to 180
+      yPosition += 12;
+    } else {
+      yPosition += 5;
+    }
   });
 
   // Footer

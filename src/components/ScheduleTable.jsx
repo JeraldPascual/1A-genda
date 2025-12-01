@@ -4,6 +4,7 @@ import { Button } from '@mui/material';
 
 const ScheduleTable = ({ userBatch }) => {
   const [showFullSchedule, setShowFullSchedule] = useState(false);
+
   const scheduleData = {
     '1A1': {
       MONDAY: [
