@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Tabs, Tab, Box, Collapse, IconButton } from '@mui/material';
-import { ChevronDown, ChevronUp, Calendar, Megaphone, Target, BookOpen, Send } from 'lucide-react';
+import { ChevronDown, ChevronUp, Calendar, Megaphone, Target, BookOpen, Send, TrendingUp } from 'lucide-react';
 import AnnouncementPanel from './AnnouncementPanel';
 import ScheduleTable from './ScheduleTable';
 import ResourceLinks from './ResourceLinks';
 import ContentSubmissionPanel from './ContentSubmissionPanel';
+import StudentAnalytics from './StudentAnalytics';
 
 const StudentModularDashboard = ({ userBatch }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -74,6 +75,11 @@ const StudentModularDashboard = ({ userBatch }) => {
             icon={<Send className="w-5 h-5" />}
             iconPosition="start"
             label="Submit Content"
+          />
+          <Tab
+            icon={<TrendingUp className="w-5 h-5" />}
+            iconPosition="start"
+            label="Analytics"
           />
         </Tabs>
       </div>
@@ -204,6 +210,29 @@ const StudentModularDashboard = ({ userBatch }) => {
         </div>
       </div>
       */}
+
+      {/* Tab Panels */}
+      <div>
+        <TabPanel value={activeTab} index={0}>
+          <AnnouncementPanel />
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={1}>
+          <ScheduleTable userBatch={userBatch} />
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={2}>
+          <ResourceLinks />
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={3}>
+          <ContentSubmissionPanel />
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={4}>
+          <StudentAnalytics />
+        </TabPanel>
+      </div>
     </div>
   );
 };

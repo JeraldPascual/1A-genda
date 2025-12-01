@@ -11,7 +11,8 @@ import SemesterProgress from './components/SemesterProgress';
 import DailyQuote from './components/DailyQuote';
 import AdminPanel from './components/AdminPanel';
 import StudentModularDashboard from './components/StudentModularDashboard';
-import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon } from 'lucide-react';
+import GlobalSearch from './components/GlobalSearch';
+import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon, Search } from 'lucide-react';
 import gsap from 'gsap';
 import muiTheme from './theme/muiTheme';
 
@@ -22,6 +23,7 @@ function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [showLightModeWarning, setShowLightModeWarning] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const headerRef = useRef(null);
 
   useEffect(() => {
@@ -43,6 +45,22 @@ function App() {
       });
     }
   }, [user, userData]); // Add userData dependency
+
+  // Keyboard shortcut for search (Ctrl+K or Cmd+K)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowSearch(true);
+      }
+      if (e.key === 'Escape' && showSearch) {
+        setShowSearch(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSearch]);
 
   const handleSignOut = async () => {
     setShowLogoutDialog(false);
@@ -129,6 +147,20 @@ function App() {
               </div>
 
               <div className="flex items-center gap-2">
+                <IconButton
+                  onClick={() => setShowSearch(true)}
+                  className="glass-effect"
+                  sx={{
+                    color: 'var(--color-text-primary)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                    },
+                  }}
+                  title="Search (Ctrl+K)"
+                >
+                  <Search className="w-5 h-5" />
+                </IconButton>
+
                 <IconButton
                   onClick={handleThemeToggle}
                   className="glass-effect"
@@ -336,6 +368,9 @@ function App() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Global Search */}
+      <GlobalSearch isOpen={showSearch} onClose={() => setShowSearch(false)} />
     </ThemeProvider>
   );
 }

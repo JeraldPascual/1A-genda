@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getAllGlobalTasks, getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests } from '../utils/firestore';
-import { Users, CheckCircle, Circle, TrendingUp, FileEdit, Send } from 'lucide-react';
+import { Users, CheckCircle, Circle, TrendingUp, FileEdit, Send, Download } from 'lucide-react';
+import { exportStudentProgressToPDF } from '../utils/pdfExport';
 
 const StudentProgressTracker = () => {
   const [students, setStudents] = useState([]);
@@ -180,6 +181,17 @@ const StudentProgressTracker = () => {
 
                   {/* Completion Rate */}
                   <div className="flex flex-col items-start lg:items-end justify-center gap-1">
+                    <button
+                      onClick={() => {
+                        const studentProgress = progressData.filter(p => p.userId === student.uid);
+                        exportStudentProgressToPDF(student, tasks, studentProgress);
+                      }}
+                      className="mb-2 px-2 py-1 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-600/30 text-emerald-400"
+                      title="Export to PDF"
+                    >
+                      <Download className="w-3 h-3" />
+                      Export
+                    </button>
                     <div className="flex items-center gap-2">
                       <TrendingUp
                         className={`w-4 h-4 ${

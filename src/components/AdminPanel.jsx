@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem } from '@mui/material';
-import { createGlobalTask, createAnnouncement, getAllGlobalTasks, getActiveAnnouncements, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, getTaskCreationRequests, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, getTaskRevisionRequests, approveTaskRevisionRequest, rejectTaskRevisionRequest, getContentSubmissionRequests, approveContentSubmissionRequest, rejectContentSubmissionRequest } from '../utils/firestore';
+import { createGlobalTask, createAnnouncement, getAllGlobalTasks, getActiveAnnouncements, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, getTaskCreationRequests, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, getTaskRevisionRequests, approveTaskRevisionRequest, rejectTaskRevisionRequest, getContentSubmissionRequests, approveContentSubmissionRequest, rejectContentSubmissionRequest, getAllStudentProgress, getAllUsers } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
 import { Timestamp } from 'firebase/firestore';
-import { PlusCircle, Megaphone, CheckCircle, AlertCircle, Shield, ListTodo, Trash2, Eye, Users, UserCheck, Zap, Target, Inbox, Edit, X, FileEdit, Send } from 'lucide-react';
+import { PlusCircle, Megaphone, CheckCircle, AlertCircle, Shield, ListTodo, Trash2, Eye, Users, UserCheck, Zap, Target, Inbox, Edit, X, FileEdit, Send, Download } from 'lucide-react';
 import StudentProgressTracker from './StudentProgressTracker';
 import StudentDashboard from './StudentDashboard';
+import { exportTasksToPDF, exportStudentProgressToPDF, exportAnnouncementsToPDF } from '../utils/pdfExport';
 
 const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   const { user } = useAuth();
@@ -686,6 +687,13 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
             <h3 className="text-lg font-semibold text-dark-text-primary">All Global Tasks</h3>
             <div className="flex gap-2">
               <button
+                onClick={() => exportTasksToPDF(tasks)}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                <Download className="w-4 h-4" />
+                Export PDF
+              </button>
+              <button
                 onClick={() => setBatchFilter('all')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   batchFilter === 'all'
@@ -818,7 +826,16 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
         <div className="space-y-3">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary">Active Announcements</h3>
-            <span className="text-sm dark:text-dark-text-muted light:text-light-text-muted">{announcements.length} active</span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => exportAnnouncementsToPDF(announcements)}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                <Download className="w-4 h-4" />
+                Export PDF
+              </button>
+              <span className="text-sm dark:text-dark-text-muted light:text-light-text-muted">{announcements.length} active</span>
+            </div>
           </div>
           {announcements.length === 0 ? (
             <div className="text-center py-12 dark:text-dark-text-muted light:text-light-text-muted">
