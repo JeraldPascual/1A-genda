@@ -12,6 +12,7 @@ import DailyQuote from './components/DailyQuote';
 import AdminPanel from './components/AdminPanel';
 import StudentModularDashboard from './components/StudentModularDashboard';
 import GlobalSearch from './components/GlobalSearch';
+import InstallPrompt from './components/InstallPrompt';
 import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon, Search, Download } from 'lucide-react';
 import gsap from 'gsap';
 import muiTheme from './theme/muiTheme';
@@ -426,6 +427,9 @@ function App() {
         onClose={() => setShowSearch(false)}
         onNavigate={handleNavigateFromSearch}
       />
+
+      {/* Install Prompt - Only shows on mobile */}
+      {user && <InstallPrompt />}
     </ThemeProvider>
   );
 }
