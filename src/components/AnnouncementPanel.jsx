@@ -1,11 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { getActiveAnnouncements } from '../utils/firestore';
 import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X } from 'lucide-react';
+import { Button } from '@mui/material';
 import gsap from 'gsap';
 
 const AnnouncementPanel = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [showAllAnnouncements, setShowAllAnnouncements] = useState(false);
   const cardRefs = useRef([]);
 
   useEffect(() => {
@@ -83,16 +85,34 @@ const AnnouncementPanel = () => {
 
   if (announcements.length === 0) return null;
 
+  const displayedAnnouncements = showAllAnnouncements ? announcements : announcements.slice(0, 5);
+
   return (
     <div className="space-y-4 mb-8">
-      <div className="flex items-center gap-3">
-        <Sparkles className="w-6 h-6 text-sky-400" />
-        <h3 className="text-xl font-bold dark:text-dark-text-primary light:text-light-text-primary flex items-center gap-2">
-          <Megaphone className="w-6 h-6 text-sky-400" />
-          <span>Important Announcements</span>
-        </h3>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Sparkles className="w-6 h-6 text-sky-400" />
+          <h3 className="text-xl font-bold dark:text-dark-text-primary light:text-light-text-primary flex items-center gap-2">
+            <Megaphone className="w-6 h-6 text-sky-400" />
+            <span>Important Announcements</span>
+          </h3>
+        </div>
+        {announcements.length > 5 && (
+          <Button
+            size="small"
+            onClick={() => setShowAllAnnouncements(!showAllAnnouncements)}
+            sx={{
+              color: 'var(--color-primary)',
+              textTransform: 'none',
+              fontSize: '0.875rem',
+              fontWeight: 600
+            }}
+          >
+            {showAllAnnouncements ? 'Show Less' : `View All (${announcements.length})`}
+          </Button>
+        )}
       </div>
-      {announcements.map((announcement, index) => (
+      {displayedAnnouncements.map((announcement, index) => (
         <div
           key={announcement.id}
           ref={(el) => (cardRefs.current[index] = el)}
@@ -116,20 +136,13 @@ const AnnouncementPanel = () => {
                 {announcement.type.toUpperCase()}
               </span>
             </div>
-            <p className="dark:text-dark-text-primary light:!text-white text-base leading-relaxed break-words overflow-wrap-anywhere">
-              {isLongDescription(announcement.message)
-                ? truncateText(announcement.message)
-                : announcement.message}
-            </p>
-            {isLongDescription(announcement.message) && (
-              <button
-                onClick={() => setSelectedAnnouncement(announcement)}
-                className="mt-3 flex items-center gap-2 text-sm font-semibold dark:text-sky-400 light:!text-white dark:hover:text-sky-300 light:hover:!text-blue-100 transition-colors"
-              >
-                <span>Read More</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
-            )}
+            <button
+              onClick={() => setSelectedAnnouncement(announcement)}
+              className="mt-2 flex items-center gap-2 text-sm font-semibold dark:text-sky-400 light:!text-white dark:hover:text-sky-300 light:hover:!text-blue-100 transition-colors"
+            >
+              <span>Read More</span>
+              <ChevronDown className="w-4 h-4" />
+            </button>
           </div>
         </div>
       ))}

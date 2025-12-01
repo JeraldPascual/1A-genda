@@ -7,11 +7,10 @@ import Login from './components/Login';
 import Register from './components/Register';
 import KanbanBoard from './components/KanbanBoard';
 import AnnouncementTicker from './components/AnnouncementTicker';
-import AnnouncementPanel from './components/AnnouncementPanel';
 import SemesterProgress from './components/SemesterProgress';
 import DailyQuote from './components/DailyQuote';
 import AdminPanel from './components/AdminPanel';
-import ResourceLinks from './components/ResourceLinks';
+import StudentModularDashboard from './components/StudentModularDashboard';
 import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon } from 'lucide-react';
 import gsap from 'gsap';
 import muiTheme from './theme/muiTheme';
@@ -178,35 +177,35 @@ function App() {
           <SemesterProgress />
         </div>
 
-        {/* Admin Panel or Kanban Board */}
+        {/* Admin Panel or Student Dashboard */}
         {isAdmin() ? (
           <AdminPanel
             onTaskCreated={handleRefresh}
             onAnnouncementCreated={handleRefresh}
           />
         ) : (
-          <div>
-            {/* Announcement Panel for Students */}
-            <AnnouncementPanel key={`announcement-panel-${refreshKey}`} />
+          <div className="space-y-8">
+            {/* Modular Dashboard with Tabs */}
+            <StudentModularDashboard userBatch={userData?.batch} />
 
-            {/* Resource Links for Students */}
-            <ResourceLinks />
-
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-3xl font-bold dark:text-dark-text-primary light:text-light-text-primary flex items-center gap-3">
-                <Target className="w-8 h-8 text-sky-400" />
-                <span>My Task Board</span>
-              </h2>
-              <Button
-                onClick={handleRefresh}
-                startIcon={<RefreshCw className="w-4 h-4" />}
-                variant="contained"
-                className="!normal-case !font-semibold !px-5 !py-2.5 !rounded-xl !shadow-lg !shadow-sky-600/30 hover:!shadow-xl hover:!shadow-sky-600/40 hover:!scale-105"
-              >
-                Refresh
-              </Button>
+            {/* Task Board */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold dark:text-dark-text-primary light:text-light-text-primary flex items-center gap-3">
+                  <Target className="w-8 h-8 text-sky-400" />
+                  <span>My Task Board</span>
+                </h2>
+                <Button
+                  onClick={handleRefresh}
+                  startIcon={<RefreshCw className="w-4 h-4" />}
+                  variant="contained"
+                  className="!normal-case !font-semibold !px-5 !py-2.5 !rounded-xl !shadow-lg !shadow-sky-600/30 hover:!shadow-xl hover:!shadow-sky-600/40 hover:!scale-105"
+                >
+                  Refresh
+                </Button>
+              </div>
+              <KanbanBoard key={refreshKey} />
             </div>
-            <KanbanBoard key={refreshKey} />
           </div>
         )}
       </main>

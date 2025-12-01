@@ -10,6 +10,8 @@ const ContentSubmissionPanel = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [myRequests, setMyRequests] = useState([]);
+  const [showAllSubmissions, setShowAllSubmissions] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
 
   const [formData, setFormData] = useState({
     contentType: 'task',
@@ -166,17 +168,33 @@ const ContentSubmissionPanel = () => {
       {myRequests.length > 0 && (
         <Card className="dark:!bg-transparent light:!bg-blue-600">
           <CardContent className="!p-6">
-            <h3 className="text-lg font-semibold dark:text-dark-text-primary light:!text-white mb-4">
-              My Submissions
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold dark:text-dark-text-primary light:!text-white">
+                My Submissions ({myRequests.length})
+              </h3>
+              {myRequests.length > 5 && (
+                <Button
+                  size="small"
+                  onClick={() => setShowAllSubmissions(!showAllSubmissions)}
+                  sx={{
+                    color: 'var(--color-primary)',
+                    textTransform: 'none',
+                    fontSize: '0.875rem',
+                    fontWeight: 600
+                  }}
+                >
+                  {showAllSubmissions ? 'Show Less' : `View All (${myRequests.length})`}
+                </Button>
+              )}
+            </div>
             <div className="space-y-3">
-              {myRequests.map(request => (
+              {(showAllSubmissions ? myRequests : myRequests.slice(0, 5)).map(request => (
                 <div
                   key={request.id}
                   className="dark:bg-slate-800/50 light:!bg-blue-700 rounded-lg p-4 border dark:border-slate-700/50 light:!border-blue-500"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-1">
                       {request.contentType === 'task' ? (
                         <BookOpen className="w-5 h-5 dark:text-primary-400 light:!text-white" />
                       ) : (
@@ -191,14 +209,12 @@ const ContentSubmissionPanel = () => {
                       <span className="capitalize">{request.status}</span>
                     </div>
                   </div>
-                  <p className="text-sm dark:text-dark-text-muted light:!text-white/80 mb-2">
-                    {request.contentType === 'task' ? request.description : request.announcementMessage}
-                  </p>
-                  {request.adminNote && (
-                    <div className="mt-2 p-2 dark:bg-slate-700/50 light:!bg-blue-600 rounded text-xs dark:text-dark-text-muted light:!text-white/80">
-                      <strong>Admin Note:</strong> {request.adminNote}
-                    </div>
-                  )}
+                  <button
+                    onClick={() => setSelectedSubmission(request)}
+                    className="text-xs font-medium dark:text-sky-400 light:!text-white dark:hover:text-sky-300 light:hover:!text-blue-100 transition-colors"
+                  >
+                    View Details →
+                  </button>
                 </div>
               ))}
             </div>
@@ -227,8 +243,9 @@ const ContentSubmissionPanel = () => {
           sx={{
             backgroundColor: 'var(--color-bg-secondary)',
             color: 'var(--color-text-primary)',
-            pt: 3,
-            maxHeight: { xs: '70vh', sm: '70vh', md: '70vh' },
+            pt: 2,
+            pb: 1,
+            maxHeight: { xs: '60vh', sm: '65vh', md: '70vh' },
             overflowY: 'auto',
           }}
         >
@@ -243,7 +260,7 @@ const ContentSubmissionPanel = () => {
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               <TextField
                 select
                 label="Content Type"
@@ -466,6 +483,137 @@ const ContentSubmissionPanel = () => {
           </DialogActions>
         )}
       </Dialog>
+
+      {/* Submission Details Dialog */}
+      {selectedSubmission && (
+        <Dialog
+          open={!!selectedSubmission}
+          onClose={() => setSelectedSubmission(null)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle sx={{
+            color: 'var(--color-text-primary)',
+            backgroundColor: 'var(--color-bg-secondary)',
+            borderBottom: '1px solid var(--color-border)'
+          }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {selectedSubmission.contentType === 'task' ? (
+                  <BookOpen className="w-5 h-5 text-blue-400" />
+                ) : (
+                  <Bell className="w-5 h-5 text-purple-400" />
+                )}
+                <span>{selectedSubmission.contentType === 'task' ? selectedSubmission.title : selectedSubmission.announcementTitle}</span>
+              </div>
+              <span className={`text-xs font-semibold capitalize px-3 py-1 rounded-full ${getStatusColor(selectedSubmission.status)}`}>
+                {selectedSubmission.status}
+              </span>
+            </div>
+          </DialogTitle>
+          <DialogContent
+            sx={{
+              backgroundColor: 'var(--color-bg-secondary)',
+              color: 'var(--color-text-primary)',
+              pt: 3,
+              pb: 2,
+              maxHeight: { xs: '60vh', sm: '65vh', md: '70vh' },
+              overflowY: 'auto',
+            }}
+          >
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-semibold dark:text-dark-text-muted light:text-light-text-muted mb-2">
+                  Content Type
+                </h4>
+                <p className="dark:text-dark-text-primary light:text-light-text-primary capitalize">
+                  {selectedSubmission.contentType}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-semibold dark:text-dark-text-muted light:text-light-text-muted mb-2">
+                  {selectedSubmission.contentType === 'task' ? 'Description' : 'Message'}
+                </h4>
+                <p className="dark:text-dark-text-primary light:text-light-text-primary whitespace-pre-wrap">
+                  {selectedSubmission.contentType === 'task' ? selectedSubmission.description : selectedSubmission.announcementMessage}
+                </p>
+              </div>
+
+              {selectedSubmission.contentType === 'task' && (
+                <>
+                  {selectedSubmission.subject && (
+                    <div>
+                      <h4 className="text-sm font-semibold dark:text-dark-text-muted light:text-light-text-muted mb-2">
+                        Subject
+                      </h4>
+                      <p className="dark:text-dark-text-primary light:text-light-text-primary">
+                        {selectedSubmission.subject}
+                      </p>
+                    </div>
+                  )}
+                  {selectedSubmission.dueDate && (
+                    <div>
+                      <h4 className="text-sm font-semibold dark:text-dark-text-muted light:text-light-text-muted mb-2">
+                        Due Date
+                      </h4>
+                      <p className="dark:text-dark-text-primary light:text-light-text-primary">
+                        {new Date(selectedSubmission.dueDate.seconds * 1000).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
+                  {selectedSubmission.priority && (
+                    <div>
+                      <h4 className="text-sm font-semibold dark:text-dark-text-muted light:text-light-text-muted mb-2">
+                        Priority
+                      </h4>
+                      <p className="dark:text-dark-text-primary light:text-light-text-primary capitalize">
+                        {selectedSubmission.priority}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+
+              <div>
+                <h4 className="text-sm font-semibold dark:text-dark-text-muted light:text-light-text-muted mb-2">
+                  Reason for Submission
+                </h4>
+                <p className="dark:text-dark-text-primary light:text-light-text-primary whitespace-pre-wrap">
+                  {selectedSubmission.reason}
+                </p>
+              </div>
+
+              {selectedSubmission.adminNote && (
+                <div className="p-3 dark:bg-slate-700/50 light:bg-blue-600 rounded-lg">
+                  <h4 className="text-sm font-semibold dark:text-amber-400 light:text-white mb-2">
+                    Admin Note
+                  </h4>
+                  <p className="dark:text-dark-text-primary light:text-white whitespace-pre-wrap">
+                    {selectedSubmission.adminNote}
+                  </p>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+          <DialogActions sx={{
+            backgroundColor: 'var(--color-bg-secondary)',
+            borderTop: '1px solid var(--color-border)',
+            padding: '16px 24px'
+          }}>
+            <Button
+              onClick={() => setSelectedSubmission(null)}
+              variant="contained"
+              sx={{
+                backgroundColor: '#8b5cf6',
+                '&:hover': { backgroundColor: '#7c3aed' },
+              }}
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </div>
   );
 };

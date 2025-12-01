@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests } from '../utils/firestore';
+import { getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests, getAllGlobalTasks } from '../utils/firestore';
 
 const StudentDashboard = () => {
   const [students, setStudents] = useState([]);
@@ -21,18 +21,26 @@ const StudentDashboard = () => {
   const loadStudentData = async () => {
     setLoading(true);
     try {
-      const [allUsers, progressData, revisionData, submissionData] = await Promise.all([
+      const [allUsers, progressData, revisionData, submissionData, globalTasks] = await Promise.all([
         getAllUsers(),
         getAllStudentProgress(),
         getTaskRevisionRequests(),
-        getContentSubmissionRequests()
+        getContentSubmissionRequests(),
+        getAllGlobalTasks()
       ]);
       const studentUsers = allUsers.filter(u => u.role === 'student');
 
       const studentsWithProgress = studentUsers.map(student => {
         const studentProgress = progressData.filter(p => p.userId === student.id);
         const completedTasks = studentProgress.filter(p => p.status === 'done').length;
-        const totalTasks = studentProgress.length;
+
+        // Calculate total available tasks for this student's batch
+        const availableTasks = globalTasks.filter(task => {
+          if (!task.batch || task.batch === 'all') return true;
+          return task.batch === student.batch;
+        });
+        const totalTasks = availableTasks.length;
+
         const completionRate = totalTasks > 0 ? Math.round((completedTasks * 100) / totalTasks) : 0;
 
         return {

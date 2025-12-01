@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem } from '@mui/material';
 import KanbanColumn from './KanbanColumn';
-import ContentSubmissionPanel from './ContentSubmissionPanel';
 import { useAuth } from '../context/AuthContext';
 import {
   getAllGlobalTasks,
@@ -301,13 +300,6 @@ const KanbanBoard = () => {
         ))}
       </div>
 
-      {/* Content Submission Panel - Available to all students */}
-      {!isAdmin() && (
-        <div className="mt-6">
-          <ContentSubmissionPanel />
-        </div>
-      )}
-
       {/* My Task Requests Status */}
       {!isAdmin() && userData?.batch === '1A2' && myRequests.length > 0 && (
         <div className="mt-6">
@@ -340,8 +332,15 @@ const KanbanBoard = () => {
       {/* Task Request Dialog */}
       <Dialog open={showRequestDialog} onClose={handleRequestDialogClose} maxWidth="sm" fullWidth>
         <DialogTitle>Request New Task for 1A2</DialogTitle>
-        <DialogContent>
-          <div className="space-y-4 mt-2">
+        <DialogContent
+          sx={{
+            pt: 1,
+            pb: 1,
+            maxHeight: { xs: '60vh', sm: '65vh', md: '70vh' },
+            overflowY: 'auto',
+          }}
+        >
+          <div className="space-y-2 mt-1">
             <TextField
               name="title"
               label="Task Title"
