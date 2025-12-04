@@ -18,6 +18,7 @@ const ContentSubmissionPanel = () => {
   const [attachments, setAttachments] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState('');
 
   const [formData, setFormData] = useState({
     contentType: 'task',

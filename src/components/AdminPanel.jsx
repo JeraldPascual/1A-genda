@@ -50,6 +50,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   const [announcementAttachments, setAnnouncementAttachments] = useState([]);
   const [uploadingAnnouncement, setUploadingAnnouncement] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState('');
 
   useEffect(() => {
     if (activeTab === 'viewTasks') {
@@ -281,10 +282,17 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
+    setUploadError('');
     setUploadingAnnouncement(true);
     const uploadedFiles = [];
+    const failedFiles = [];
 
     for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        failedFiles.push({ name: file.name, reason: 'Exceeds 5MB limit' });
+        continue;
+      }
+
       try {
         const result = await uploadFile(file, 'announcements', (progress) => {
           setUploadProgress(progress);
@@ -293,14 +301,23 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
         if (result.success) {
           uploadedFiles.push(result);
         } else {
-          setMessage({ type: 'error', text: `Failed to upload ${file.name}: ${result.error}` });
+          failedFiles.push({ name: file.name, reason: result.error || 'Upload failed' });
         }
       } catch (error) {
-        setMessage({ type: 'error', text: `Error uploading ${file.name}` });
+        failedFiles.push({ name: file.name, reason: error.message || 'Upload failed' });
       }
     }
 
-    setAnnouncementAttachments(prev => [...prev, ...uploadedFiles]);
+    if (failedFiles.length > 0) {
+      const errorMsg = `Failed: ${failedFiles.map(f => `${f.name} (${f.reason})`).join(', ')}`;
+      setUploadError(errorMsg);
+      setMessage({ type: 'error', text: errorMsg });
+    }
+
+    if (uploadedFiles.length > 0) {
+      setAnnouncementAttachments(prev => [...prev, ...uploadedFiles]);
+    }
+
     setUploadingAnnouncement(false);
     setUploadProgress(0);
     e.target.value = ''; // Reset file input
@@ -821,6 +838,13 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                   ))}
                 </div>
               )}
+
+              {/* Error Display */}
+              {uploadError && (
+                <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                  <p className="text-sm text-red-400">{uploadError}</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -1092,9 +1116,17 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                 >
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex-1">
-                      <h4 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary mb-1">
-                        {request.title}
-                      </h4>
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h4 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary">
+                          {request.title}
+                        </h4>
+                        {request.attachments && request.attachments.length > 0 && (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 flex items-center gap-1">
+                            <Paperclip className="w-3 h-3" />
+                            {request.attachments.length}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary mb-2">
                         {request.description}
                       </p>
@@ -1107,6 +1139,18 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                       <div className="text-xs dark:text-dark-text-muted light:text-light-text-muted">
                         <span>Requested by: <strong>{request.userName}</strong> ({request.userEmail})</span>
                       </div>
+
+                      {request.attachments && request.attachments.length > 0 && (
+                        <div className="mt-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Paperclip className="w-4 h-4 text-sky-400" />
+                            <span className="text-sm font-semibold text-sky-400">
+                              Attachments ({request.attachments.length})
+                            </span>
+                          </div>
+                          <AttachmentList attachments={request.attachments} />
+                        </div>
+                      )}
                     </div>
                   </div>
 

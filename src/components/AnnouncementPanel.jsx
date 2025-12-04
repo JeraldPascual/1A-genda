@@ -5,6 +5,7 @@ import { Button } from '@mui/material';
 import { exportAnnouncementsToPDF } from '../utils/pdfExport';
 import gsap from 'gsap';
 import AttachmentList from './AttachmentList';
+import LinkifiedText from './LinkifiedText';
 
 const AnnouncementPanel = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -219,7 +220,7 @@ const AnnouncementPanel = () => {
             </div>
             <div className="p-6 pt-0 space-y-4">
               <p className="dark:text-dark-text-primary light:text-light-text-primary text-lg leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere">
-                {selectedAnnouncement.message}
+                <LinkifiedText text={selectedAnnouncement.message} />
               </p>
               {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
                 <AttachmentList attachments={selectedAnnouncement.attachments} />

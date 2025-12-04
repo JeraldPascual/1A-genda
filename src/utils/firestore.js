@@ -429,7 +429,7 @@ export const getTaskCreationRequests = async (filters = {}) => {
 export const approveTaskCreationRequest = async (requestId, requestData) => {
   try {
     // Create the global task from the request
-    const taskResult = await createGlobalTask({
+    const taskData = {
       title: requestData.title,
       description: requestData.description,
       subject: requestData.subject,
@@ -438,7 +438,14 @@ export const approveTaskCreationRequest = async (requestId, requestData) => {
       column: 'todo',
       batch: requestData.batch, // Should be 1A2
       order: Date.now(),
-    });
+    };
+
+    // Add attachments if present
+    if (requestData.attachments && requestData.attachments.length > 0) {
+      taskData.attachments = requestData.attachments;
+    }
+
+    const taskResult = await createGlobalTask(taskData);
 
     if (taskResult.success) {
       // Delete the request after successful task creation to clean up Firestore

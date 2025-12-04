@@ -1,13 +1,73 @@
 import { useState } from 'react';
 import { Card, CardContent, Button, Chip } from '@mui/material';
-import { Calendar, BookOpen, Send, CheckCircle, Clock } from 'lucide-react';
+import { Calendar, BookOpen, Send, CheckCircle, Clock, Upload, Paperclip, X as XIcon, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { createTaskRequest } from '../utils/firestore';
+import { uploadFile, formatFileSize } from '../utils/fileUpload';
 
 const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
   const [requesting, setRequesting] = useState(false);
   const [requested, setRequested] = useState(!!existingRequest);
   const [requestStatus, setRequestStatus] = useState(existingRequest?.status || null);
   const [reason, setReason] = useState("");
+  const [attachments, setAttachments] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState(''); = useState(0);
+
+  const handleFileUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+
+    setUploadError('');
+    setUploading(true);
+    const uploadedFiles = [];
+    const failedFiles = [];
+
+    for (const file of files) {
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        failedFiles.push({ name: file.name, reason: 'File exceeds 5MB limit' });
+        continue;
+      }
+
+      try {
+        const result = await uploadFile(file, (progress) => {
+          setUploadProgress(progress);
+        });
+
+        if (result.success) {
+          uploadedFiles.push({
+            url: result.url,
+            fileName: result.fileName,
+            fileSize: result.fileSize,
+            fileType: result.fileType,
+          });
+        } else {
+          failedFiles.push({ name: file.name, reason: result.error || 'Upload failed' });
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        failedFiles.push({ name: file.name, reason: error.message || 'Upload failed' });
+      }
+    }
+
+    if (failedFiles.length > 0) {
+      const errorMsg = `Failed to upload ${failedFiles.length} file(s):\n${failedFiles.map(f => `• ${f.name}: ${f.reason}`).join('\n')}`;
+      setUploadError(errorMsg);
+    }
+
+    if (uploadedFiles.length > 0) {
+      setAttachments(prev => [...prev, ...uploadedFiles]);
+    }
+
+    setUploading(false);
+    setUploadProgress(0);
+    event.target.value = '';
+  };
+
+  const removeAttachment = (index) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleRequestAccess = async () => {
     setRequesting(true);
@@ -20,6 +80,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
         taskTitle: task.title,
         taskSubject: task.subject,
         reason: reason || `Student from batch ${userBatch} requesting access to ${task.batch} task`,
+        attachments: attachments.length > 0 ? attachments : [],
       });
 
       if (result.success) {
@@ -142,11 +203,75 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
                 />
               </div>
             )}
+
+            {/* File Upload Section - only for 1A2 */}
+            {userBatch === '1A2' && (
+              <div className="mb-3">
+                <label className="block text-xs font-medium mb-2 dark:text-sky-400 light:text-blue-600 flex items-center gap-2">
+                  <Upload className="w-4 h-4" />
+                  Attach Files (Optional)
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip"
+                  onChange={handleFileUpload}
+                  disabled={uploading || requesting || requested}
+                  className="hidden"
+                  id={`file-upload-${task.id}`}
+                />
+                <label
+                  htmlFor={`file-upload-${task.id}`}
+                  className={`block w-full text-center px-4 py-2 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                    uploading || requesting || requested
+                      ? 'border-slate-600 text-slate-500 cursor-not-allowed'
+                      : 'border-sky-500 text-sky-400 hover:border-sky-400 hover:bg-sky-500/10'
+                  }`}
+                >
+                  {uploading ? `Uploading... ${uploadProgress}%` : 'Click to upload files'}
+                </label>
+                <p className="text-xs text-slate-400 mt-1">
+                  Supported: Images, PDF, Word, Excel, PowerPoint, Text, ZIP (Max 5MB per file)
+                </p>
+
+                {attachments.length > 0 && (
+                  <div className="mt-2 space-y-2">
+                    {attachments.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-2 dark:bg-slate-800 light:bg-gray-100 rounded border dark:border-slate-700 light:border-gray-300"
+                      >
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          {file.fileType?.startsWith('image/') ? (
+                            <ImageIcon className="w-4 h-4 text-sky-400 shrink-0" />
+                          ) : (
+                            <FileIcon className="w-4 h-4 text-sky-400 shrink-0" />
+                          )}
+                          <span className="text-xs dark:text-dark-text-primary light:text-light-text-primary truncate">
+                            {file.fileName}
+                          </span>
+                          <span className="text-xs dark:text-dark-text-muted light:text-light-text-muted shrink-0">
+                            ({formatFileSize(file.fileSize)})
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => removeAttachment(index)}
+                          disabled={requesting || requested}
+                          className="p-1 hover:bg-red-500/20 rounded transition-colors disabled:opacity-50"
+                        >
+                          <XIcon className="w-4 h-4 text-red-400" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             <Button
               variant="outlined"
               fullWidth
               onClick={handleRequestAccess}
-              disabled={requesting || requested || (userBatch === '1A2' && !reason.trim())}
+              disabled={requesting || requested || uploading || (userBatch === '1A2' && !reason.trim())}
               startIcon={<Send className="w-4 h-4" />}
               sx={{
                 borderColor: 'rgba(59, 130, 246, 0.5)',

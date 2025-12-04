@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import { createTaskRevisionRequest } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
 import AttachmentList from './AttachmentList';
+import LinkifiedText from './LinkifiedText';
 
 const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userData }) => {
   const cardRef = useRef(null);
@@ -601,7 +602,7 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
 
             <div className="pt-2">
               <p className="dark:text-dark-text-primary light:text-light-text-primary text-base leading-relaxed whitespace-pre-wrap">
-                {task.description}
+                <LinkifiedText text={task.description} />
               </p>
 
               {task.dueDate && (

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { getActiveAnnouncements } from '../utils/firestore';
-import { Megaphone, AlertTriangle, PartyPopper, X } from 'lucide-react';
+import { Megaphone, AlertTriangle, PartyPopper, X, Paperclip } from 'lucide-react';
+import AttachmentList from './AttachmentList';
+import LinkifiedText from './LinkifiedText';
 
 const AnnouncementTicker = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -144,6 +146,12 @@ const AnnouncementTicker = () => {
                   <h3 className={`text-2xl font-bold ${getAnnouncementTextColor(selectedAnnouncement.type)} wrap-break-word`}>
                     {selectedAnnouncement.title}
                   </h3>
+                  {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
+                    <span className="text-xs font-semibold px-2 py-1 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center gap-1">
+                      <Paperclip className="w-3 h-3" />
+                      {selectedAnnouncement.attachments.length}
+                    </span>
+                  )}
                   <span className={`text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap ${
                     selectedAnnouncement.type === 'urgent'
                       ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
@@ -158,8 +166,20 @@ const AnnouncementTicker = () => {
             </div>
             <div className="p-6">
               <p className="dark:text-dark-text-primary light:text-light-text-primary text-lg leading-relaxed whitespace-pre-wrap wrap-break-word overflow-wrap-anywhere">
-                {selectedAnnouncement.message}
+                <LinkifiedText text={selectedAnnouncement.message} />
               </p>
+
+              {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
+                <div className="mt-6 pt-6 border-t dark:border-dark-border light:border-light-border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Paperclip className="w-4 h-4 text-sky-400" />
+                    <span className="text-sm font-semibold text-sky-400">
+                      Attachments ({selectedAnnouncement.attachments.length})
+                    </span>
+                  </div>
+                  <AttachmentList attachments={selectedAnnouncement.attachments} />
+                </div>
+              )}
             </div>
           </div>
         </div>
