@@ -6,6 +6,7 @@ import { Timestamp } from 'firebase/firestore';
 import { PlusCircle, Megaphone, CheckCircle, AlertCircle, Shield, ListTodo, Trash2, Eye, Users, UserCheck, Zap, Target, Inbox, Edit, X, FileEdit, Send, Download, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import StudentProgressTracker from './StudentProgressTracker';
 import StudentDashboard from './StudentDashboard';
+import AttachmentList from './AttachmentList';
 import { exportTasksToPDF, exportStudentProgressToPDF, exportAnnouncementsToPDF } from '../utils/pdfExport';
 import { uploadFile, formatFileSize, getFileIcon } from '../utils/fileUpload';
 
@@ -1300,6 +1301,12 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                         <h4 className="text-base font-semibold dark:text-dark-text-primary light:text-light-text-primary">
                           {request.contentType === 'task' ? request.title : request.announcementTitle}
                         </h4>
+                        {request.attachments && request.attachments.length > 0 && (
+                          <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-sky-500/20 text-sky-400 font-medium">
+                            <Paperclip className="w-3 h-3" />
+                            {request.attachments.length}
+                          </span>
+                        )}
                         <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                           request.status === 'pending' ? 'bg-amber-500/20 text-amber-400' :
                           request.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' :
@@ -1356,6 +1363,18 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                           <strong>Reason:</strong> {request.reason}
                         </p>
                       </div>
+
+                      {request.attachments && request.attachments.length > 0 && (
+                        <div className="mt-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Paperclip className="w-4 h-4 text-sky-400" />
+                            <span className="text-sm font-semibold text-sky-400">
+                              Attachments ({request.attachments.length})
+                            </span>
+                          </div>
+                          <AttachmentList attachments={request.attachments} />
+                        </div>
+                      )}
 
                       {request.adminNote && (
                         <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
