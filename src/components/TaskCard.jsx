@@ -6,7 +6,8 @@ import gsap from 'gsap';
 import { createTaskRevisionRequest } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
 import AttachmentList from './AttachmentList';
-import LinkifiedText from './LinkifiedText';
+import MarkdownDisplay from './MarkdownDisplay';
+import MarkdownEditor from './MarkdownEditor';
 
 const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userData }) => {
   const cardRef = useRef(null);
@@ -230,9 +231,9 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
 
         {task.description && (
           <div className="mb-3">
-            <p className="text-xs dark:text-dark-text-secondary light:!text-white/90 leading-relaxed line-clamp-2">
-              {task.description}
-            </p>
+            <div className="text-xs dark:text-dark-text-secondary light:!text-white/90 leading-relaxed line-clamp-2 markdown-card-preview">
+              <MarkdownDisplay content={task.description} />
+            </div>
             {(isLongDescription(task.description) || (task.attachments && task.attachments.length > 0)) && (
               <button
                 onClick={() => setShowDescriptionModal(true)}
@@ -456,19 +457,12 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
                     '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
                   }}
                 />
-                <TextField
-                  label="Proposed Description"
+                <MarkdownEditor
                   value={revisionForm.proposedDescription}
-                  onChange={(e) => setRevisionForm({ ...revisionForm, proposedDescription: e.target.value })}
-                  fullWidth
-                  multiline
+                  onChange={(val) => setRevisionForm({ ...revisionForm, proposedDescription: val })}
+                  label="Proposed Description"
                   rows={3}
                   size="small"
-                  sx={{
-                    '& .MuiInputBase-root': { color: 'var(--color-text-primary)' },
-                    '& .MuiInputLabel-root': { color: 'var(--color-text-muted)' },
-                    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
-                  }}
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <TextField
@@ -521,21 +515,14 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
               />
             )}
 
-            <TextField
-              label="Reason for Revision *"
+            <MarkdownEditor
               value={revisionForm.reason}
-              onChange={(e) => setRevisionForm({ ...revisionForm, reason: e.target.value })}
-              fullWidth
-              multiline
+              onChange={(val) => setRevisionForm({ ...revisionForm, reason: val })}
+              label="Reason for Revision"
               rows={3}
               required
               placeholder="Explain why this revision is needed..."
               size="small"
-              sx={{
-                '& .MuiInputBase-root': { color: 'var(--color-text-primary)' },
-                '& .MuiInputLabel-root': { color: 'var(--color-text-muted)' },
-                '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
-              }}
             />
           </div>
         )}
@@ -601,9 +588,9 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
             </div>
 
             <div className="pt-2">
-              <p className="dark:text-dark-text-primary light:text-light-text-primary text-base leading-relaxed whitespace-pre-wrap">
-                <LinkifiedText text={task.description} />
-              </p>
+              <div className="dark:text-dark-text-primary light:text-light-text-primary text-base leading-relaxed">
+                <MarkdownDisplay content={task.description} />
+              </div>
 
               {task.dueDate && (
                 <div className="mt-4 pt-4 border-t dark:border-dark-border light:border-light-border">

@@ -7,6 +7,8 @@ import { PlusCircle, Megaphone, CheckCircle, AlertCircle, Shield, ListTodo, Tras
 import StudentProgressTracker from './StudentProgressTracker';
 import StudentDashboard from './StudentDashboard';
 import AttachmentList from './AttachmentList';
+import MarkdownEditor from './MarkdownEditor';
+import MarkdownDisplay from './MarkdownDisplay';
 import { exportTasksToPDF, exportStudentProgressToPDF, exportAnnouncementsToPDF } from '../utils/pdfExport';
 import { uploadFile, formatFileSize, getFileIcon } from '../utils/fileUpload';
 
@@ -620,15 +622,11 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-sky-400 mb-2">
-                Description
-              </label>
-              <textarea
-                name="description"
+              <MarkdownEditor
                 value={taskForm.description}
-                onChange={handleTaskChange}
-                rows="3"
-                className="w-full px-4 py-3 dark:bg-slate-900/40 light:bg-white border dark:border-slate-700/50 light:border-gray-200 rounded-lg focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/50 focus:outline-none dark:text-dark-text-primary light:text-light-text-primary placeholder-slate-500 transition-all resize-none"
+                onChange={(val) => setTaskForm({ ...taskForm, description: val })}
+                label="Description"
+                rows={3}
                 placeholder="Additional details about the task..."
               />
             </div>
@@ -756,15 +754,11 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-sky-400 mb-2">
-              Message *
-            </label>
-            <textarea
-              name="message"
+            <MarkdownEditor
               value={announcementForm.message}
-              onChange={handleAnnouncementChange}
-              rows="4"
-              className="w-full px-4 py-3 dark:bg-slate-900/40 light:bg-white border dark:border-slate-700/50 light:border-gray-200 rounded-lg focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/50 focus:outline-none dark:text-dark-text-primary light:text-light-text-primary placeholder-slate-500 transition-all resize-none"
+              onChange={(val) => setAnnouncementForm({ ...announcementForm, message: val })}
+              label="Message"
+              rows={4}
               placeholder="Your announcement message..."
               required
             />
@@ -969,7 +963,9 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                         </span>
                       </div>
                       {task.description && (
-                        <p className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary mb-2 wrap-break-word overflow-wrap-anywhere">{task.description}</p>
+                        <div className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary mb-2 wrap-break-word overflow-wrap-anywhere markdown-card-preview">
+                          <MarkdownDisplay content={task.description} />
+                        </div>
                       )}
                       <div className="flex items-center gap-3 text-xs dark:text-dark-text-muted light:text-light-text-muted">
                         {task.subject && (
@@ -1067,7 +1063,9 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary wrap-break-word overflow-wrap-anywhere">{announcement.message}</p>
+                    <div className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary wrap-break-word overflow-wrap-anywhere markdown-card-preview">
+                      <MarkdownDisplay content={announcement.message} />
+                    </div>
                   </div>
                   <div className="flex gap-2 shrink-0">
                     <button
@@ -1127,9 +1125,9 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                           </span>
                         )}
                       </div>
-                      <p className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary mb-2">
-                        {request.description}
-                      </p>
+                      <div className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary mb-2 markdown-card-preview">
+                        <MarkdownDisplay content={request.description} />
+                      </div>
                       <div className="flex items-center gap-4 text-xs dark:text-dark-text-muted light:text-light-text-muted mb-2">
                         <span>Subject: <strong className="text-primary-400">{request.subject}</strong></span>
                         <span>Batch: <strong className="text-purple-400">{request.batch}</strong></span>
@@ -1371,9 +1369,10 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
 
                       {request.contentType === 'task' ? (
                         <div className="space-y-2 text-sm">
-                          <p className="dark:text-dark-text-muted light:text-light-text-muted">
-                            <strong>Description:</strong> {request.description}
-                          </p>
+                          <div className="dark:text-dark-text-muted light:text-light-text-muted markdown-card-preview">
+                            <strong>Description:</strong>
+                            <MarkdownDisplay content={request.description} />
+                          </div>
                           <div className="flex flex-wrap gap-4">
                             {request.subject && (
                               <span className="dark:text-dark-text-muted light:text-light-text-muted">
@@ -1399,9 +1398,10 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                         </div>
                       ) : (
                         <div className="space-y-2 text-sm">
-                          <p className="dark:text-dark-text-muted light:text-light-text-muted">
-                            <strong>Message:</strong> {request.announcementMessage}
-                          </p>
+                          <div className="dark:text-dark-text-muted light:text-light-text-muted markdown-card-preview">
+                            <strong>Message:</strong>
+                            <MarkdownDisplay content={request.announcementMessage} />
+                          </div>
                           <p className="dark:text-dark-text-muted light:text-light-text-muted">
                             <strong>Type:</strong> {request.announcementType}
                           </p>
@@ -1562,15 +1562,14 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                 onChange={(e) => setEditTaskDialog(prev => ({ ...prev, task: { ...prev.task, title: e.target.value } }))}
                 sx={{ mb: 2.5 }}
               />
-              <TextField
-                label="Description"
-                fullWidth
-                multiline
-                rows={3}
-                value={editTaskDialog.task.description}
-                onChange={(e) => setEditTaskDialog(prev => ({ ...prev, task: { ...prev.task, description: e.target.value } }))}
-                sx={{ mb: 2.5 }}
-              />
+              <Box sx={{ mb: 2.5 }}>
+                <MarkdownEditor
+                  value={editTaskDialog.task.description}
+                  onChange={(val) => setEditTaskDialog(prev => ({ ...prev, task: { ...prev.task, description: val } }))}
+                  label="Description"
+                  rows={3}
+                />
+              </Box>
               <TextField
                 label="Subject"
                 fullWidth
@@ -1633,15 +1632,15 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                 onChange={(e) => setEditAnnouncementDialog(prev => ({ ...prev, announcement: { ...prev.announcement, title: e.target.value } }))}
                 sx={{ mb: 2.5 }}
               />
-              <TextField
-                label="Message"
-                fullWidth
-                multiline
-                rows={4}
-                value={editAnnouncementDialog.announcement.message}
-                onChange={(e) => setEditAnnouncementDialog(prev => ({ ...prev, announcement: { ...prev.announcement, message: e.target.value } }))}
-                sx={{ mb: 2.5 }}
-              />
+              <Box sx={{ mb: 2.5 }}>
+                <MarkdownEditor
+                  value={editAnnouncementDialog.announcement.message}
+                  onChange={(val) => setEditAnnouncementDialog(prev => ({ ...prev, announcement: { ...prev.announcement, message: val } }))}
+                  label="Message"
+                  rows={4}
+                  required
+                />
+              </Box>
               <TextField
                 label="Type"
                 select

@@ -5,7 +5,7 @@ import { Button } from '@mui/material';
 import { exportAnnouncementsToPDF } from '../utils/pdfExport';
 import gsap from 'gsap';
 import AttachmentList from './AttachmentList';
-import LinkifiedText from './LinkifiedText';
+import MarkdownDisplay from './MarkdownDisplay';
 
 const AnnouncementPanel = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -165,9 +165,9 @@ const AnnouncementPanel = () => {
                 </span>
               )}
             </div>
-            <p className="dark:text-dark-text-muted light:!text-white/80 text-sm mb-3 line-clamp-2 break-words">
-              {announcement.message}
-            </p>
+            <div className="dark:text-dark-text-muted light:!text-white/80 text-sm mb-3 line-clamp-2 break-words markdown-card-preview">
+              <MarkdownDisplay content={announcement.message} />
+            </div>
             <button
               onClick={() => setSelectedAnnouncement(announcement)}
               className="flex items-center gap-2 text-sm font-semibold dark:text-sky-400 light:!text-white dark:hover:text-sky-300 light:hover:!text-blue-100 transition-colors"
@@ -219,9 +219,9 @@ const AnnouncementPanel = () => {
               </div>
             </div>
             <div className="p-6 pt-0 space-y-4">
-              <p className="dark:text-dark-text-primary light:text-light-text-primary text-lg leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere">
-                <LinkifiedText text={selectedAnnouncement.message} />
-              </p>
+              <div className="dark:text-dark-text-primary light:text-light-text-primary text-lg leading-relaxed">
+                <MarkdownDisplay content={selectedAnnouncement.message} />
+              </div>
               {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
                 <AttachmentList attachments={selectedAnnouncement.attachments} />
               )}
@@ -277,9 +277,9 @@ const AnnouncementPanel = () => {
                           </span>
                         )}
                       </div>
-                      <p className="dark:text-dark-text-muted light:!text-white/80 text-sm mb-3 line-clamp-2 break-words">
-                        {announcement.message}
-                      </p>
+                      <div className="dark:text-dark-text-muted light:!text-white/80 text-sm mb-3 line-clamp-2 break-words markdown-card-preview">
+                        <MarkdownDisplay content={announcement.message} />
+                      </div>
                       <button
                         onClick={() => setSelectedAnnouncement(announcement)}
                         className="flex items-center gap-2 text-sm font-semibold dark:text-sky-400 light:!text-white dark:hover:text-sky-300 light:hover:!text-blue-100 transition-colors"

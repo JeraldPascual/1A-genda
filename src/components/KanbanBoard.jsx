@@ -12,6 +12,7 @@ import {
 import confetti from 'canvas-confetti';
 import { PlusCircle, Upload, Paperclip, X as XIcon, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { uploadFile, formatFileSize } from '../utils/fileUpload';
+import MarkdownEditor from './MarkdownEditor';
 
 const KanbanBoard = () => {
   const { user, isAdmin, userData } = useAuth();
@@ -412,14 +413,11 @@ const KanbanBoard = () => {
               onChange={handleRequestFormChange}
               required
             />
-            <TextField
-              name="description"
-              label="Description"
-              fullWidth
-              multiline
-              rows={3}
+            <MarkdownEditor
               value={requestForm.description}
-              onChange={handleRequestFormChange}
+              onChange={(val) => setRequestForm({ ...requestForm, description: val })}
+              label="Description"
+              rows={3}
             />
             <TextField
               name="subject"

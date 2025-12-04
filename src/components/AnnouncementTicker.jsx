@@ -3,7 +3,7 @@ import gsap from 'gsap';
 import { getActiveAnnouncements } from '../utils/firestore';
 import { Megaphone, AlertTriangle, PartyPopper, X, Paperclip } from 'lucide-react';
 import AttachmentList from './AttachmentList';
-import LinkifiedText from './LinkifiedText';
+import MarkdownDisplay from './MarkdownDisplay';
 
 const AnnouncementTicker = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -165,9 +165,9 @@ const AnnouncementTicker = () => {
               </div>
             </div>
             <div className="p-6">
-              <p className="dark:text-dark-text-primary light:text-light-text-primary text-lg leading-relaxed whitespace-pre-wrap wrap-break-word overflow-wrap-anywhere">
-                <LinkifiedText text={selectedAnnouncement.message} />
-              </p>
+              <div className="dark:text-dark-text-primary light:text-light-text-primary text-lg leading-relaxed">
+                <MarkdownDisplay content={selectedAnnouncement.message} />
+              </div>
 
               {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
                 <div className="mt-6 pt-6 border-t dark:border-dark-border light:border-light-border">

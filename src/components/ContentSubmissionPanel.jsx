@@ -4,6 +4,7 @@ import { Plus, Send, Calendar, BookOpen, Bell, CheckCircle, Clock, X, Upload, Pa
 import { createContentSubmissionRequest, getContentSubmissionRequests } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
 import { uploadFile, formatFileSize } from '../utils/fileUpload';
+import MarkdownEditor from './MarkdownEditor';
 
 const ContentSubmissionPanel = () => {
   const { user, userData } = useAuth();
@@ -340,21 +341,12 @@ const ContentSubmissionPanel = () => {
                       '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
                     }}
                   />
-                  <TextField
-                    label="Description"
+                  <MarkdownEditor
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    fullWidth
-                    multiline
+                    onChange={(val) => setFormData({ ...formData, description: val })}
+                    label="Description"
                     rows={3}
                     size="small"
-                    sx={{
-                      mb: 2,
-                      width: '100%',
-                      '& .MuiInputBase-root': { color: 'var(--color-text-primary)' },
-                      '& .MuiInputLabel-root': { color: 'var(--color-text-muted)' },
-                      '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
-                    }}
                   />
                   <TextField
                     select
@@ -450,20 +442,13 @@ const ContentSubmissionPanel = () => {
                       '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
                     }}
                   />
-                  <TextField
-                    label="Message *"
+                  <MarkdownEditor
                     value={formData.announcementMessage}
-                    onChange={(e) => setFormData({ ...formData, announcementMessage: e.target.value })}
-                    fullWidth
-                    multiline
+                    onChange={(val) => setFormData({ ...formData, announcementMessage: val })}
+                    label="Message"
                     rows={4}
                     required
                     size="small"
-                    sx={{
-                      '& .MuiInputBase-root': { color: 'var(--color-text-primary)' },
-                      '& .MuiInputLabel-root': { color: 'var(--color-text-muted)' },
-                      '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
-                    }}
                   />
                   <TextField
                     select

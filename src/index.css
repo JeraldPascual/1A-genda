@@ -229,3 +229,250 @@ body {
   background-color: #f1f5f9;
   color: #0f172a;
 }
+
+/* Markdown Preview Styles */
+
+/* Dark mode markdown */
+:root.dark .markdown-preview,
+:root.dark .markdown-content {
+  color: var(--color-text-primary);
+  line-height: 1.6;
+}
+
+:root.dark .markdown-preview h1,
+:root.dark .markdown-content h1,
+:root.dark .markdown-preview h2,
+:root.dark .markdown-content h2,
+:root.dark .markdown-preview h3,
+:root.dark .markdown-content h3 {
+  color: #38bdf8;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  padding-bottom: 0.3rem;
+}
+
+:root.dark .markdown-preview code,
+:root.dark .markdown-content code,
+:root.dark .markdown-inline-code {
+  background: rgba(30, 41, 59, 0.6);
+  color: #fbbf24;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'Courier New', monospace;
+}
+
+:root.dark .markdown-preview pre,
+:root.dark .markdown-content pre,
+:root.dark .markdown-code-block {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  display: block;
+}
+
+:root.dark .markdown-preview blockquote,
+:root.dark .markdown-content blockquote,
+:root.dark .markdown-blockquote {
+  border-left: 4px solid #0ea5e9;
+  padding-left: 16px;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+:root.dark .markdown-preview a,
+:root.dark .markdown-content a,
+:root.dark .markdown-link {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-decoration-color: rgba(56, 189, 248, 0.5);
+}
+
+:root.dark .markdown-preview a:hover,
+:root.dark .markdown-content a:hover,
+:root.dark .markdown-link:hover {
+  color: #7dd3fc;
+}
+
+:root.dark .markdown-preview ul,
+:root.dark .markdown-content ul,
+:root.dark .markdown-preview ol,
+:root.dark .markdown-content ol {
+  padding-left: 24px;
+}
+
+:root.dark .markdown-preview input[type="checkbox"],
+:root.dark .markdown-content input[type="checkbox"] {
+  accent-color: #0ea5e9;
+  margin-right: 8px;
+}
+
+:root.dark .markdown-preview table,
+:root.dark .markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+:root.dark .markdown-preview th,
+:root.dark .markdown-content th,
+:root.dark .markdown-preview td,
+:root.dark .markdown-content td {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  padding: 8px 12px;
+}
+
+:root.dark .markdown-preview th,
+:root.dark .markdown-content th {
+  background: rgba(30, 41, 59, 0.5);
+  font-weight: 600;
+}
+
+/* Light mode markdown */
+:root:not(.dark) .markdown-preview,
+:root:not(.dark) .markdown-content {
+  color: #1e293b;
+  line-height: 1.6;
+}
+
+:root:not(.dark) .markdown-preview h1,
+:root:not(.dark) .markdown-content h1,
+:root:not(.dark) .markdown-preview h2,
+:root:not(.dark) .markdown-content h2,
+:root:not(.dark) .markdown-preview h3,
+:root:not(.dark) .markdown-content h3 {
+  color: #0284c7;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.3rem;
+}
+
+:root:not(.dark) .markdown-preview code,
+:root:not(.dark) .markdown-content code,
+:root:not(.dark) .markdown-inline-code {
+  background: #f1f5f9;
+  color: #ea580c;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'Courier New', monospace;
+}
+
+:root:not(.dark) .markdown-preview pre,
+:root:not(.dark) .markdown-content pre,
+:root:not(.dark) .markdown-code-block {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  display: block;
+}
+
+:root:not(.dark) .markdown-preview blockquote,
+:root:not(.dark) .markdown-content blockquote,
+:root:not(.dark) .markdown-blockquote {
+  border-left: 4px solid #0ea5e9;
+  padding-left: 16px;
+  color: #64748b;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+:root:not(.dark) .markdown-preview a,
+:root:not(.dark) .markdown-content a,
+:root:not(.dark) .markdown-link {
+  color: #0284c7;
+  text-decoration: underline;
+  text-decoration-color: rgba(2, 132, 199, 0.5);
+}
+
+:root:not(.dark) .markdown-preview a:hover,
+:root:not(.dark) .markdown-content a:hover,
+:root:not(.dark) .markdown-link:hover {
+  color: #0369a1;
+}
+
+:root:not(.dark) .markdown-preview ul,
+:root:not(.dark) .markdown-content ul,
+:root:not(.dark) .markdown-preview ol,
+:root:not(.dark) .markdown-content ol {
+  padding-left: 24px;
+}
+
+:root:not(.dark) .markdown-preview input[type="checkbox"],
+:root:not(.dark) .markdown-content input[type="checkbox"] {
+  accent-color: #0ea5e9;
+  margin-right: 8px;
+}
+
+:root:not(.dark) .markdown-preview table,
+:root:not(.dark) .markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+:root:not(.dark) .markdown-preview th,
+:root:not(.dark) .markdown-content th,
+:root:not(.dark) .markdown-preview td,
+:root:not(.dark) .markdown-content td {
+  border: 1px solid #cbd5e1;
+  padding: 8px 12px;
+}
+
+:root:not(.dark) .markdown-preview th,
+:root:not(.dark) .markdown-content th {
+  background: #f1f5f9;
+  font-weight: 600;
+}
+
+/* Markdown card preview (compact for task cards) */
+.markdown-card-preview {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.markdown-card-preview h1,
+.markdown-card-preview h2,
+.markdown-card-preview h3,
+.markdown-card-preview h4,
+.markdown-card-preview h5,
+.markdown-card-preview h6 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.markdown-card-preview p {
+  margin: 0;
+  padding: 0;
+}
+
+.markdown-card-preview code {
+  font-size: 0.7rem;
+  padding: 1px 3px;
+}
+
+.markdown-card-preview ul,
+.markdown-card-preview ol {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.markdown-card-preview li {
+  margin: 0;
+}
+
+.markdown-card-preview a {
+  font-size: 0.75rem;
+}
+
+.markdown-card-preview blockquote {
+  margin: 0;
+  padding-left: 8px;
+  border-left-width: 2px;
+}
