@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { getActiveAnnouncements } from '../utils/firestore';
-import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X, Download } from 'lucide-react';
+import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X, Download, Paperclip } from 'lucide-react';
 import { Button } from '@mui/material';
 import { exportAnnouncementsToPDF } from '../utils/pdfExport';
 import gsap from 'gsap';
+import AttachmentList from './AttachmentList';
 
 const AnnouncementPanel = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -156,6 +157,12 @@ const AnnouncementPanel = () => {
               }`}>
                 {announcement.type.toUpperCase()}
               </span>
+              {announcement.attachments && announcement.attachments.length > 0 && (
+                <span className="text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap dark:bg-purple-500/20 light:!bg-blue-700 dark:text-purple-400 light:!text-white border dark:border-purple-500/30 light:!border-blue-500 flex items-center gap-1">
+                  <Paperclip className="w-3 h-3" />
+                  {announcement.attachments.length} {announcement.attachments.length === 1 ? 'file' : 'files'}
+                </span>
+              )}
             </div>
             <p className="dark:text-dark-text-muted light:!text-white/80 text-sm mb-3 line-clamp-2 break-words">
               {announcement.message}
@@ -201,13 +208,22 @@ const AnnouncementPanel = () => {
                   }`}>
                     {selectedAnnouncement.type.toUpperCase()}
                   </span>
+                  {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
+                    <span className="text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center gap-1">
+                      <Paperclip className="w-3 h-3" />
+                      {selectedAnnouncement.attachments.length} {selectedAnnouncement.attachments.length === 1 ? 'file' : 'files'}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
-            <div className="p-6 pt-0">
+            <div className="p-6 pt-0 space-y-4">
               <p className="dark:text-dark-text-primary light:text-light-text-primary text-lg leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere">
                 {selectedAnnouncement.message}
               </p>
+              {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
+                <AttachmentList attachments={selectedAnnouncement.attachments} />
+              )}
             </div>
           </div>
         </div>
@@ -253,6 +269,12 @@ const AnnouncementPanel = () => {
                         }`}>
                           {announcement.type.toUpperCase()}
                         </span>
+                        {announcement.attachments && announcement.attachments.length > 0 && (
+                          <span className="text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap dark:bg-purple-500/20 light:!bg-blue-700 dark:text-purple-400 light:!text-white border dark:border-purple-500/30 light:!border-blue-500 flex items-center gap-1">
+                            <Paperclip className="w-3 h-3" />
+                            {announcement.attachments.length} {announcement.attachments.length === 1 ? 'file' : 'files'}
+                          </span>
+                        )}
                       </div>
                       <p className="dark:text-dark-text-muted light:!text-white/80 text-sm mb-3 line-clamp-2 break-words">
                         {announcement.message}

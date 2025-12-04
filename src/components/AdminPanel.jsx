@@ -3,10 +3,11 @@ import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions, Butt
 import { createGlobalTask, createAnnouncement, getAllGlobalTasks, getActiveAnnouncements, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, getTaskCreationRequests, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, getTaskRevisionRequests, approveTaskRevisionRequest, rejectTaskRevisionRequest, getContentSubmissionRequests, approveContentSubmissionRequest, rejectContentSubmissionRequest, getAllStudentProgress, getAllUsers } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
 import { Timestamp } from 'firebase/firestore';
-import { PlusCircle, Megaphone, CheckCircle, AlertCircle, Shield, ListTodo, Trash2, Eye, Users, UserCheck, Zap, Target, Inbox, Edit, X, FileEdit, Send, Download } from 'lucide-react';
+import { PlusCircle, Megaphone, CheckCircle, AlertCircle, Shield, ListTodo, Trash2, Eye, Users, UserCheck, Zap, Target, Inbox, Edit, X, FileEdit, Send, Download, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import StudentProgressTracker from './StudentProgressTracker';
 import StudentDashboard from './StudentDashboard';
 import { exportTasksToPDF, exportStudentProgressToPDF, exportAnnouncementsToPDF } from '../utils/pdfExport';
+import { uploadFile, formatFileSize, getFileIcon } from '../utils/fileUpload';
 
 const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   const { user } = useAuth();
@@ -24,6 +25,9 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   // Edit dialogs
   const [editTaskDialog, setEditTaskDialog] = useState({ open: false, task: null });
   const [editAnnouncementDialog, setEditAnnouncementDialog] = useState({ open: false, announcement: null });
+  const [editAnnouncementAttachments, setEditAnnouncementAttachments] = useState([]);
+  const [uploadingEditAnnouncement, setUploadingEditAnnouncement] = useState(false);
+  const [uploadEditProgress, setUploadEditProgress] = useState(0);
 
   // Task form state
   const [taskForm, setTaskForm] = useState({
@@ -42,6 +46,9 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
     message: '',
     type: 'info',
   });
+  const [announcementAttachments, setAnnouncementAttachments] = useState([]);
+  const [uploadingAnnouncement, setUploadingAnnouncement] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     if (activeTab === 'viewTasks') {
@@ -168,7 +175,42 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
 
   const handleEditAnnouncement = (announcement) => {
     setEditAnnouncementDialog({ open: true, announcement });
+    setEditAnnouncementAttachments(announcement.attachments || []);
   };
+
+  const handleEditAnnouncementFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploadingEditAnnouncement(true);
+    const uploadedFiles = [];
+
+    for (const file of files) {
+      try {
+        const result = await uploadFile(file, 'announcements', (progress) => {
+          setUploadEditProgress(progress);
+        });
+
+        if (result.success) {
+          uploadedFiles.push(result);
+        } else {
+          setMessage({ type: 'error', text: `Failed to upload ${file.name}: ${result.error}` });
+        }
+      } catch (error) {
+        setMessage({ type: 'error', text: `Error uploading ${file.name}` });
+      }
+    }
+
+    setEditAnnouncementAttachments(prev => [...prev, ...uploadedFiles]);
+    setUploadingEditAnnouncement(false);
+    setUploadEditProgress(0);
+    e.target.value = ''; // Reset file input
+  };
+
+  const removeEditAnnouncementAttachment = (index) => {
+    setEditAnnouncementAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
 
   const handleUpdateTask = async () => {
     const task = editTaskDialog.task;
@@ -192,16 +234,27 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   };
 
   const handleUpdateAnnouncement = async () => {
+    // Check if files are still uploading
+    if (uploadingEditAnnouncement) {
+      setMessage({
+        type: 'error',
+        text: 'Please wait for all files to finish uploading before saving.'
+      });
+      return;
+    }
+
     const announcement = editAnnouncementDialog.announcement;
     const result = await updateAnnouncement(announcement.id, {
       title: announcement.title,
       message: announcement.message,
       type: announcement.type,
+      attachments: editAnnouncementAttachments,
     });
 
     if (result.success) {
       setMessage({ type: 'success', text: 'Announcement updated successfully!' });
       setEditAnnouncementDialog({ open: false, announcement: null });
+      setEditAnnouncementAttachments([]);
       loadAnnouncements();
       if (onAnnouncementCreated) onAnnouncementCreated();
     } else {
@@ -222,6 +275,40 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       [e.target.name]: e.target.value
     }));
   };
+
+  const handleAnnouncementFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploadingAnnouncement(true);
+    const uploadedFiles = [];
+
+    for (const file of files) {
+      try {
+        const result = await uploadFile(file, 'announcements', (progress) => {
+          setUploadProgress(progress);
+        });
+
+        if (result.success) {
+          uploadedFiles.push(result);
+        } else {
+          setMessage({ type: 'error', text: `Failed to upload ${file.name}: ${result.error}` });
+        }
+      } catch (error) {
+        setMessage({ type: 'error', text: `Error uploading ${file.name}` });
+      }
+    }
+
+    setAnnouncementAttachments(prev => [...prev, ...uploadedFiles]);
+    setUploadingAnnouncement(false);
+    setUploadProgress(0);
+    e.target.value = ''; // Reset file input
+  };
+
+  const removeAnnouncementAttachment = (index) => {
+    setAnnouncementAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
 
   const handleTaskSubmit = async (e) => {
     e.preventDefault();
@@ -261,6 +348,16 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
 
   const handleAnnouncementSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if files are still uploading
+    if (uploadingAnnouncement) {
+      setMessage({
+        type: 'error',
+        text: 'Please wait for all files to finish uploading before submitting.'
+      });
+      return;
+    }
+
     setLoading(true);
     setMessage({ type: '', text: '' });
 
@@ -268,6 +365,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       const announcementData = {
         ...announcementForm,
         createdBy: user.uid,
+        attachments: announcementAttachments.length > 0 ? announcementAttachments : [],
       };
 
       const result = await createAnnouncement(announcementData);
@@ -279,6 +377,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
           message: '',
           type: 'info',
         });
+        setAnnouncementAttachments([]);
         if (onAnnouncementCreated) onAnnouncementCreated();
       } else {
         setMessage({ type: 'error', text: result.error });
@@ -669,13 +768,74 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
             </select>
           </div>
 
+          {/* File Upload Section */}
+          <div>
+            <label className="flex text-sm font-semibold text-sky-400 mb-2 items-center gap-2">
+              <Paperclip className="w-4 h-4" />
+              Attachments (optional)
+            </label>
+            <div className="space-y-3">
+              <label className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed dark:border-slate-700/50 light:border-gray-300 rounded-lg cursor-pointer hover:border-sky-500/50 transition-all group">
+                <div className="flex items-center gap-2 text-sm dark:text-dark-text-muted light:text-light-text-secondary group-hover:text-sky-400 transition-colors">
+                  <Upload className="w-5 h-5" />
+                  <span>{uploadingAnnouncement ? `Uploading... ${Math.round(uploadProgress)}%` : 'Click to upload files'}</span>
+                </div>
+                <input
+                  type="file"
+                  onChange={handleAnnouncementFileUpload}
+                  className="hidden"
+                  multiple
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+                  disabled={uploadingAnnouncement}
+                />
+              </label>
+              <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">
+                Supported: Images, PDF, Word, Excel, PowerPoint, Text, ZIP (Max 5MB per file)
+              </p>
+
+              {/* Uploaded Files List */}
+              {announcementAttachments.length > 0 && (
+                <div className="space-y-2">
+                  {announcementAttachments.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 dark:bg-slate-900/40 light:bg-gray-50 border dark:border-slate-700/50 light:border-gray-200 rounded-lg">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {file.fileType.startsWith('image/') ? (
+                          <ImageIcon className="w-5 h-5 text-sky-400 shrink-0" />
+                        ) : (
+                          <FileIcon className="w-5 h-5 text-sky-400 shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.fileName}</p>
+                          <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">{formatFileSize(file.fileSize)}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeAnnouncementAttachment(index)}
+                        className="p-1 hover:bg-red-500/20 rounded transition-colors"
+                      >
+                        <X className="w-4 h-4 text-red-400" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploadingAnnouncement}
             className="w-full bg-secondary-600 hover:bg-secondary-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
           >
             <Megaphone className="w-5 h-5" />
-            <span>{loading ? 'Creating Announcement...' : 'Broadcast Announcement'}</span>
+            <span>
+              {uploadingAnnouncement
+                ? 'Uploading files...'
+                : loading
+                ? 'Creating Announcement...'
+                : 'Broadcast Announcement'}
+            </span>
           </button>
         </form>
       )}
@@ -869,6 +1029,12 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                       >
                         {announcement.type}
                       </span>
+                      {announcement.attachments && announcement.attachments.length > 0 && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 flex items-center gap-1">
+                          <Paperclip className="w-3 h-3" />
+                          {announcement.attachments.length}
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary wrap-break-word overflow-wrap-anywhere">{announcement.message}</p>
                   </div>
@@ -1420,12 +1586,76 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                 <MenuItem value="success">Success</MenuItem>
                 <MenuItem value="urgent">Urgent</MenuItem>
               </TextField>
+
+              {/* File Upload Section */}
+              <div>
+                <label className="flex text-sm font-semibold text-sky-400 mb-2 items-center gap-2">
+                  <Paperclip className="w-4 h-4" />
+                  Attachments (optional)
+                </label>
+                <div className="space-y-3">
+                  <label className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed dark:border-slate-700/50 light:border-gray-300 rounded-lg cursor-pointer hover:border-sky-500/50 transition-all group">
+                    <div className="flex items-center gap-2 text-sm dark:text-dark-text-muted light:text-light-text-secondary group-hover:text-sky-400 transition-colors">
+                      <Upload className="w-5 h-5" />
+                      <span>{uploadingEditAnnouncement ? `Uploading... ${Math.round(uploadEditProgress)}%` : 'Click to upload files'}</span>
+                    </div>
+                    <input
+                      type="file"
+                      onChange={handleEditAnnouncementFileUpload}
+                      className="hidden"
+                      multiple
+                      accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+                      disabled={uploadingEditAnnouncement}
+                    />
+                  </label>
+                  <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">
+                    Supported: Images, PDF, Word, Excel, PowerPoint, Text, ZIP (Max 5MB per file)
+                  </p>
+
+                  {/* Uploaded Files List */}
+                  {editAnnouncementAttachments.length > 0 && (
+                    <div className="space-y-2">
+                      {editAnnouncementAttachments.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 dark:bg-slate-900/40 light:bg-gray-50 border dark:border-slate-700/50 light:border-gray-200 rounded-lg">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            {file.fileType?.startsWith('image/') ? (
+                              <ImageIcon className="w-5 h-5 text-sky-400 shrink-0" />
+                            ) : (
+                              <FileIcon className="w-5 h-5 text-sky-400 shrink-0" />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.fileName}</p>
+                              <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">{formatFileSize(file.fileSize)}</p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeEditAnnouncementAttachment(index)}
+                            className="p-1 hover:bg-red-500/20 rounded transition-colors"
+                          >
+                            <X className="w-4 h-4 text-red-400" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditAnnouncementDialog({ open: false, announcement: null })}>Cancel</Button>
-          <Button onClick={handleUpdateAnnouncement} variant="contained">Save Changes</Button>
+          <Button onClick={() => {
+            setEditAnnouncementDialog({ open: false, announcement: null });
+            setEditAnnouncementAttachments([]);
+          }}>Cancel</Button>
+          <Button
+            onClick={handleUpdateAnnouncement}
+            variant="contained"
+            disabled={uploadingEditAnnouncement}
+          >
+            {uploadingEditAnnouncement ? 'Uploading...' : 'Save Changes'}
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
