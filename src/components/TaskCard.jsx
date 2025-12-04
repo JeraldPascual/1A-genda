@@ -237,9 +237,20 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
                 onClick={() => setShowDescriptionModal(true)}
                 className="mt-2 flex items-center gap-1 text-xs font-semibold dark:text-sky-400 light:!text-white/90 dark:hover:text-sky-300 light:hover:!text-white transition-colors"
               >
-                <span>Read More</span>
+                <span>{task.attachments && task.attachments.length > 0 ? 'View Details & Attachments' : 'Read More'}</span>
               </button>
             )}
+          </div>
+        )}
+
+        {!task.description && task.attachments && task.attachments.length > 0 && (
+          <div className="mb-3">
+            <button
+              onClick={() => setShowDescriptionModal(true)}
+              className="flex items-center gap-1 text-xs font-semibold dark:text-sky-400 light:!text-white/90 dark:hover:text-sky-300 light:hover:!text-white transition-colors"
+            >
+              <span>View Attachments</span>
+            </button>
           </div>
         )}
 
