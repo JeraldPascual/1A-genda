@@ -610,6 +610,11 @@ export const approveContentSubmissionRequest = async (requestId, requestData) =>
         order: Date.now(),
       };
 
+      // Add attachments if present
+      if (requestData.attachments && requestData.attachments.length > 0) {
+        taskData.attachments = requestData.attachments;
+      }
+
       // Add batch field if specified, otherwise 'all'
       if (requestData.targetBatch && requestData.targetBatch !== 'both') {
         taskData.batch = requestData.targetBatch;
@@ -629,14 +634,21 @@ export const approveContentSubmissionRequest = async (requestId, requestData) =>
       return { success: false, error: 'Failed to create task' };
     } else if (requestData.contentType === 'announcement') {
       // Create a new announcement
-      const announcementRef = await addDoc(collection(db, 'announcements'), {
+      const announcementData = {
         title: requestData.announcementTitle,
         message: requestData.announcementMessage,
         type: requestData.announcementType || 'info',
         createdBy: 'student-submission',
         createdAt: serverTimestamp(),
         isActive: true,
-      });
+      };
+
+      // Add attachments if present
+      if (requestData.attachments && requestData.attachments.length > 0) {
+        announcementData.attachments = requestData.attachments;
+      }
+
+      const announcementRef = await addDoc(collection(db, 'announcements'), announcementData);
 
       if (announcementRef.id) {
         // Delete the request after successful announcement creation to clean up Firestore

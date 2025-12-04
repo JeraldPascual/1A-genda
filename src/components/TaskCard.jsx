@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Card, CardContent, Button, Chip, TextField, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Menu } from '@mui/material';
-import { Calendar, BookOpen, CheckCircle, ArrowRight, ArrowLeft, X, Edit3, AlertCircle, Bell, MoreVertical, Trash2, Copy } from 'lucide-react';
+import { Calendar, BookOpen, CheckCircle, ArrowRight, ArrowLeft, X, Edit3, AlertCircle, Bell, MoreVertical, Trash2, Copy, Paperclip } from 'lucide-react';
 import gsap from 'gsap';
 import { createTaskRevisionRequest } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
+import AttachmentList from './AttachmentList';
 
 const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userData }) => {
   const cardRef = useRef(null);
@@ -253,6 +254,12 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
             <span className="flex items-center gap-1 px-2 py-1 dark:bg-slate-700/50 light:!bg-blue-700 rounded border dark:border-slate-600/30 light:!border-blue-500">
               <Calendar className="w-3 h-3" />
               <span>{formatDate(task.dueDate)}</span>
+            </span>
+          )}
+          {task.attachments && task.attachments.length > 0 && (
+            <span className="flex items-center gap-1 px-2 py-1 dark:bg-sky-600/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white rounded border dark:border-sky-600/30 light:!border-blue-500">
+              <Paperclip className="w-3 h-3" />
+              <span>{task.attachments.length}</span>
             </span>
           )}
           {/* Deadline Warning Badge - inline with date */}
@@ -592,6 +599,18 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
                     <Calendar className="w-4 h-4" />
                     <span>Due: {formatDate(task.dueDate)}</span>
                   </div>
+                </div>
+              )}
+
+              {task.attachments && task.attachments.length > 0 && (
+                <div className="mt-4 pt-4 border-t dark:border-dark-border light:border-light-border">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Paperclip className="w-4 h-4 text-sky-400" />
+                    <span className="text-sm font-semibold text-sky-400">
+                      Attachments ({task.attachments.length})
+                    </span>
+                  </div>
+                  <AttachmentList attachments={task.attachments} />
                 </div>
               )}
             </div>

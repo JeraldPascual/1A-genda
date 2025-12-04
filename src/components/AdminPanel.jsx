@@ -956,6 +956,12 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                         {task.dueDate && (
                           <span>Due: {task.dueDate.toDate ? task.dueDate.toDate().toLocaleDateString() : 'N/A'}</span>
                         )}
+                        {task.attachments && task.attachments.length > 0 && (
+                          <span className="flex items-center gap-1 bg-sky-600 bg-opacity-20 text-sky-400 px-2 py-1 rounded border border-sky-600 border-opacity-30">
+                            <Paperclip className="w-3 h-3" />
+                            {task.attachments.length}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-2 shrink-0">
