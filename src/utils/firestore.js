@@ -290,12 +290,11 @@ export const updateAnnouncement = async (announcementId, updates) => {
 
 export const deactivateAnnouncement = async (announcementId) => {
   try {
-    await updateDoc(doc(db, 'announcements', announcementId), {
-      isActive: false,
-    });
+    // Permanently delete the announcement from Firestore
+    await deleteDoc(doc(db, 'announcements', announcementId));
     return { success: true };
   } catch (error) {
-    console.error('Error deactivating announcement:', error);
+    console.error('Error deleting announcement:', error);
     return { success: false, error: error.message };
   }
 };
@@ -442,12 +441,8 @@ export const approveTaskCreationRequest = async (requestId, requestData) => {
     });
 
     if (taskResult.success) {
-      // Update request status
-      await updateDoc(doc(db, 'taskCreationRequests', requestId), {
-        status: 'approved',
-        createdTaskId: taskResult.id,
-        updatedAt: serverTimestamp(),
-      });
+      // Delete the request after successful task creation to clean up Firestore
+      await deleteDoc(doc(db, 'taskCreationRequests', requestId));
       return { success: true, taskId: taskResult.id };
     }
     return { success: false, error: 'Failed to create task' };
@@ -459,11 +454,8 @@ export const approveTaskCreationRequest = async (requestId, requestData) => {
 
 export const rejectTaskCreationRequest = async (requestId, adminNote = '') => {
   try {
-    await updateDoc(doc(db, 'taskCreationRequests', requestId), {
-      status: 'rejected',
-      adminNote,
-      updatedAt: serverTimestamp(),
-    });
+    // Delete rejected request immediately to clean up Firestore
+    await deleteDoc(doc(db, 'taskCreationRequests', requestId));
     return { success: true };
   } catch (error) {
     console.error('Error rejecting task creation request:', error);
@@ -533,11 +525,8 @@ export const approveTaskRevisionRequest = async (requestId, requestData) => {
     const taskResult = await updateGlobalTask(requestData.taskId, updates);
 
     if (taskResult.success) {
-      // Update request status
-      await updateDoc(doc(db, 'taskRevisionRequests', requestId), {
-        status: 'approved',
-        updatedAt: serverTimestamp(),
-      });
+      // Delete the request after successful task update to clean up Firestore
+      await deleteDoc(doc(db, 'taskRevisionRequests', requestId));
       return { success: true };
     }
     return { success: false, error: 'Failed to update task' };
@@ -549,11 +538,8 @@ export const approveTaskRevisionRequest = async (requestId, requestData) => {
 
 export const rejectTaskRevisionRequest = async (requestId, adminNote = '') => {
   try {
-    await updateDoc(doc(db, 'taskRevisionRequests', requestId), {
-      status: 'rejected',
-      adminNote,
-      updatedAt: serverTimestamp(),
-    });
+    // Delete rejected request immediately to clean up Firestore
+    await deleteDoc(doc(db, 'taskRevisionRequests', requestId));
     return { success: true };
   } catch (error) {
     console.error('Error rejecting task revision request:', error);
@@ -634,11 +620,8 @@ export const approveContentSubmissionRequest = async (requestId, requestData) =>
       const taskResult = await createGlobalTask(taskData);
 
       if (taskResult.success) {
-        await updateDoc(doc(db, 'contentSubmissionRequests', requestId), {
-          status: 'approved',
-          createdContentId: taskResult.id,
-          updatedAt: serverTimestamp(),
-        });
+        // Delete the request after successful task creation to clean up Firestore
+        await deleteDoc(doc(db, 'contentSubmissionRequests', requestId));
         console.log('Task created successfully with ID:', taskResult.id);
         return { success: true, contentId: taskResult.id, type: 'task' };
       }
@@ -656,11 +639,8 @@ export const approveContentSubmissionRequest = async (requestId, requestData) =>
       });
 
       if (announcementRef.id) {
-        await updateDoc(doc(db, 'contentSubmissionRequests', requestId), {
-          status: 'approved',
-          createdContentId: announcementRef.id,
-          updatedAt: serverTimestamp(),
-        });
+        // Delete the request after successful announcement creation to clean up Firestore
+        await deleteDoc(doc(db, 'contentSubmissionRequests', requestId));
         return { success: true, contentId: announcementRef.id };
       }
       return { success: false, error: 'Failed to create announcement' };
@@ -674,11 +654,8 @@ export const approveContentSubmissionRequest = async (requestId, requestData) =>
 
 export const rejectContentSubmissionRequest = async (requestId, adminNote = '') => {
   try {
-    await updateDoc(doc(db, 'contentSubmissionRequests', requestId), {
-      status: 'rejected',
-      adminNote,
-      updatedAt: serverTimestamp(),
-    });
+    // Delete rejected submission immediately to clean up Firestore
+    await deleteDoc(doc(db, 'contentSubmissionRequests', requestId));
     return { success: true };
   } catch (error) {
     console.error('Error rejecting content submission request:', error);
