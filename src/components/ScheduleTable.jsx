@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Clock, MapPin, User } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, X } from 'lucide-react';
 import { Button } from '@mui/material';
 
 const ScheduleTable = ({ userBatch }) => {
@@ -102,31 +102,32 @@ const ScheduleTable = ({ userBatch }) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <Calendar className="w-6 h-6 text-sky-400" />
-          <h3 className="text-xl font-bold dark:text-dark-text-primary light:text-light-text-primary">
-            Class Schedule — {userBatch}
-          </h3>
+    <>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Calendar className="w-6 h-6 text-sky-400" />
+            <h3 className="text-xl font-bold dark:text-dark-text-primary light:text-light-text-primary">
+              Class Schedule — {userBatch}
+            </h3>
+          </div>
+          {allClasses.length > 5 && (
+            <Button
+              size="small"
+              onClick={() => setShowFullSchedule(true)}
+              sx={{
+                color: 'var(--color-primary)',
+                textTransform: 'none',
+                fontSize: '0.875rem',
+                fontWeight: 600
+              }}
+            >
+              {`View Full Schedule (${allClasses.length})`}
+            </Button>
+          )}
         </div>
-        {allClasses.length > 5 && (
-          <Button
-            size="small"
-            onClick={() => setShowFullSchedule(!showFullSchedule)}
-            sx={{
-              color: 'var(--color-primary)',
-              textTransform: 'none',
-              fontSize: '0.875rem',
-              fontWeight: 600
-            }}
-          >
-            {showFullSchedule ? 'Show Less' : `View Full Schedule (${allClasses.length})`}
-          </Button>
-        )}
-      </div>
 
-      <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4">
         {displayedDays.map((day) => {
           const classes = showFullSchedule ? schedule[day] : (displayedSchedule[day] || []);
 
@@ -200,6 +201,100 @@ const ScheduleTable = ({ userBatch }) => {
         })}
       </div>
     </div>
+
+    {showFullSchedule && (
+      <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setShowFullSchedule(false)}>
+        <div className="glass-effect rounded-2xl max-w-4xl w-full max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => setShowFullSchedule(false)}
+            className="sticky top-4 float-right z-10 p-2 bg-slate-800/80 hover:bg-slate-700/90 rounded-lg transition-colors shadow-lg mr-4 backdrop-blur-sm"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <Calendar className="w-6 h-6 text-sky-400" />
+              <h3 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary">
+                Full Class Schedule — {userBatch}
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+              {days.map((day) => {
+                const classes = schedule[day];
+                return (
+                  <div
+                    key={day}
+                    className="glass-card dark:!bg-transparent light:!bg-blue-600 border-2 dark:border-slate-700 light:!border-blue-500 rounded-xl p-4 shadow-lg"
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className={`px-3 py-1 rounded-lg font-bold ${
+                        classes.length === 0
+                          ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:!text-white'
+                          : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white'
+                      }`}>
+                        {day}
+                      </div>
+                      {classes.length === 0 && (
+                        <span className="text-sm dark:text-dark-text-muted light:!text-white/80 italic">
+                          No classes
+                        </span>
+                      )}
+                    </div>
+
+                    {classes.length > 0 && (
+                      <div className="space-y-3">
+                        {classes.map((classItem, idx) => (
+                          <div
+                            key={idx}
+                            className={`bg-gradient-to-br ${getSubjectColor(classItem.subject)} border-2 rounded-lg p-3 transition-all duration-200 hover:scale-[1.02]`}
+                          >
+                            <div className="flex items-start justify-between gap-3 mb-2">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className={`font-bold text-sm ${getSubjectTextColor(classItem.subject)} light:!text-white`}>
+                                    {classItem.subject}
+                                  </span>
+                                  {classItem.online && (
+                                    <span className="text-xs px-2 py-0.5 rounded-full dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white border dark:border-sky-500/30 light:!border-blue-500">
+                                      Online
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs dark:text-dark-text-muted light:!text-white/90 mb-2">
+                                  {classItem.fullName}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs dark:text-dark-text-muted light:!text-white/90">
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                <span>{classItem.time}</span>
+                              </div>
+                              {classItem.room && (
+                                <div className="flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  <span>{classItem.room}</span>
+                                </div>
+                              )}
+                              <div className="flex items-center gap-1">
+                                <User className="w-3 h-3" />
+                                <span>{classItem.instructor}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 

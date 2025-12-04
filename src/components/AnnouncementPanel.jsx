@@ -90,8 +90,6 @@ const AnnouncementPanel = () => {
 
   if (announcements.length === 0) return null;
 
-  const displayedAnnouncements = showAllAnnouncements ? announcements : announcements.slice(0, 5);
-
   return (
     <div className="space-y-4 mb-8">
       <div>
@@ -122,7 +120,7 @@ const AnnouncementPanel = () => {
           {announcements.length > 5 && (
             <Button
               size="small"
-              onClick={() => setShowAllAnnouncements(!showAllAnnouncements)}
+              onClick={() => setShowAllAnnouncements(true)}
               sx={{
                 color: 'var(--color-primary)',
                 textTransform: 'none',
@@ -130,12 +128,12 @@ const AnnouncementPanel = () => {
                 fontWeight: 600
               }}
             >
-              {showAllAnnouncements ? 'Show Less' : `View All (${announcements.length})`}
+              {`View All (${announcements.length})`}
             </Button>
           )}
         </div>
       </div>
-      {displayedAnnouncements.map((announcement, index) => (
+      {announcements.slice(0, 5).map((announcement, index) => (
         <div
           key={announcement.id}
           ref={(el) => (cardRefs.current[index] = el)}
@@ -159,9 +157,12 @@ const AnnouncementPanel = () => {
                 {announcement.type.toUpperCase()}
               </span>
             </div>
+            <p className="dark:text-dark-text-muted light:!text-white/80 text-sm mb-3 line-clamp-2 break-words">
+              {announcement.message}
+            </p>
             <button
               onClick={() => setSelectedAnnouncement(announcement)}
-              className="mt-2 flex items-center gap-2 text-sm font-semibold dark:text-sky-400 light:!text-white dark:hover:text-sky-300 light:hover:!text-blue-100 transition-colors"
+              className="flex items-center gap-2 text-sm font-semibold dark:text-sky-400 light:!text-white dark:hover:text-sky-300 light:hover:!text-blue-100 transition-colors"
             >
               <span>Read More</span>
               <ChevronDown className="w-4 h-4" />
@@ -172,7 +173,7 @@ const AnnouncementPanel = () => {
 
       {/* Modal for full description */}
       {selectedAnnouncement && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setSelectedAnnouncement(null)}>
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setSelectedAnnouncement(null)}>
           <div className="glass-effect rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
             {/* Sticky Close Button */}
             <button
@@ -207,6 +208,66 @@ const AnnouncementPanel = () => {
               <p className="dark:text-dark-text-primary light:text-light-text-primary text-lg leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere">
                 {selectedAnnouncement.message}
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for viewing all announcements */}
+      {showAllAnnouncements && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setShowAllAnnouncements(false)}>
+          <div className="glass-effect rounded-2xl max-w-4xl w-full max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowAllAnnouncements(false)}
+              className="sticky top-4 float-right z-10 p-2 bg-slate-800/80 hover:bg-slate-700/90 rounded-lg transition-colors shadow-lg mr-4 backdrop-blur-sm"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <Megaphone className="w-6 h-6 text-sky-400" />
+                <h3 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary">
+                  All Announcements ({announcements.length})
+                </h3>
+              </div>
+              <div className="space-y-4">
+                {announcements.map((announcement) => (
+                  <div
+                    key={announcement.id}
+                    className="glass-card dark:!bg-transparent light:!bg-blue-600 border-2 dark:border-slate-700 light:!border-blue-500 rounded-2xl p-6 flex items-start gap-4 shadow-lg"
+                  >
+                    <div className={`shrink-0 p-3 rounded-xl ${getAnnouncementTextColor(announcement.type)} dark:bg-opacity-10 light:!bg-blue-700 ${getGlowColor(announcement.type)} shadow-lg`}>
+                      {getAnnouncementIcon(announcement.type)}
+                    </div>
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <h4 className={`font-bold text-lg ${getAnnouncementTextColor(announcement.type)} light:!text-white break-words`}>
+                          {announcement.title}
+                        </h4>
+                        <span className={`text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap ${
+                          announcement.type === 'urgent'
+                            ? 'dark:bg-rose-500/20 light:!bg-blue-700 dark:text-rose-400 light:!text-white border dark:border-rose-500/30 light:!border-blue-500'
+                            : announcement.type === 'celebration'
+                            ? 'dark:bg-emerald-500/20 light:!bg-blue-700 dark:text-emerald-400 light:!text-white border dark:border-emerald-500/30 light:!border-blue-500'
+                            : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white border dark:border-sky-500/30 light:!border-blue-500'
+                        }`}>
+                          {announcement.type.toUpperCase()}
+                        </span>
+                      </div>
+                      <p className="dark:text-dark-text-muted light:!text-white/80 text-sm mb-3 line-clamp-2 break-words">
+                        {announcement.message}
+                      </p>
+                      <button
+                        onClick={() => setSelectedAnnouncement(announcement)}
+                        className="flex items-center gap-2 text-sm font-semibold dark:text-sky-400 light:!text-white dark:hover:text-sky-300 light:hover:!text-blue-100 transition-colors"
+                      >
+                        <span>Read More</span>
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

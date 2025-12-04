@@ -23,24 +23,28 @@ const AnnouncementTicker = () => {
 
     // infinite scroll animation for the announcement headline to keep cm aware
     const ticker = tickerRef.current;
-    const tickerWidth = ticker.offsetWidth;
-    const containerWidth = containerRef.current?.offsetWidth || window.innerWidth;
+    const tickerWidth = ticker.scrollWidth;
 
-    // Calculate duration based on content width - FASTER speed
-    const baseSpeed = 80;
-    const duration = tickerWidth / baseSpeed;
+    // Set initial position
+    gsap.set(ticker, { x: 0 });
 
-    const tl = gsap.timeline({ repeat: -1 });
+    // Calculate duration based on content width - FASTER speed (150 pixels per second)
+    const baseSpeed = 130;
+    const duration = (tickerWidth / 2) / baseSpeed;
 
-    tl.to(ticker, {
+    // Create seamless infinite loop animation
+    const animation = gsap.to(ticker, {
       x: -tickerWidth / 2,
-      duration: Math.max(duration, 10),
+      duration: duration,
       ease: 'none',
-    }).set(ticker, {
-      x: 0,
+      repeat: -1,
+      onRepeat: function() {
+        // Reset position instantly for seamless loop
+        gsap.set(ticker, { x: 0 });
+      }
     });
 
-    return () => tl.kill();
+    return () => animation.kill();
   }, [announcements]);
 
   // Show "No announcements" message when empty
@@ -121,7 +125,7 @@ const AnnouncementTicker = () => {
         </div>
       </div>
 
-      
+
       {selectedAnnouncement && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setSelectedAnnouncement(null)}>
           <div className="glass-effect rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
