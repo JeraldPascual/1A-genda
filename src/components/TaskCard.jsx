@@ -232,7 +232,7 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
             <p className="text-xs dark:text-dark-text-secondary light:!text-white/90 leading-relaxed line-clamp-2">
               {task.description}
             </p>
-            {isLongDescription(task.description) && (
+            {(isLongDescription(task.description) || (task.attachments && task.attachments.length > 0)) && (
               <button
                 onClick={() => setShowDescriptionModal(true)}
                 className="mt-2 flex items-center gap-1 text-xs font-semibold dark:text-sky-400 light:!text-white/90 dark:hover:text-sky-300 light:hover:!text-white transition-colors"
