@@ -125,6 +125,12 @@ const AnnouncementTicker = () => {
       {selectedAnnouncement && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setSelectedAnnouncement(null)}>
           <div className="glass-effect rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedAnnouncement(null)}
+              className="sticky top-4 float-right z-10 p-2 bg-slate-800/80 hover:bg-slate-700/90 rounded-lg transition-colors shadow-lg mr-4 backdrop-blur-sm"
+            >
+              <X className="w-5 h-5" />
+            </button>
             <div className={`p-6 flex items-start gap-4`}>
               <div className={`shrink-0 p-3 rounded-xl ${getAnnouncementTextColor(selectedAnnouncement.type)} bg-opacity-10 ${getGlowColor(selectedAnnouncement.type)} shadow-lg`}>
                 {getAnnouncementIcon(selectedAnnouncement.type)}
@@ -145,12 +151,6 @@ const AnnouncementTicker = () => {
                   </span>
                 </div>
               </div>
-              <button
-                onClick={() => setSelectedAnnouncement(null)}
-                className="shrink-0 p-2 hover:bg-white/10 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5 dark:text-dark-text-muted light:text-light-text-muted" />
-              </button>
             </div>
             <div className="p-6">
               <p className="dark:text-dark-text-primary light:text-light-text-primary text-lg leading-relaxed whitespace-pre-wrap wrap-break-word overflow-wrap-anywhere">

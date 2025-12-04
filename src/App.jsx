@@ -256,8 +256,8 @@ function App() {
 
             {/* Task Board */}
             <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold dark:text-dark-text-primary light:text-light-text-primary flex items-center gap-3">
+              <div className="mb-6">
+                <h2 className="text-3xl font-bold dark:text-dark-text-primary light:text-light-text-primary flex items-center gap-3 mb-3">
                   <Target className="w-8 h-8 text-sky-400" />
                   <span>My Task Board</span>
                 </h2>

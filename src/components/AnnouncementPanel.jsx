@@ -94,8 +94,8 @@ const AnnouncementPanel = () => {
 
   return (
     <div className="space-y-4 mb-8">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div>
+        <div className="flex items-center gap-3 mb-2">
           <Sparkles className="w-6 h-6 text-sky-400" />
           <h3 className="text-xl font-bold dark:text-dark-text-primary light:text-light-text-primary flex items-center gap-2">
             <Megaphone className="w-6 h-6 text-sky-400" />
