@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, Button, TextField, MenuItem, Chip, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { Plus, Send, Calendar, BookOpen, Bell, CheckCircle, Clock, X } from 'lucide-react';
+import { Plus, Send, Calendar, BookOpen, Bell, CheckCircle, Clock, X, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { createContentSubmissionRequest, getContentSubmissionRequests } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
+import { uploadFile, formatFileSize } from '../utils/fileUpload';
 
 const ContentSubmissionPanel = () => {
   const { user, userData } = useAuth();
@@ -12,6 +13,11 @@ const ContentSubmissionPanel = () => {
   const [myRequests, setMyRequests] = useState([]);
   const [showAllSubmissions, setShowAllSubmissions] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
+
+  // File upload state
+  const [attachments, setAttachments] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const [formData, setFormData] = useState({
     contentType: 'task',
@@ -57,9 +63,48 @@ const ContentSubmissionPanel = () => {
       announcementType: 'info',
       reason: '',
     });
+    setAttachments([]);
+  };
+
+  const handleFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploading(true);
+    const uploadedFiles = [];
+
+    for (const file of files) {
+      try {
+        const result = await uploadFile(file, 'submissions', (progress) => {
+          setUploadProgress(progress);
+        });
+
+        if (result.success) {
+          uploadedFiles.push(result);
+        } else {
+          alert(`Failed to upload ${file.name}: ${result.error}`);
+        }
+      } catch (error) {
+        alert(`Error uploading ${file.name}`);
+      }
+    }
+
+    setAttachments(prev => [...prev, ...uploadedFiles]);
+    setUploading(false);
+    setUploadProgress(0);
+    e.target.value = ''; // Reset file input
+  };
+
+  const removeAttachment = (index) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
+    if (uploading) {
+      alert('Please wait for files to finish uploading');
+      return;
+    }
+
     if (!formData.reason.trim()) {
       alert('Please provide a reason for this submission');
       return;
@@ -82,6 +127,7 @@ const ContentSubmissionPanel = () => {
         userBatch: userData?.batch || 'unknown',
         contentType: formData.contentType,
         reason: formData.reason,
+        attachments: attachments.length > 0 ? attachments : [],
       };
 
       if (formData.contentType === 'task') {
@@ -454,6 +500,59 @@ const ContentSubmissionPanel = () => {
                   '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-border)' },
                 }}
               />
+
+              {/* File Upload Section */}
+              <div className="space-y-3 mt-4">
+                <label className="flex text-sm font-semibold dark:text-sky-400 light:text-sky-600 items-center gap-2">
+                  <Paperclip className="w-4 h-4" />
+                  Attachments (optional)
+                </label>
+                <label className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed dark:border-slate-700/50 light:border-gray-300 rounded-lg cursor-pointer hover:border-sky-500/50 transition-all group">
+                  <div className="flex items-center gap-2 text-sm dark:text-dark-text-muted light:text-light-text-secondary group-hover:text-sky-400 transition-colors">
+                    <Upload className="w-5 h-5" />
+                    <span>{uploading ? `Uploading... ${Math.round(uploadProgress)}%` : 'Click to upload files'}</span>
+                  </div>
+                  <input
+                    type="file"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    multiple
+                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+                    disabled={uploading}
+                  />
+                </label>
+                <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">
+                  Supported: Images, PDF, Word, Excel, PowerPoint, Text, ZIP (Max 5MB per file)
+                </p>
+
+                {/* Uploaded Files List */}
+                {attachments.length > 0 && (
+                  <div className="space-y-2">
+                    {attachments.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 dark:bg-slate-900/40 light:bg-gray-50 border dark:border-slate-700/50 light:border-gray-200 rounded-lg">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          {file.fileType.startsWith('image/') ? (
+                            <ImageIcon className="w-5 h-5 text-sky-400 shrink-0" />
+                          ) : (
+                            <FileIcon className="w-5 h-5 text-sky-400 shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.fileName}</p>
+                            <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">{formatFileSize(file.fileSize)}</p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeAttachment(index)}
+                          className="p-1 hover:bg-red-500/20 rounded transition-colors"
+                        >
+                          <X className="w-4 h-4 text-red-400" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </DialogContent>
@@ -472,13 +571,13 @@ const ContentSubmissionPanel = () => {
             <Button
               onClick={handleSubmit}
               variant="contained"
-              disabled={submitting || !formData.reason.trim()}
+              disabled={submitting || uploading || !formData.reason.trim()}
               sx={{
                 backgroundColor: '#8b5cf6',
                 '&:hover': { backgroundColor: '#7c3aed' },
               }}
             >
-              {submitting ? 'Submitting...' : 'Submit'}
+              {uploading ? 'Uploading files...' : submitting ? 'Submitting...' : 'Submit'}
             </Button>
           </DialogActions>
         )}

@@ -18,19 +18,23 @@ A modern task management application for class administrators (P.I.O.) and stude
 - **Simple Task Board**: Two columns (To Do → Completed) with forward/backward navigation
 - **Personal Progress Tracking**: Mark tasks complete without affecting other students
 - **Task Revision Requests**: Request changes to existing tasks (edit details, deadlines, priorities)
-- **Content Submissions**: Submit new task or announcement proposals for both batches
-- **Announcement Feed**: View important class announcements with animated ticker
+- **Content Submissions**: Submit new task or announcement proposals with file attachments
+- **File Upload Support**: Attach images, PDFs, and documents to submissions (up to 5MB)
+- **Announcement Feed**: View important class announcements with file attachments and fullscreen image viewer
 - **Notion Integration**: Quick links to external deadlines tracker and resources
 - **Semester Progress**: Visual indicator of class progress
+- **File Downloads**: Download attachments from announcements and view images in fullscreen
 
 ### For P.I.O. (Class Admin)
 - **Global Task Management**: Create tasks for specific batches (1A1, 1A2) or all students
 - **Batch-Based Assignment**: Assign tasks to specific batches or make them available to everyone
-- **Request Management**: Approve/reject task revision and content submission requests
-- **Announcement System**: Post urgent alerts, info, or celebrations across batches
+- **Request Management**: Approve/reject task revision and content submission requests (auto-cleanup on reject/approve)
+- **Announcement System**: Post urgent alerts, info, or celebrations with file attachments
+- **File Upload Support**: Attach images, PDFs, Office docs (up to 5MB per file, base64 storage)
 - **Student Dashboard**: View demographics, completion statistics, and request activity
 - **Progress Tracker**: Monitor individual student task completion and request counts
 - **Batch Filtering**: View and manage tasks by batch or all together
+- **Auto Firestore Cleanup**: Deleted/approved/rejected records removed automatically
 
 ## Tech Stack
 
@@ -177,12 +181,13 @@ The application will be available at [http://localhost:5173](http://localhost:51
    - Info (🔵) - General updates
    - Urgent (🔴) - Important deadlines
    - Celebration (🟢) - Achievements
+   - Attach files: Images, PDFs, Word, Excel, PowerPoint, ZIP (max 5MB)
 4. **Review Requests**
    - Task Revision Requests - Proposed changes to existing tasks
    - Content Submissions - Suggested new tasks/announcements
 5. **Manage Requests**
-   - Approve requests to apply changes immediately
-   - Reject with optional feedback notes
+   - Approve requests to apply changes (auto-deletes request after processing)
+   - Reject with deletion (cleans up Firestore immediately)
 6. **Monitor Activity**
    - Student progress dashboard
    - Completion statistics
@@ -193,9 +198,10 @@ The application will be available at [http://localhost:5173](http://localhost:51
 2. **Complete Tasks** - Click "Mark Complete" to move to Completed
 3. **Undo Completion** - Use "Back to To Do" to revert
 4. **Request Revisions** - Propose changes to existing tasks
-5. **Submit Content** - Suggest new tasks or announcements
+5. **Submit Content** - Suggest new tasks or announcements with optional file attachments
 6. **Track Submissions** - Check request status and admin feedback
-7. **Stay Updated** - View announcements and resource links
+7. **Stay Updated** - View announcements with attachments
+8. **Download Files** - Click images for fullscreen view, download any attachment type
 
 ---
 
@@ -224,6 +230,19 @@ The application will be available at [http://localhost:5173](http://localhost:51
 - GSAP infinite scroll animation
 - Color-coded by type (Info/Urgent/Celebration)
 - Auto-refreshes on new announcements
+- Attachment indicators with file count badges
+
+**AnnouncementPanel.jsx** - Announcement display:
+- Full announcement cards with attachment preview
+- Fullscreen image viewer with portal rendering
+- Download functionality for all file types
+- Three-dot menu for download options
+
+**AttachmentList.jsx** - File attachment display:
+- Full-size image display with aspect ratio preservation
+- Clickable images for fullscreen popup view
+- Download menu for images and documents
+- Support for images, PDFs, Office docs, text, ZIP files
 
 **StudentProgressTracker.jsx** - Admin view of all students:
 - Task completion counts
@@ -237,10 +256,11 @@ The application will be available at [http://localhost:5173](http://localhost:51
 - Request activity metrics
 
 **ContentSubmissionPanel.jsx** - Student submission interface:
-- Create task proposals
-- Create announcement suggestions
-- View submission history
-- See admin feedback
+- Create task proposals with file attachments
+- Create announcement suggestions with media uploads
+- View submission history with attachment indicators
+- See admin feedback and approval status
+- Upload progress tracking for file submissions
 
 **TaskCard.jsx** / **RequestableTaskCard.jsx**:
 - Task details display
@@ -275,13 +295,21 @@ The application will be available at [http://localhost:5173](http://localhost:51
 
 ### Backend Stack
 - **Firebase Authentication** - Secure email/password authentication
-- **Cloud Firestore** - NoSQL database with real-time sync
+- **Cloud Firestore** - NoSQL database with real-time sync and base64 file storage
 - **Firebase Security Rules** - Server-side data access control
+- **Auto-Cleanup System** - Automatic deletion of processed/rejected records
 
 ### Animation Features
 - **Confetti Celebration** - Task completion rewards with canvas-confetti
 - **GSAP Scrolling** - Smooth infinite announcement ticker
 - **Card Animations** - Staggered entry animations for task cards
+- **Portal Modals** - Fullscreen image viewer with smooth transitions
+
+### File Management
+- **Base64 Storage** - Files stored directly in Firestore (no Firebase Storage billing)
+- **5MB File Limit** - Optimized for announcements and documents
+- **Instant Uploads** - Local file conversion with immediate preview
+- **Supported Formats** - Images (jpg, png, gif), PDF, Office docs, text, ZIP
 
 ---
 
