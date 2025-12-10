@@ -529,6 +529,11 @@ export const approveTaskRevisionRequest = async (requestId, requestData) => {
     if (requestData.proposedChanges.priority) updates.priority = requestData.proposedChanges.priority;
     if (requestData.proposedChanges.subject) updates.subject = requestData.proposedChanges.subject;
 
+    // Apply attachments from revision request if they exist
+    if (requestData.attachments && requestData.attachments.length > 0) {
+      updates.attachments = requestData.attachments;
+    }
+
     const taskResult = await updateGlobalTask(requestData.taskId, updates);
 
     if (taskResult.success) {
@@ -731,9 +736,27 @@ export const getAnnouncementRevisionRequests = async (filters = {}) => {
   }
 };
 
-export const approveAnnouncementRevisionRequest = async (requestId) => {
+export const approveAnnouncementRevisionRequest = async (requestId, requestData) => {
   try {
+    // Get the announcement document
+    const announcementRef = doc(db, 'announcements', requestData.announcementId);
+    const announcementDoc = await getDoc(announcementRef);
+
+    if (!announcementDoc.exists()) {
+      return { success: false, error: 'Announcement not found' };
+    }
+
+    // Update announcement with revised data
+    const updateData = {};
+    if (requestData.revisedTitle) updateData.title = requestData.revisedTitle;
+    if (requestData.revisedMessage) updateData.message = requestData.revisedMessage;
+    if (requestData.revisedType) updateData.type = requestData.revisedType;
+
+    await updateDoc(announcementRef, updateData);
+
+    // Delete the revision request
     await deleteDoc(doc(db, 'announcementRevisionRequests', requestId));
+
     return { success: true };
   } catch (error) {
     console.error('Error approving announcement revision request:', error);
@@ -743,7 +766,12 @@ export const approveAnnouncementRevisionRequest = async (requestId) => {
 
 export const rejectAnnouncementRevisionRequest = async (requestId, adminNote = '') => {
   try {
-    await deleteDoc(doc(db, 'announcementRevisionRequests', requestId));
+    // Update the request status to rejected with admin note
+    await updateDoc(doc(db, 'announcementRevisionRequests', requestId), {
+      status: 'rejected',
+      adminNote,
+      reviewedAt: serverTimestamp()
+    });
     return { success: true };
   } catch (error) {
     console.error('Error rejecting announcement revision request:', error);

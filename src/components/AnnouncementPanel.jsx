@@ -17,6 +17,9 @@ const AnnouncementPanel = () => {
   const [showAllAnnouncements, setShowAllAnnouncements] = useState(false);
   const [revisionDialog, setRevisionDialog] = useState({ open: false, announcement: null });
   const [revisionReason, setRevisionReason] = useState('');
+  const [revisedTitle, setRevisedTitle] = useState('');
+  const [revisedMessage, setRevisedMessage] = useState('');
+  const [revisedType, setRevisedType] = useState('');
   const [revisionAttachments, setRevisionAttachments] = useState([]);
   const [uploadingRevision, setUploadingRevision] = useState(false);
   const [uploadRevisionProgress, setUploadRevisionProgress] = useState(0);
@@ -40,6 +43,9 @@ const AnnouncementPanel = () => {
   const handleRequestRevision = (announcement) => {
     setRevisionDialog({ open: true, announcement });
     setRevisionReason('');
+    setRevisedTitle(announcement.title);
+    setRevisedMessage(announcement.message);
+    setRevisedType(announcement.type);
     setRevisionAttachments([]);
     setUploadRevisionError('');
   };
@@ -70,11 +76,11 @@ const AnnouncementPanel = () => {
           setUploadRevisionProgress(currentFileProgress);
         });
 
-        if (result.success) {
+        if (result.success && result.file) {
           uploadedFiles.push(result.file);
           processedSize += file.size;
         } else {
-          throw new Error(result.error);
+          throw new Error(result.error || 'Upload failed');
         }
       }
 
@@ -106,6 +112,11 @@ const AnnouncementPanel = () => {
       return;
     }
 
+    if (!revisedTitle.trim() || !revisedMessage.trim()) {
+      setMessage({ type: 'error', text: 'Please provide revised title and message' });
+      return;
+    }
+
     if (uploadingRevision) {
       setMessage({ type: 'error', text: 'Please wait for all files to finish uploading' });
       return;
@@ -118,6 +129,9 @@ const AnnouncementPanel = () => {
       userEmail: user.email,
       userName: user.displayName || user.email,
       reason: revisionReason,
+      revisedTitle,
+      revisedMessage,
+      revisedType,
       attachments: revisionAttachments,
     });
 
@@ -125,6 +139,9 @@ const AnnouncementPanel = () => {
       setMessage({ type: 'success', text: 'Revision request submitted successfully!' });
       setRevisionDialog({ open: false, announcement: null });
       setRevisionReason('');
+      setRevisedTitle('');
+      setRevisedMessage('');
+      setRevisedType('');
       setRevisionAttachments([]);
       setUploadRevisionError('');
       setTimeout(() => setMessage({ type: '', text: '' }), 3000);
@@ -360,7 +377,7 @@ const AnnouncementPanel = () => {
       <Dialog
         open={revisionDialog.open}
         onClose={() => setRevisionDialog({ open: false, announcement: null })}
-        maxWidth="sm"
+        maxWidth="md"
         fullWidth
       >
         <DialogTitle>Request Announcement Revision</DialogTitle>
@@ -368,16 +385,52 @@ const AnnouncementPanel = () => {
           {revisionDialog.announcement && (
             <div className="space-y-4 mt-2">
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Request a revision for: <strong>{revisionDialog.announcement.title}</strong>
+                Revising announcement: <strong>{revisionDialog.announcement.title}</strong>
               </Typography>
 
               <MarkdownEditor
                 value={revisionReason}
                 onChange={setRevisionReason}
-                label="Reason for Revision"
+                label="Reason for Revision *"
                 placeholder="Explain what needs to be revised and why..."
-                rows={4}
+                rows={3}
               />
+
+              <TextField
+                fullWidth
+                label="Revised Title *"
+                value={revisedTitle}
+                onChange={(e) => setRevisedTitle(e.target.value)}
+                size="small"
+                required
+              />
+
+              <MarkdownEditor
+                value={revisedMessage}
+                onChange={setRevisedMessage}
+                label="Revised Message *"
+                placeholder="Updated announcement message..."
+                rows={5}
+              />
+
+              <div>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  Revised Type *
+                </Typography>
+                <div className="flex gap-2">
+                  {['info', 'urgent', 'celebration'].map((type) => (
+                    <Button
+                      key={type}
+                      variant={revisedType === type ? 'contained' : 'outlined'}
+                      onClick={() => setRevisedType(type)}
+                      size="small"
+                      sx={{ textTransform: 'capitalize' }}
+                    >
+                      {type}
+                    </Button>
+                  ))}
+                </div>
+              </div>
 
               {/* File Upload Section */}
               <div>
@@ -456,7 +509,7 @@ const AnnouncementPanel = () => {
           <Button
             onClick={handleSubmitRevisionRequest}
             variant="contained"
-            disabled={uploadingRevision || !revisionReason.trim()}
+            disabled={uploadingRevision || !revisionReason.trim() || !revisedTitle.trim() || !revisedMessage.trim()}
           >
             Submit Request
           </Button>

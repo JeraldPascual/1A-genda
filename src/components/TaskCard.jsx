@@ -164,11 +164,11 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
           setUploadRevisionProgress(currentFileProgress);
         });
 
-        if (result.success) {
+        if (result.success && result.file) {
           uploadedFiles.push(result.file);
           processedSize += file.size;
         } else {
-          throw new Error(result.error);
+          throw new Error(result.error || 'Upload failed');
         }
       }
 
@@ -642,40 +642,37 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
 
               {revisionAttachments.length > 0 && (
                 <div style={{ marginTop: '8px' }}>
-                  <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-                    Attached Files:
-                  </Typography>
-                  {revisionAttachments.map((file, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '8px',
-                        backgroundColor: 'var(--color-bg-tertiary)',
-                        borderRadius: '8px',
-                        marginBottom: '4px'
-                      }}
-                    >
-                      {file.type?.startsWith('image/') ? (
-                        <ImageIcon className="w-4 h-4 text-blue-500" />
-                      ) : (
-                        <FileIcon className="w-4 h-4 text-gray-500" />
-                      )}
-                      <Typography variant="caption" sx={{ flex: 1 }}>
-                        {file.name} ({(file.size / 1024).toFixed(2)} KB)
-                      </Typography>
-                      <IconButton
-                        size="small"
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <Typography variant="caption" color="text.secondary">
+                      Attached Files ({revisionAttachments.length}):
+                    </Typography>
+                  </div>
+                  <AttachmentList attachments={revisionAttachments} />
+                  <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {revisionAttachments.map((file, index) => (
+                      <button
+                        key={index}
                         onClick={() => removeRevisionAttachment(index)}
                         disabled={uploadingRevision}
-                        sx={{ color: 'var(--color-text-muted)' }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          padding: '4px 8px',
+                          fontSize: '11px',
+                          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                          color: 'rgb(239, 68, 68)',
+                          border: '1px solid rgba(239, 68, 68, 0.3)',
+                          borderRadius: '6px',
+                          cursor: uploadingRevision ? 'not-allowed' : 'pointer',
+                          opacity: uploadingRevision ? 0.5 : 1
+                        }}
                       >
-                        <X className="w-4 h-4" />
-                      </IconButton>
-                    </div>
-                  ))}
+                        <X className="w-3 h-3" />
+                        Remove {file.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

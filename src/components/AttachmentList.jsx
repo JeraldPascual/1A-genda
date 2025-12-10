@@ -20,7 +20,19 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
 
   if (!attachments || attachments.length === 0) return null;
 
+  // Normalize file object to handle both old and new structures
+  const normalizeFile = (file) => {
+    if (!file) return { url: '', name: 'Unknown', size: 0, type: 'application/octet-stream' };
+    return {
+      url: file.url || '',
+      name: file.name || file.fileName || 'Unknown',
+      size: file.size || file.fileSize || 0,
+      type: file.type || file.fileType || 'application/octet-stream'
+    };
+  };
+
   const getFileIcon = (fileType) => {
+    if (!fileType) return FileIcon;
     if (fileType.startsWith('image/')) return ImageIcon;
     if (fileType.includes('pdf') || fileType.includes('document') || fileType.includes('word')) return FileText;
     if (fileType.includes('sheet') || fileType.includes('excel')) return FileSpreadsheet;
@@ -57,9 +69,10 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
         Attachments ({attachments.length})
       </h4>
       <div className="flex flex-col gap-4">
-        {attachments.map((file, index) => {
-          const Icon = getFileIcon(file.fileType);
-          const isImage = file.fileType.startsWith('image/');
+        {attachments.map((attachment, index) => {
+          const file = normalizeFile(attachment);
+          const Icon = getFileIcon(file.type);
+          const isImage = file.type && file.type.startsWith('image/');
 
           return (
             <div
@@ -73,7 +86,7 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                 >
                   <img
                     src={file.url}
-                    alt={file.fileName}
+                    alt={file.name}
                     className="w-full h-auto"
                     loading="lazy"
                   />
@@ -98,7 +111,7 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDownload(file.url, file.fileName);
+                          handleDownload(file.url, file.name);
                         }}
                         className="w-full px-4 py-2 text-left text-sm dark:text-dark-text-primary light:text-light-text-primary hover:bg-sky-500/10 flex items-center gap-2"
                       >
@@ -111,10 +124,10 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                   {/* Filename overlay at bottom */}
                   <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/70 to-transparent p-3 pointer-events-none">
                     <p className="text-sm font-medium text-white truncate">
-                      {file.fileName}
+                      {file.name}
                     </p>
                     <p className="text-xs text-gray-300">
-                      {formatFileSize(file.fileSize)}
+                      {formatFileSize(file.size)}
                     </p>
                   </div>
                 </div>
@@ -126,10 +139,10 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium dark:text-dark-text-primary light:text-light-text-primary truncate">
-                        {file.fileName}
+                        {file.name}
                       </p>
                       <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">
-                        {formatFileSize(file.fileSize)}
+                        {formatFileSize(file.size)}
                       </p>
                     </div>
                   </div>
@@ -147,7 +160,7 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                   {activeMenu === index && (
                     <div className="absolute top-12 right-2 bg-white dark:bg-slate-800 border dark:border-slate-700 light:border-blue-200 rounded-lg shadow-lg py-1 min-w-[150px] z-10">
                       <button
-                        onClick={() => handleDownload(file.url, file.fileName)}
+                        onClick={() => handleDownload(file.url, file.name)}
                         className="w-full px-4 py-2 text-left text-sm dark:text-dark-text-primary light:text-light-text-primary hover:bg-sky-500/10 flex items-center gap-2"
                       >
                         <Download className="w-4 h-4" />
@@ -186,13 +199,13 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
           </button>
           <img
             src={fullscreenImage.url}
-            alt={fullscreenImage.fileName}
+            alt={fullscreenImage.name}
             className="max-w-full max-h-full object-contain"
             onClick={(e) => e.stopPropagation()}
           />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 px-4 py-2 rounded-lg">
             <p className="text-white text-sm font-medium">
-              {fullscreenImage.fileName}
+              {fullscreenImage.name}
             </p>
           </div>
         </div>,

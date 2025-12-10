@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem, LinearProgress, IconButton, Typography } from '@mui/material';
-import { createGlobalTask, createAnnouncement, getAllGlobalTasks, getActiveAnnouncements, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, getTaskCreationRequests, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, getTaskRevisionRequests, approveTaskRevisionRequest, rejectTaskRevisionRequest, getContentSubmissionRequests, approveContentSubmissionRequest, rejectContentSubmissionRequest, getAllStudentProgress, getAllUsers } from '../utils/firestore';
+import { createGlobalTask, createAnnouncement, getAllGlobalTasks, getActiveAnnouncements, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, getTaskCreationRequests, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, getTaskRevisionRequests, approveTaskRevisionRequest, rejectTaskRevisionRequest, getContentSubmissionRequests, approveContentSubmissionRequest, rejectContentSubmissionRequest, getAllStudentProgress, getAllUsers, getAnnouncementRevisionRequests, approveAnnouncementRevisionRequest, rejectAnnouncementRevisionRequest } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
 import { Timestamp } from 'firebase/firestore';
 import { PlusCircle, Megaphone, CheckCircle, AlertCircle, Shield, ListTodo, Trash2, Eye, Users, UserCheck, Zap, Target, Inbox, Edit, X, FileEdit, Send, Download, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
@@ -21,6 +21,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   const [announcements, setAnnouncements] = useState([]);
   const [taskCreationRequests, setTaskCreationRequests] = useState([]);
   const [taskRevisionRequests, setTaskRevisionRequests] = useState([]);
+  const [announcementRevisionRequests, setAnnouncementRevisionRequests] = useState([]);
   const [contentSubmissionRequests, setContentSubmissionRequests] = useState([]);
   const [orphanedUsers, setOrphanedUsers] = useState([]);
   const [batchFilter, setBatchFilter] = useState('all'); // Filter for viewing tasks
@@ -73,6 +74,8 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       loadTaskCreationRequests();
     } else if (activeTab === 'taskRevisionRequests') {
       loadTaskRevisionRequests();
+    } else if (activeTab === 'announcementRevisionRequests') {
+      loadAnnouncementRevisionRequests();
     } else if (activeTab === 'contentSubmissions') {
       loadContentSubmissionRequests();
     } else if (activeTab === 'utilities') {
@@ -89,6 +92,13 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
     setLoading(true);
     const requests = await getTaskRevisionRequests();
     setTaskRevisionRequests(requests);
+    setLoading(false);
+  };
+
+  const loadAnnouncementRevisionRequests = async () => {
+    setLoading(true);
+    const requests = await getAnnouncementRevisionRequests();
+    setAnnouncementRevisionRequests(requests);
     setLoading(false);
   };
 
@@ -203,12 +213,12 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
 
     for (const file of files) {
       try {
-        const result = await uploadFile(file, 'announcements', (progress) => {
+        const result = await uploadFile(file, (progress) => {
           setUploadEditProgress(progress);
         });
 
-        if (result.success) {
-          uploadedFiles.push(result);
+        if (result.success && result.file) {
+          uploadedFiles.push(result.file);
         } else {
           setMessage({ type: 'error', text: `Failed to upload ${file.name}: ${result.error}` });
         }
@@ -327,12 +337,12 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       }
 
       try {
-        const result = await uploadFile(file, 'announcements', (progress) => {
+        const result = await uploadFile(file, (progress) => {
           setUploadProgress(progress);
         });
 
-        if (result.success) {
-          uploadedFiles.push(result);
+        if (result.success && result.file) {
+          uploadedFiles.push(result.file);
         } else {
           failedFiles.push({ name: file.name, reason: result.error || 'Upload failed' });
         }
@@ -376,12 +386,12 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       }
 
       try {
-        const result = await uploadFile(file, 'tasks', (progress) => {
+        const result = await uploadFile(file, (progress) => {
           setUploadTaskProgress(progress);
         });
 
-        if (result.success) {
-          uploadedFiles.push(result);
+        if (result.success && result.file) {
+          uploadedFiles.push(result.file);
         } else {
           failedFiles.push({ name: file.name, reason: result.error || 'Upload failed' });
         }
@@ -595,6 +605,40 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
     setLoading(false);
   };
 
+  const handleApproveAnnouncementRevision = async (requestId, requestData) => {
+    setLoading(true);
+    try {
+      const result = await approveAnnouncementRevisionRequest(requestId, requestData);
+      if (result.success) {
+        setMessage({ type: 'success', text: 'Announcement revision approved and applied!' });
+        await loadAnnouncementRevisionRequests();
+        await loadAnnouncements(); // Refresh announcements to show updated data
+      } else {
+        setMessage({ type: 'error', text: result.error });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message });
+    }
+    setLoading(false);
+  };
+
+  const handleRejectAnnouncementRevision = async (requestId) => {
+    const adminNote = prompt('Reason for rejection (optional):');
+    setLoading(true);
+    try {
+      const result = await rejectAnnouncementRevisionRequest(requestId, adminNote || '');
+      if (result.success) {
+        setMessage({ type: 'success', text: 'Announcement revision request rejected.' });
+        await loadAnnouncementRevisionRequests();
+      } else {
+        setMessage({ type: 'error', text: result.error });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message });
+    }
+    setLoading(false);
+  };
+
   const handleApproveContentSubmission = async (requestId, requestData) => {
     setLoading(true);
     setMessage({ type: '', text: '' });
@@ -708,7 +752,13 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
             value="taskRevisionRequests"
             icon={<FileEdit className="w-4 h-4" />}
             iconPosition="start"
-            label="Revision Requests"
+            label="Task Revisions"
+          />
+          <Tab
+            value="announcementRevisionRequests"
+            icon={<Megaphone className="w-4 h-4" />}
+            iconPosition="start"
+            label="Announcement Revisions"
           />
           <Tab
             value="contentSubmissions"
@@ -913,13 +963,13 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                   {taskAttachments.map((file, index) => (
                     <div key={index} className="flex items-center justify-between p-2 dark:bg-slate-700/50 light:bg-gray-100 rounded-lg">
                       <div className="flex items-center gap-2 flex-1 min-w-0">
-                        {file.fileType.startsWith('image/') ? (
+                        {file.type?.startsWith('image/') ? (
                           <ImageIcon className="w-4 h-4 text-sky-400 shrink-0" />
                         ) : (
                           <FileIcon className="w-4 h-4 text-sky-400 shrink-0" />
                         )}
-                        <span className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.fileName}</span>
-                        <span className="text-xs dark:text-dark-text-muted light:text-light-text-muted shrink-0">{formatFileSize(file.fileSize)}</span>
+                        <span className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.name}</span>
+                        <span className="text-xs dark:text-dark-text-muted light:text-light-text-muted shrink-0">{formatFileSize(file.size)}</span>
                       </div>
                       <button
                         type="button"
@@ -1029,14 +1079,14 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                   {announcementAttachments.map((file, index) => (
                     <div key={index} className="flex items-center justify-between p-3 dark:bg-slate-900/40 light:bg-gray-50 border dark:border-slate-700/50 light:border-gray-200 rounded-lg">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        {file.fileType.startsWith('image/') ? (
+                        {file.type?.startsWith('image/') ? (
                           <ImageIcon className="w-5 h-5 text-sky-400 shrink-0" />
                         ) : (
                           <FileIcon className="w-5 h-5 text-sky-400 shrink-0" />
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.fileName}</p>
-                          <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">{formatFileSize(file.fileSize)}</p>
+                          <p className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.name}</p>
+                          <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">{formatFileSize(file.size)}</p>
                         </div>
                       </div>
                       <button
@@ -1201,6 +1251,11 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                           </span>
                         )}
                       </div>
+                      {task.attachments && task.attachments.length > 0 && (
+                        <div className="mt-3">
+                          <AttachmentList attachments={task.attachments} />
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-2 shrink-0">
                       <button
@@ -1284,6 +1339,11 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                     <div className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary wrap-break-word overflow-wrap-anywhere markdown-card-preview">
                       <MarkdownDisplay content={announcement.message} />
                     </div>
+                    {announcement.attachments && announcement.attachments.length > 0 && (
+                      <div className="mt-3">
+                        <AttachmentList attachments={announcement.attachments} />
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-2 shrink-0">
                     <button
@@ -1483,6 +1543,18 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                         </div>
                       )}
 
+                      {request.attachments && request.attachments.length > 0 && (
+                        <div className="mt-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Paperclip className="w-4 h-4 text-sky-400" />
+                            <span className="text-sm font-semibold text-sky-400">
+                              Attachments ({request.attachments.length})
+                            </span>
+                          </div>
+                          <AttachmentList attachments={request.attachments} />
+                        </div>
+                      )}
+
                       {request.adminNote && (
                         <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                           <p className="text-sm text-red-400">
@@ -1510,6 +1582,133 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                         color="error"
                         size="small"
                         onClick={() => handleRejectRevisionRequest(request.id)}
+                        disabled={loading}
+                        startIcon={<X className="w-4 h-4" />}
+                      >
+                        Reject
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Announcement Revision Requests Tab */}
+      {activeTab === 'announcementRevisionRequests' && (
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary mb-2">
+              Announcement Revision Requests
+            </h3>
+            <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted">
+              Review and approve/reject student requests to modify existing announcements
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="dark:text-dark-text-muted light:text-light-text-muted">Loading...</p>
+            </div>
+          ) : announcementRevisionRequests.length === 0 ? (
+            <div className="text-center py-12 border dark:border-dark-border light:border-light-border rounded-lg">
+              <Megaphone className="w-12 h-12 mx-auto mb-3 dark:text-dark-text-muted light:text-light-text-muted opacity-30" />
+              <p className="dark:text-dark-text-muted light:text-light-text-muted">No announcement revision requests</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {announcementRevisionRequests.map(request => (
+                <div
+                  key={request.id}
+                  className="border dark:border-dark-border light:border-light-border rounded-lg p-6 dark:bg-slate-800/30 light:bg-white"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h4 className="text-base font-semibold dark:text-dark-text-primary light:text-light-text-primary">
+                          {request.announcementTitle || 'Announcement Revision'}
+                        </h4>
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${ request.status === 'pending' ? 'bg-amber-500/20 text-amber-400' :
+                          request.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' :
+                          'bg-red-500/20 text-red-400'
+                        }`}>
+                          {request.status}
+                        </span>
+                      </div>
+                      <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mb-3">
+                        <strong>Batch:</strong> {request.userBatch}
+                      </p>
+
+                      <div className="space-y-3">
+                        {request.revisedTitle && (
+                          <div className="p-3 dark:bg-slate-700/50 light:bg-gray-100 rounded-lg">
+                            <p className="text-xs font-semibold dark:text-dark-text-muted light:text-light-text-muted mb-1">Revised Title:</p>
+                            <p className="text-sm dark:text-primary-400 light:text-primary-600">{request.revisedTitle}</p>
+                          </div>
+                        )}
+                        {request.revisedMessage && (
+                          <div className="p-3 dark:bg-slate-700/50 light:bg-gray-100 rounded-lg">
+                            <p className="text-xs font-semibold dark:text-dark-text-muted light:text-light-text-muted mb-1">Revised Message:</p>
+                            <div className="markdown-card-preview">
+                              <MarkdownDisplay content={request.revisedMessage} />
+                            </div>
+                          </div>
+                        )}
+                        {request.revisedType && (
+                          <div className="p-3 dark:bg-slate-700/50 light:bg-gray-100 rounded-lg">
+                            <p className="text-xs font-semibold dark:text-dark-text-muted light:text-light-text-muted mb-1">Revised Type:</p>
+                            <p className="text-sm dark:text-primary-400 light:text-primary-600">{request.revisedType}</p>
+                          </div>
+                        )}
+                        <div className="p-3 dark:bg-slate-700/50 light:bg-gray-100 rounded-lg">
+                          <p className="text-xs font-semibold dark:text-dark-text-muted light:text-light-text-muted mb-1">Reason for Revision:</p>
+                          <div className="markdown-card-preview">
+                            <MarkdownDisplay content={request.reason || 'No reason provided'} />
+                          </div>
+                        </div>
+                      </div>
+
+                      {request.attachments && request.attachments.length > 0 && (
+                        <div className="mt-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Paperclip className="w-4 h-4 text-sky-400" />
+                            <span className="text-sm font-semibold text-sky-400">
+                              Attachments ({request.attachments.length})
+                            </span>
+                          </div>
+                          <AttachmentList attachments={request.attachments} />
+                        </div>
+                      )}
+
+                      {request.adminNote && (
+                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                          <p className="text-sm text-red-400">
+                            <strong>Admin Note:</strong> {request.adminNote}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {request.status === 'pending' && (
+                    <div className="flex gap-3 pt-3 border-t dark:border-dark-border light:border-light-border">
+                      <Button
+                        variant="contained"
+                        color="success"
+                        size="small"
+                        onClick={() => handleApproveAnnouncementRevision(request.id, request)}
+                        disabled={loading}
+                        startIcon={<CheckCircle className="w-4 h-4" />}
+                      >
+                        Approve & Apply Changes
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        onClick={() => handleRejectAnnouncementRevision(request.id)}
                         disabled={loading}
                         startIcon={<X className="w-4 h-4" />}
                       >
@@ -2013,14 +2212,14 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                       {editAnnouncementAttachments.map((file, index) => (
                         <div key={index} className="flex items-center justify-between p-3 dark:bg-slate-900/40 light:bg-gray-50 border dark:border-slate-700/50 light:border-gray-200 rounded-lg">
                           <div className="flex items-center gap-3 flex-1 min-w-0">
-                            {file.fileType?.startsWith('image/') ? (
+                            {file.type?.startsWith('image/') ? (
                               <ImageIcon className="w-5 h-5 text-sky-400 shrink-0" />
                             ) : (
                               <FileIcon className="w-5 h-5 text-sky-400 shrink-0" />
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.fileName}</p>
-                              <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">{formatFileSize(file.fileSize)}</p>
+                              <p className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.name}</p>
+                              <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">{formatFileSize(file.size)}</p>
                             </div>
                           </div>
                           <button

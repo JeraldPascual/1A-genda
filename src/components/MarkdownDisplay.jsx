@@ -11,11 +11,19 @@ const MarkdownDisplay = ({ content, className = '' }) => {
         <code className="markdown-inline-code" {...props} /> :
         <code className="markdown-code-block" {...props} />,
     a: ({node, href, ...props}) => {
-      // Fix URLs that don't start with http:// or https://
+      // Sanitize and fix URLs - prevent XSS via javascript:, data:, file: protocols
       let fixedHref = href;
-      if (href && !href.match(/^https?:\/\//i) && !href.match(/^mailto:/i)) {
+
+      // Block dangerous protocols
+      const dangerousProtocols = /^(javascript|data|file|vbscript):/i;
+      if (href && dangerousProtocols.test(href)) {
+        fixedHref = '#'; // Neutralize dangerous links
+        console.warn('Blocked potentially dangerous link:', href);
+      } else if (href && !href.match(/^https?:\/\//i) && !href.match(/^mailto:/i) && !href.match(/^#/)) {
+        // Only add https:// to relative URLs, not to anchors or already valid protocols
         fixedHref = 'https://' + href;
       }
+
       return <a className="markdown-link" href={fixedHref} target="_blank" rel="noopener noreferrer" {...props} />;
     },
     blockquote: ({node, ...props}) => <blockquote className="markdown-blockquote" {...props} />,

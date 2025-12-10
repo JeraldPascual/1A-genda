@@ -54,13 +54,8 @@ const KanbanBoard = () => {
           setUploadProgress(progress);
         });
 
-        if (result.success) {
-          uploadedFiles.push({
-            url: result.url,
-            fileName: result.fileName,
-            fileSize: result.fileSize,
-            fileType: result.fileType,
-          });
+        if (result.success && result.file) {
+          uploadedFiles.push(result.file);
         } else {
           failedFiles.push({ name: file.name, reason: result.error || 'Upload failed' });
         }

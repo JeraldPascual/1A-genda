@@ -77,12 +77,12 @@ const ContentSubmissionPanel = () => {
 
     for (const file of files) {
       try {
-        const result = await uploadFile(file, 'submissions', (progress) => {
+        const result = await uploadFile(file, (progress) => {
           setUploadProgress(progress);
         });
 
-        if (result.success) {
-          uploadedFiles.push(result);
+        if (result.success && result.file) {
+          uploadedFiles.push(result.file);
         } else {
           alert(`Failed to upload ${file.name}: ${result.error}`);
         }
@@ -517,14 +517,14 @@ const ContentSubmissionPanel = () => {
                     {attachments.map((file, index) => (
                       <div key={index} className="flex items-center justify-between p-3 dark:bg-slate-900/40 light:bg-gray-50 border dark:border-slate-700/50 light:border-gray-200 rounded-lg">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          {file.fileType.startsWith('image/') ? (
+                          {file.type?.startsWith('image/') ? (
                             <ImageIcon className="w-5 h-5 text-sky-400 shrink-0" />
                           ) : (
                             <FileIcon className="w-5 h-5 text-sky-400 shrink-0" />
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.fileName}</p>
-                            <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">{formatFileSize(file.fileSize)}</p>
+                            <p className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.name}</p>
+                            <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">{formatFileSize(file.size)}</p>
                           </div>
                         </div>
                         <button

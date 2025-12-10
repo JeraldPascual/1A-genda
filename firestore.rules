@@ -65,6 +65,14 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // NEW: Announcement revision requests - students can create/read, admins can manage
+    match /announcementRevisionRequests/{requestId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
     // NEW: Content submission requests - students can create/read, admins can manage
     match /contentSubmissionRequests/{requestId} {
       allow read: if request.auth != null;

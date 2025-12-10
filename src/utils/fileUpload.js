@@ -1,17 +1,68 @@
 /**
+ * Sanitize filename to prevent path traversal and injection attacks
+ * @param {string} filename - Original filename
+ * @returns {string} - Sanitized filename
+ */
+const sanitizeFilename = (filename) => {
+  // Remove path traversal attempts and dangerous characters
+  return filename
+    .replace(/[^a-zA-Z0-9._-]/g, '_') // Only allow alphanumeric, dots, underscores, hyphens
+    .replace(/\.{2,}/g, '.') // Remove multiple consecutive dots
+    .replace(/^\.+/, '') // Remove leading dots
+    .substring(0, 255); // Limit length
+};
+
+/**
+ * Validate file MIME type against common malicious types
+ * @param {File} file - The file to validate
+ * @returns {boolean} - True if file type is safe
+ */
+const isValidFileType = (file) => {
+  // Block potentially dangerous file types
+  const dangerousTypes = [
+    'application/x-msdownload', // .exe
+    'application/x-sh', // shell scripts
+    'application/x-php', // PHP files
+    'text/x-python', // Python scripts
+    'application/javascript', // JS files (could be malicious)
+    'application/x-executable',
+    'application/x-sharedlib',
+  ];
+
+  const dangerousExtensions = /\.(exe|bat|cmd|sh|php|py|js|vbs|msi|app|deb|rpm)$/i;
+
+  if (dangerousTypes.includes(file.type)) {
+    return false;
+  }
+
+  if (dangerousExtensions.test(file.name)) {
+    return false;
+  }
+
+  return true;
+};
+
+/**
  * Upload a file as base64 to Firestore (no Firebase Storage needed)
  * @param {File} file - The file to upload
- * @param {string} path - Storage path (for organization only)
  * @param {function} onProgress - Callback for upload progress (percentage)
- * @returns {Promise<{success: boolean, url?: string, fileName?: string, error?: string}>}
+ * @returns {Promise<{success: boolean, file?: object, error?: string}>}
  */
-export const uploadFile = async (file, path, onProgress = null) => {
+export const uploadFile = async (file, onProgress = null) => {
   try {
+    // Validate file type for security
+    if (!isValidFileType(file)) {
+      return { success: false, error: 'File type not allowed for security reasons' };
+    }
+
     // Validate file size (max 5MB for base64 storage)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       return { success: false, error: 'File size must be less than 5MB' };
     }
+
+    // Sanitize filename
+    const sanitizedName = sanitizeFilename(file.name);
 
     // Convert file to base64
     const base64Data = await fileToBase64(file);
@@ -22,11 +73,13 @@ export const uploadFile = async (file, path, onProgress = null) => {
 
     return {
       success: true,
-      url: base64Data, // Store base64 data as URL
-      fileName: file.name,
-      fileSize: file.size,
-      fileType: file.type,
-      storagePath: `${path}/${file.name}`, // Virtual path for organization
+      file: {
+        url: base64Data,
+        name: sanitizedName,
+        size: file.size,
+        type: file.type,
+        uploadedAt: new Date().toISOString(),
+      }
     };
   } catch (error) {
     console.error('Upload file error:', error);
