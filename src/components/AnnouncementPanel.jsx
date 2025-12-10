@@ -1,16 +1,27 @@
 import { useEffect, useState, useRef } from 'react';
-import { getActiveAnnouncements } from '../utils/firestore';
-import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X, Download, Paperclip } from 'lucide-react';
-import { Button } from '@mui/material';
+import { getActiveAnnouncements, createAnnouncementRevisionRequest } from '../utils/firestore';
+import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X, Download, Paperclip, FileEdit, Image as ImageIcon, File as FileIcon } from 'lucide-react';
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, LinearProgress, IconButton, Typography } from '@mui/material';
 import { exportAnnouncementsToPDF } from '../utils/pdfExport';
+import { uploadFile } from '../utils/fileUpload';
+import { useAuth } from '../context/AuthContext';
 import gsap from 'gsap';
 import AttachmentList from './AttachmentList';
 import MarkdownDisplay from './MarkdownDisplay';
+import MarkdownEditor from './MarkdownEditor';
 
 const AnnouncementPanel = () => {
+  const { user } = useAuth();
   const [announcements, setAnnouncements] = useState([]);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [showAllAnnouncements, setShowAllAnnouncements] = useState(false);
+  const [revisionDialog, setRevisionDialog] = useState({ open: false, announcement: null });
+  const [revisionReason, setRevisionReason] = useState('');
+  const [revisionAttachments, setRevisionAttachments] = useState([]);
+  const [uploadingRevision, setUploadingRevision] = useState(false);
+  const [uploadRevisionProgress, setUploadRevisionProgress] = useState(0);
+  const [uploadRevisionError, setUploadRevisionError] = useState('');
+  const [message, setMessage] = useState({ type: '', text: '' });
   const cardRefs = useRef([]);
 
   useEffect(() => {
@@ -24,6 +35,102 @@ const AnnouncementPanel = () => {
 
   const handleExportAnnouncements = () => {
     exportAnnouncementsToPDF(announcements);
+  };
+
+  const handleRequestRevision = (announcement) => {
+    setRevisionDialog({ open: true, announcement });
+    setRevisionReason('');
+    setRevisionAttachments([]);
+    setUploadRevisionError('');
+  };
+
+  const handleRevisionFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (totalSize > maxSize) {
+      setUploadRevisionError('Total file size exceeds 5MB limit');
+      return;
+    }
+
+    setUploadingRevision(true);
+    setUploadRevisionError('');
+    setUploadRevisionProgress(0);
+
+    try {
+      const uploadedFiles = [];
+      let processedSize = 0;
+
+      for (const file of files) {
+        const result = await uploadFile(file, (progress) => {
+          const currentFileProgress = (processedSize + (file.size * progress / 100)) / totalSize * 100;
+          setUploadRevisionProgress(currentFileProgress);
+        });
+
+        if (result.success) {
+          uploadedFiles.push(result.file);
+          processedSize += file.size;
+        } else {
+          throw new Error(result.error);
+        }
+      }
+
+      setRevisionAttachments(prev => [...prev, ...uploadedFiles]);
+      setUploadRevisionProgress(100);
+
+      setTimeout(() => {
+        setUploadingRevision(false);
+        setUploadRevisionProgress(0);
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      setUploadRevisionError(error.message || 'Failed to upload files');
+      setUploadingRevision(false);
+    }
+
+    setUploadRevisionProgress(0);
+    e.target.value = '';
+  };
+
+  const removeRevisionAttachment = (index) => {
+    setRevisionAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmitRevisionRequest = async () => {
+    if (!revisionReason.trim()) {
+      setMessage({ type: 'error', text: 'Please provide a reason for the revision request' });
+      return;
+    }
+
+    if (uploadingRevision) {
+      setMessage({ type: 'error', text: 'Please wait for all files to finish uploading' });
+      return;
+    }
+
+    const result = await createAnnouncementRevisionRequest({
+      announcementId: revisionDialog.announcement.id,
+      announcementTitle: revisionDialog.announcement.title,
+      userId: user.uid,
+      userEmail: user.email,
+      userName: user.displayName || user.email,
+      reason: revisionReason,
+      attachments: revisionAttachments,
+    });
+
+    if (result.success) {
+      setMessage({ type: 'success', text: 'Revision request submitted successfully!' });
+      setRevisionDialog({ open: false, announcement: null });
+      setRevisionReason('');
+      setRevisionAttachments([]);
+      setUploadRevisionError('');
+      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+    } else {
+      setMessage({ type: 'error', text: result.error });
+    }
   };
 
   useEffect(() => {
@@ -225,8 +332,143 @@ const AnnouncementPanel = () => {
               {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
                 <AttachmentList attachments={selectedAnnouncement.attachments} />
               )}
+              {/* Request Revision Button */}
+              <div className="flex justify-end pt-2">
+                <Button
+                  variant="outlined"
+                  startIcon={<FileEdit className="w-4 h-4" />}
+                  onClick={() => handleRequestRevision(selectedAnnouncement)}
+                  sx={{
+                    color: 'var(--color-primary)',
+                    borderColor: 'var(--color-primary)',
+                    textTransform: 'none',
+                    '&:hover': {
+                      borderColor: 'var(--color-primary)',
+                      backgroundColor: 'rgba(56, 189, 248, 0.1)'
+                    }
+                  }}
+                >
+                  Request Revision
+                </Button>
+              </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Revision Request Dialog */}
+      <Dialog
+        open={revisionDialog.open}
+        onClose={() => setRevisionDialog({ open: false, announcement: null })}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Request Announcement Revision</DialogTitle>
+        <DialogContent>
+          {revisionDialog.announcement && (
+            <div className="space-y-4 mt-2">
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Request a revision for: <strong>{revisionDialog.announcement.title}</strong>
+              </Typography>
+
+              <MarkdownEditor
+                value={revisionReason}
+                onChange={setRevisionReason}
+                label="Reason for Revision"
+                placeholder="Explain what needs to be revised and why..."
+                rows={4}
+              />
+
+              {/* File Upload Section */}
+              <div>
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleRevisionFileUpload}
+                  style={{ display: 'none' }}
+                  id="revision-file-upload"
+                  disabled={uploadingRevision}
+                />
+                <label htmlFor="revision-file-upload">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    startIcon={<Paperclip className="w-4 h-4" />}
+                    disabled={uploadingRevision}
+                    fullWidth
+                  >
+                    {uploadingRevision ? 'Uploading...' : 'Add Supporting Files'}
+                  </Button>
+                </label>
+
+                {uploadingRevision && (
+                  <div className="mt-2">
+                    <LinearProgress variant="determinate" value={uploadRevisionProgress} />
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                      Uploading... {Math.round(uploadRevisionProgress)}%
+                    </Typography>
+                  </div>
+                )}
+
+                {uploadRevisionError && (
+                  <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>
+                    {uploadRevisionError}
+                  </Typography>
+                )}
+
+                {revisionAttachments.length > 0 && (
+                  <div className="mt-2 space-y-2">
+                    <Typography variant="caption" color="text.secondary">
+                      Attached Files:
+                    </Typography>
+                    {revisionAttachments.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 p-2 bg-slate-100 dark:bg-slate-800 rounded-lg"
+                      >
+                        {file.type?.startsWith('image/') ? (
+                          <ImageIcon className="w-4 h-4 text-blue-500" />
+                        ) : (
+                          <FileIcon className="w-4 h-4 text-gray-500" />
+                        )}
+                        <Typography variant="caption" sx={{ flex: 1 }}>
+                          {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                        </Typography>
+                        <IconButton
+                          size="small"
+                          onClick={() => removeRevisionAttachment(index)}
+                          disabled={uploadingRevision}
+                        >
+                          <X className="w-4 h-4" />
+                        </IconButton>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRevisionDialog({ open: false, announcement: null })}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmitRevisionRequest}
+            variant="contained"
+            disabled={uploadingRevision || !revisionReason.trim()}
+          >
+            Submit Request
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Message Snackbar */}
+      {message.text && (
+        <div className={`fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg ${
+          message.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        } text-white`}>
+          {message.text}
         </div>
       )}
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem } from '@mui/material';
+import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem, LinearProgress, IconButton, Typography } from '@mui/material';
 import { createGlobalTask, createAnnouncement, getAllGlobalTasks, getActiveAnnouncements, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, getTaskCreationRequests, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, getTaskRevisionRequests, approveTaskRevisionRequest, rejectTaskRevisionRequest, getContentSubmissionRequests, approveContentSubmissionRequest, rejectContentSubmissionRequest, getAllStudentProgress, getAllUsers } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
 import { Timestamp } from 'firebase/firestore';
@@ -42,6 +42,16 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
     column: 'todo',
     batch: 'all', // all, 1A1, or 1A2
   });
+  const [taskAttachments, setTaskAttachments] = useState([]);
+  const [uploadingTask, setUploadingTask] = useState(false);
+  const [uploadTaskProgress, setUploadTaskProgress] = useState(0);
+  const [uploadTaskError, setUploadTaskError] = useState('');
+
+  // Edit task attachment states
+  const [editTaskAttachments, setEditTaskAttachments] = useState([]);
+  const [uploadingEditTask, setUploadingEditTask] = useState(false);
+  const [uploadEditTaskProgress, setUploadEditTaskProgress] = useState(0);
+  const [uploadEditTaskError, setUploadEditTaskError] = useState('');
 
   // Announcement form state
   const [announcementForm, setAnnouncementForm] = useState({
@@ -175,6 +185,8 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
 
   const handleEditTask = (task) => {
     setEditTaskDialog({ open: true, task });
+    setEditTaskAttachments([]);
+    setUploadEditTaskError('');
   };
 
   const handleEditAnnouncement = (announcement) => {
@@ -217,7 +229,23 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
 
 
   const handleUpdateTask = async () => {
+    // Check if files are still uploading
+    if (uploadingEditTask) {
+      setMessage({
+        type: 'error',
+        text: 'Please wait for all files to finish uploading before saving.'
+      });
+      return;
+    }
+
     const task = editTaskDialog.task;
+
+    // Merge existing attachments with new ones
+    const allAttachments = [
+      ...(task.attachments || []),
+      ...editTaskAttachments
+    ];
+
     const result = await updateGlobalTask(task.id, {
       title: task.title,
       description: task.description,
@@ -225,11 +253,14 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       dueDate: task.dueDate ? (typeof task.dueDate === 'string' ? Timestamp.fromDate(new Date(task.dueDate)) : task.dueDate) : null,
       priority: task.priority,
       batch: task.batch,
+      attachments: allAttachments,
     });
 
     if (result.success) {
       setMessage({ type: 'success', text: 'Task updated successfully!' });
       setEditTaskDialog({ open: false, task: null });
+      setEditTaskAttachments([]);
+      setUploadEditTaskError('');
       loadTasks();
       if (onTaskCreated) onTaskCreated();
     } else {
@@ -329,9 +360,126 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
     setAnnouncementAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleTaskFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploadTaskError('');
+    setUploadingTask(true);
+    const uploadedFiles = [];
+    const failedFiles = [];
+
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        failedFiles.push({ name: file.name, reason: 'Exceeds 5MB limit' });
+        continue;
+      }
+
+      try {
+        const result = await uploadFile(file, 'tasks', (progress) => {
+          setUploadTaskProgress(progress);
+        });
+
+        if (result.success) {
+          uploadedFiles.push(result);
+        } else {
+          failedFiles.push({ name: file.name, reason: result.error || 'Upload failed' });
+        }
+      } catch (error) {
+        failedFiles.push({ name: file.name, reason: error.message || 'Upload failed' });
+      }
+    }
+
+    if (failedFiles.length > 0) {
+      const errorMsg = `Failed: ${failedFiles.map(f => `${f.name} (${f.reason})`).join(', ')}`;
+      setUploadTaskError(errorMsg);
+      setMessage({ type: 'error', text: errorMsg });
+    }
+
+    if (uploadedFiles.length > 0) {
+      setTaskAttachments(prev => [...prev, ...uploadedFiles]);
+    }
+
+    setUploadingTask(false);
+    setUploadTaskProgress(0);
+    e.target.value = ''; // Reset file input
+  };
+
+  const removeTaskAttachment = (index) => {
+    setTaskAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Edit task file upload handler
+  const handleEditTaskFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    // Check if total size exceeds limit
+    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (totalSize > maxSize) {
+      setUploadEditTaskError('Total file size exceeds 5MB limit');
+      return;
+    }
+
+    setUploadingEditTask(true);
+    setUploadEditTaskError('');
+    setUploadEditTaskProgress(0);
+
+    try {
+      const uploadedFiles = [];
+      let processedSize = 0;
+
+      for (const file of files) {
+        const result = await uploadFile(file, (progress) => {
+          const currentFileProgress = (processedSize + (file.size * progress / 100)) / totalSize * 100;
+          setUploadEditTaskProgress(currentFileProgress);
+        });
+
+        if (result.success) {
+          uploadedFiles.push(result.file);
+          processedSize += file.size;
+        } else {
+          throw new Error(result.error);
+        }
+      }
+
+      setEditTaskAttachments(prev => [...prev, ...uploadedFiles]);
+      setUploadEditTaskProgress(100);
+
+      setTimeout(() => {
+        setUploadingEditTask(false);
+        setUploadEditTaskProgress(0);
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      setUploadEditTaskError(error.message || 'Failed to upload files');
+      setUploadingEditTask(false);
+    }
+
+    setUploadEditTaskProgress(0);
+    e.target.value = ''; // Reset file input
+  };
+
+  const removeEditTaskAttachment = (index) => {
+    setEditTaskAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
 
   const handleTaskSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if files are still uploading
+    if (uploadingTask) {
+      setMessage({
+        type: 'error',
+        text: 'Please wait for all files to finish uploading before submitting.'
+      });
+      return;
+    }
+
     setLoading(true);
     setMessage({ type: '', text: '' });
 
@@ -341,6 +489,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
         dueDate: taskForm.dueDate ? Timestamp.fromDate(new Date(taskForm.dueDate)) : null,
         createdBy: user.uid,
         order: Date.now(), // Simple ordering
+        attachments: taskAttachments,
       };
 
       const result = await createGlobalTask(taskData);
@@ -354,7 +503,10 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
           dueDate: '',
           priority: 'medium',
           column: 'todo',
+          batch: 'all',
         });
+        setTaskAttachments([]);
+        setUploadTaskError('');
         if (onTaskCreated) onTaskCreated();
       } else {
         setMessage({ type: 'error', text: result.error });
@@ -720,6 +872,72 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                 <option value="todo">To Do</option>
                 <option value="done">Completed</option>
               </select>
+            </div>
+          </div>
+
+          {/* File Upload Section for Tasks */}
+          <div className="mt-4">
+            <label className="flex text-sm font-semibold text-sky-400 mb-2 items-center gap-2">
+              <Paperclip className="w-4 h-4" />
+              Attachments (optional)
+            </label>
+            <div className="space-y-3">
+              <input
+                type="file"
+                multiple
+                accept="image/*,.pdf,.doc,.docx,.txt"
+                onChange={handleTaskFileUpload}
+                className="block w-full text-sm dark:text-dark-text-secondary light:text-light-text-secondary
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-lg file:border-0
+                  file:text-sm file:font-semibold
+                  dark:file:bg-sky-500/20 light:file:bg-blue-600
+                  dark:file:text-sky-400 light:file:text-white
+                  dark:hover:file:bg-sky-500/30 light:hover:file:bg-blue-700
+                  file:cursor-pointer file:transition-all"
+                disabled={uploadingTask}
+              />
+              {uploadingTask && (
+                <div className="space-y-2">
+                  <div className="w-full bg-slate-700 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-sky-500 h-full transition-all duration-300"
+                      style={{ width: `${uploadTaskProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-sky-400">Uploading... {uploadTaskProgress}%</p>
+                </div>
+              )}
+              {taskAttachments.length > 0 && (
+                <div className="space-y-2">
+                  {taskAttachments.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 dark:bg-slate-700/50 light:bg-gray-100 rounded-lg">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {file.fileType.startsWith('image/') ? (
+                          <ImageIcon className="w-4 h-4 text-sky-400 shrink-0" />
+                        ) : (
+                          <FileIcon className="w-4 h-4 text-sky-400 shrink-0" />
+                        )}
+                        <span className="text-sm dark:text-dark-text-primary light:text-light-text-primary truncate">{file.fileName}</span>
+                        <span className="text-xs dark:text-dark-text-muted light:text-light-text-muted shrink-0">{formatFileSize(file.fileSize)}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeTaskAttachment(index)}
+                        className="p-1 hover:bg-red-500/20 rounded transition-colors shrink-0"
+                      >
+                        <X className="w-4 h-4 text-red-400" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {uploadTaskError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                  <p className="text-sm text-red-400">{uploadTaskError}</p>
+                </div>
+              )}
+              <p className="text-xs text-slate-400">Max 5MB per file. Supported: Images, PDF, DOC, TXT</p>
             </div>
           </div>
 
@@ -1610,6 +1828,115 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                 <MenuItem value="1A1">1A1 Only</MenuItem>
                 <MenuItem value="1A2">1A2 Only</MenuItem>
               </TextField>
+
+              {/* File Upload Section */}
+              <Box sx={{ mb: 2 }}>
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleEditTaskFileUpload}
+                  style={{ display: 'none' }}
+                  id="edit-task-file-upload"
+                  disabled={uploadingEditTask}
+                />
+                <label htmlFor="edit-task-file-upload">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    startIcon={<Paperclip className="w-4 h-4" />}
+                    disabled={uploadingEditTask}
+                    fullWidth
+                  >
+                    {uploadingEditTask ? 'Uploading...' : 'Add Attachments'}
+                  </Button>
+                </label>
+
+                {uploadingEditTask && (
+                  <Box sx={{ mt: 2 }}>
+                    <LinearProgress variant="determinate" value={uploadEditTaskProgress} />
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                      Uploading... {Math.round(uploadEditTaskProgress)}%
+                    </Typography>
+                  </Box>
+                )}
+
+                {uploadEditTaskError && (
+                  <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>
+                    {uploadEditTaskError}
+                  </Typography>
+                )}
+
+                {/* Display existing attachments */}
+                {editTaskDialog.task?.attachments && editTaskDialog.task.attachments.length > 0 && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                      Existing Attachments:
+                    </Typography>
+                    {editTaskDialog.task.attachments.map((file, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          p: 1,
+                          bgcolor: 'action.hover',
+                          borderRadius: 1,
+                          mb: 1
+                        }}
+                      >
+                        {file.type?.startsWith('image/') ? (
+                          <ImageIcon className="w-4 h-4 text-blue-500" />
+                        ) : (
+                          <FileIcon className="w-4 h-4 text-gray-500" />
+                        )}
+                        <Typography variant="caption" sx={{ flex: 1, wordBreak: 'break-all' }}>
+                          {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
+
+                {/* Display new attachments with remove option */}
+                {editTaskAttachments.length > 0 && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                      New Attachments:
+                    </Typography>
+                    {editTaskAttachments.map((file, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          p: 1,
+                          bgcolor: 'action.hover',
+                          borderRadius: 1,
+                          mb: 1
+                        }}
+                      >
+                        {file.type?.startsWith('image/') ? (
+                          <ImageIcon className="w-4 h-4 text-blue-500" />
+                        ) : (
+                          <FileIcon className="w-4 h-4 text-gray-500" />
+                        )}
+                        <Typography variant="caption" sx={{ flex: 1, wordBreak: 'break-all' }}>
+                          {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                        </Typography>
+                        <IconButton
+                          size="small"
+                          onClick={() => removeEditTaskAttachment(index)}
+                          disabled={uploadingEditTask}
+                        >
+                          <X className="w-4 h-4" />
+                        </IconButton>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
+              </Box>
             </div>
           )}
         </DialogContent>

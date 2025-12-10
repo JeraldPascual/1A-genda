@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Card, CardContent, Button, Chip, TextField, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Menu } from '@mui/material';
-import { Calendar, BookOpen, CheckCircle, ArrowRight, ArrowLeft, X, Edit3, AlertCircle, Bell, MoreVertical, Trash2, Copy, Paperclip } from 'lucide-react';
+import { Card, CardContent, Button, Chip, TextField, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Menu, LinearProgress, Typography } from '@mui/material';
+import { Calendar, BookOpen, CheckCircle, ArrowRight, ArrowLeft, X, Edit3, AlertCircle, Bell, MoreVertical, Trash2, Copy, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import gsap from 'gsap';
 import { createTaskRevisionRequest } from '../utils/firestore';
+import { uploadFile } from '../utils/fileUpload';
 import { useAuth } from '../context/AuthContext';
 import AttachmentList from './AttachmentList';
 import MarkdownDisplay from './MarkdownDisplay';
@@ -27,6 +28,11 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
     proposedSubject: task.subject || '',
     reason: '',
   });
+
+  const [revisionAttachments, setRevisionAttachments] = useState([]);
+  const [uploadingRevision, setUploadingRevision] = useState(false);
+  const [uploadRevisionProgress, setUploadRevisionProgress] = useState(0);
+  const [uploadRevisionError, setUploadRevisionError] = useState('');
 
   const isLongDescription = (text) => {
     return text && text.length > 100;
@@ -132,9 +138,70 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
 
   const deadlineWarning = getDeadlineWarning();
 
+  const handleRevisionFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (totalSize > maxSize) {
+      setUploadRevisionError('Total file size exceeds 5MB limit');
+      return;
+    }
+
+    setUploadingRevision(true);
+    setUploadRevisionError('');
+    setUploadRevisionProgress(0);
+
+    try {
+      const uploadedFiles = [];
+      let processedSize = 0;
+
+      for (const file of files) {
+        const result = await uploadFile(file, (progress) => {
+          const currentFileProgress = (processedSize + (file.size * progress / 100)) / totalSize * 100;
+          setUploadRevisionProgress(currentFileProgress);
+        });
+
+        if (result.success) {
+          uploadedFiles.push(result.file);
+          processedSize += file.size;
+        } else {
+          throw new Error(result.error);
+        }
+      }
+
+      setRevisionAttachments(prev => [...prev, ...uploadedFiles]);
+      setUploadRevisionProgress(100);
+
+      setTimeout(() => {
+        setUploadingRevision(false);
+        setUploadRevisionProgress(0);
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      setUploadRevisionError(error.message || 'Failed to upload files');
+      setUploadingRevision(false);
+    }
+
+    setUploadRevisionProgress(0);
+    e.target.value = '';
+  };
+
+  const removeRevisionAttachment = (index) => {
+    setRevisionAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleRevisionSubmit = async () => {
     if (!revisionForm.reason.trim()) {
       alert('Please provide a reason for the revision request');
+      return;
+    }
+
+    if (uploadingRevision) {
+      alert('Please wait for all files to finish uploading');
       return;
     }
 
@@ -162,6 +229,7 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
         requestType: revisionForm.requestType,
         proposedChanges,
         reason: revisionForm.reason,
+        attachments: revisionAttachments,
       });
 
       if (result.success) {
@@ -179,6 +247,8 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
             proposedSubject: task.subject || '',
             reason: '',
           });
+          setRevisionAttachments([]);
+          setUploadRevisionError('');
         }, 2000);
       }
     } catch (error) {
@@ -524,6 +594,91 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
               placeholder="Explain why this revision is needed..."
               size="small"
             />
+
+            {/* File Upload Section */}
+            <div>
+              <input
+                type="file"
+                multiple
+                onChange={handleRevisionFileUpload}
+                style={{ display: 'none' }}
+                id="revision-file-upload"
+                disabled={uploadingRevision}
+              />
+              <label htmlFor="revision-file-upload">
+                <Button
+                  variant="outlined"
+                  component="span"
+                  startIcon={<Paperclip className="w-4 h-4" />}
+                  disabled={uploadingRevision}
+                  fullWidth
+                  sx={{
+                    color: 'var(--color-primary)',
+                    borderColor: 'var(--color-border)',
+                    '&:hover': {
+                      borderColor: 'var(--color-primary)',
+                      backgroundColor: 'rgba(56, 189, 248, 0.1)'
+                    }
+                  }}
+                >
+                  {uploadingRevision ? 'Uploading...' : 'Add Supporting Files'}
+                </Button>
+              </label>
+
+              {uploadingRevision && (
+                <div style={{ marginTop: '8px' }}>
+                  <LinearProgress variant="determinate" value={uploadRevisionProgress} />
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                    Uploading... {Math.round(uploadRevisionProgress)}%
+                  </Typography>
+                </div>
+              )}
+
+              {uploadRevisionError && (
+                <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>
+                  {uploadRevisionError}
+                </Typography>
+              )}
+
+              {revisionAttachments.length > 0 && (
+                <div style={{ marginTop: '8px' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                    Attached Files:
+                  </Typography>
+                  {revisionAttachments.map((file, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '8px',
+                        backgroundColor: 'var(--color-bg-tertiary)',
+                        borderRadius: '8px',
+                        marginBottom: '4px'
+                      }}
+                    >
+                      {file.type?.startsWith('image/') ? (
+                        <ImageIcon className="w-4 h-4 text-blue-500" />
+                      ) : (
+                        <FileIcon className="w-4 h-4 text-gray-500" />
+                      )}
+                      <Typography variant="caption" sx={{ flex: 1 }}>
+                        {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        onClick={() => removeRevisionAttachment(index)}
+                        disabled={uploadingRevision}
+                        sx={{ color: 'var(--color-text-muted)' }}
+                      >
+                        <X className="w-4 h-4" />
+                      </IconButton>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </DialogContent>

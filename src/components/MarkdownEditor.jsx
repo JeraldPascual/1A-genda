@@ -100,8 +100,8 @@ const MarkdownEditor = ({
       {mode === 'edit' && (
         <>
           {showToolbar && (
-            <>
-              <ButtonGroup size="small" sx={{ mb: 1, ml: 1 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+              <ButtonGroup size="small">
                 <Tooltip title="Undo (Ctrl+Z)">
                   <span>
                     <Button onClick={handleUndo} disabled={historyIndex <= 0}>
@@ -118,7 +118,7 @@ const MarkdownEditor = ({
                 </Tooltip>
               </ButtonGroup>
 
-              <ButtonGroup size="small" sx={{ mb: 1, ml: 1 }}>
+              <ButtonGroup size="small">
                 <Tooltip title="Heading 1">
                   <Button onClick={() => insertHeading(1)}>
                     <Heading1 className="w-4 h-4" />
@@ -136,7 +136,7 @@ const MarkdownEditor = ({
                 </Tooltip>
               </ButtonGroup>
 
-              <ButtonGroup size="small" sx={{ mb: 1, ml: 1 }}>
+              <ButtonGroup size="small">
                 <Tooltip title="Bold (Ctrl+B)">
                   <Button onClick={() => insertMarkdown('**', '**', 'bold text')}>
                     <Bold className="w-4 h-4" />
@@ -173,7 +173,7 @@ const MarkdownEditor = ({
                   </Button>
                 </Tooltip>
               </ButtonGroup>
-            </>
+            </Box>
           )}
 
           <TextField

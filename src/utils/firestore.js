@@ -691,3 +691,63 @@ export const deleteContentSubmissionRequest = async (requestId) => {
     return { success: false, error: error.message };
   }
 };
+
+// Announcement Revision Requests
+export const createAnnouncementRevisionRequest = async (requestData) => {
+  try {
+    const docRef = await addDoc(collection(db, 'announcementRevisionRequests'), {
+      ...requestData,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    });
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error('Error creating announcement revision request:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const getAnnouncementRevisionRequests = async (filters = {}) => {
+  try {
+    let q = query(collection(db, 'announcementRevisionRequests'), orderBy('createdAt', 'desc'));
+
+    if (filters.userId) {
+      q = query(collection(db, 'announcementRevisionRequests'), where('userId', '==', filters.userId), orderBy('createdAt', 'desc'));
+    }
+
+    if (filters.status) {
+      q = query(collection(db, 'announcementRevisionRequests'), where('status', '==', filters.status), orderBy('createdAt', 'desc'));
+    }
+
+    if (filters.announcementId) {
+      q = query(collection(db, 'announcementRevisionRequests'), where('announcementId', '==', filters.announcementId), orderBy('createdAt', 'desc'));
+    }
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Error getting announcement revision requests:', error);
+    return [];
+  }
+};
+
+export const approveAnnouncementRevisionRequest = async (requestId) => {
+  try {
+    await deleteDoc(doc(db, 'announcementRevisionRequests', requestId));
+    return { success: true };
+  } catch (error) {
+    console.error('Error approving announcement revision request:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const rejectAnnouncementRevisionRequest = async (requestId, adminNote = '') => {
+  try {
+    await deleteDoc(doc(db, 'announcementRevisionRequests', requestId));
+    return { success: true };
+  } catch (error) {
+    console.error('Error rejecting announcement revision request:', error);
+    return { success: false, error: error.message };
+  }
+};
+
