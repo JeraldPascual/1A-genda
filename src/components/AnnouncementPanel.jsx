@@ -3,7 +3,7 @@ import { getActiveAnnouncements, createAnnouncementRevisionRequest } from '../ut
 import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X, Download, Paperclip, FileEdit, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, LinearProgress, IconButton, Typography } from '@mui/material';
 import { exportAnnouncementsToPDF } from '../utils/pdfExport';
-import { uploadFile } from '../utils/fileUpload';
+import { uploadFile, validateAttachmentsSize } from '../utils/fileUpload';
 import { useAuth } from '../context/AuthContext';
 import gsap from 'gsap';
 import AttachmentList from './AttachmentList';
@@ -120,6 +120,15 @@ const AnnouncementPanel = () => {
     if (uploadingRevision) {
       setMessage({ type: 'error', text: 'Please wait for all files to finish uploading' });
       return;
+    }
+
+    // Validate total attachment size before submitting
+    if (revisionAttachments.length > 0) {
+      const validation = validateAttachmentsSize(revisionAttachments);
+      if (!validation.valid) {
+        setMessage({ type: 'error', text: validation.message });
+        return;
+      }
     }
 
     const result = await createAnnouncementRevisionRequest({

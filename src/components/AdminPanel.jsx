@@ -10,7 +10,7 @@ import AttachmentList from './AttachmentList';
 import MarkdownEditor from './MarkdownEditor';
 import MarkdownDisplay from './MarkdownDisplay';
 import { exportTasksToPDF, exportStudentProgressToPDF, exportAnnouncementsToPDF } from '../utils/pdfExport';
-import { uploadFile, formatFileSize, getFileIcon } from '../utils/fileUpload';
+import { uploadFile, formatFileSize, getFileIcon, validateAttachmentsSize } from '../utils/fileUpload';
 
 const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   const { user } = useAuth();
@@ -256,6 +256,18 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       ...editTaskAttachments
     ];
 
+    // Validate total attachment size before updating
+    if (allAttachments.length > 0) {
+      const validation = validateAttachmentsSize(allAttachments);
+      if (!validation.valid) {
+        setMessage({
+          type: 'error',
+          text: validation.message
+        });
+        return;
+      }
+    }
+
     const result = await updateGlobalTask(task.id, {
       title: task.title,
       description: task.description,
@@ -286,6 +298,18 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
         text: 'Please wait for all files to finish uploading before saving.'
       });
       return;
+    }
+
+    // Validate total attachment size before updating
+    if (editAnnouncementAttachments.length > 0) {
+      const validation = validateAttachmentsSize(editAnnouncementAttachments);
+      if (!validation.valid) {
+        setMessage({
+          type: 'error',
+          text: validation.message
+        });
+        return;
+      }
     }
 
     const announcement = editAnnouncementDialog.announcement;
@@ -490,6 +514,18 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       return;
     }
 
+    // Validate total attachment size before submitting
+    if (taskAttachments.length > 0) {
+      const validation = validateAttachmentsSize(taskAttachments);
+      if (!validation.valid) {
+        setMessage({
+          type: 'error',
+          text: validation.message
+        });
+        return;
+      }
+    }
+
     setLoading(true);
     setMessage({ type: '', text: '' });
 
@@ -538,6 +574,18 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
         text: 'Please wait for all files to finish uploading before submitting.'
       });
       return;
+    }
+
+    // Validate total attachment size before submitting
+    if (announcementAttachments.length > 0) {
+      const validation = validateAttachmentsSize(announcementAttachments);
+      if (!validation.valid) {
+        setMessage({
+          type: 'error',
+          text: validation.message
+        });
+        return;
+      }
     }
 
     setLoading(true);

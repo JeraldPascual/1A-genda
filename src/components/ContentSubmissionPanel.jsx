@@ -3,7 +3,7 @@ import { Card, CardContent, Button, TextField, MenuItem, Chip, Dialog, DialogTit
 import { Plus, Send, Calendar, BookOpen, Bell, CheckCircle, Clock, X, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { createContentSubmissionRequest, getContentSubmissionRequests } from '../utils/firestore';
 import { useAuth } from '../context/AuthContext';
-import { uploadFile, formatFileSize } from '../utils/fileUpload';
+import { uploadFile, formatFileSize, validateAttachmentsSize } from '../utils/fileUpload';
 import MarkdownEditor from './MarkdownEditor';
 
 const ContentSubmissionPanel = () => {
@@ -120,6 +120,15 @@ const ContentSubmissionPanel = () => {
     if (formData.contentType === 'announcement' && !formData.announcementTitle.trim()) {
       alert('Please provide an announcement title');
       return;
+    }
+
+    // Validate total attachment size before submitting
+    if (attachments.length > 0) {
+      const validation = validateAttachmentsSize(attachments);
+      if (!validation.valid) {
+        alert(validation.message);
+        return;
+      }
     }
 
     setSubmitting(true);

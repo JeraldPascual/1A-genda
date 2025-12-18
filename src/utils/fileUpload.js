@@ -55,10 +55,11 @@ export const uploadFile = async (file, onProgress = null) => {
       return { success: false, error: 'File type not allowed for security reasons' };
     }
 
-    // Validate file size (max 5MB for base64 storage)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    // Validate file size (max 2MB to prevent Firestore document size issues)
+    // Base64 encoding increases size by ~33%, and Firestore has 1MB limit per document
+    const maxSize = 2 * 1024 * 1024; // 2MB
     if (file.size > maxSize) {
-      return { success: false, error: 'File size must be less than 5MB' };
+      return { success: false, error: 'File size must be less than 2MB' };
     }
 
     // Sanitize filename
@@ -159,4 +160,46 @@ export const validateFileType = (file, allowedTypes = []) => {
     }
     return fileType.includes(type);
   });
+};
+
+/**
+ * Calculate total size of attachments array (including base64 overhead)
+ * Estimates the final Firestore document size for attachments
+ * @param {Array} attachments - Array of attachment objects with url property
+ * @returns {number} Total size in bytes
+ */
+export const calculateAttachmentsSize = (attachments) => {
+  if (!attachments || !Array.isArray(attachments)) return 0;
+
+  return attachments.reduce((total, attachment) => {
+    if (attachment && attachment.url) {
+      // Calculate size of the base64 data URL string
+      const urlSize = new Blob([attachment.url]).size;
+      // Add overhead for other properties (name, type, size, uploadedAt)
+      const metadataOverhead = 200; // Conservative estimate for JSON properties
+      return total + urlSize + metadataOverhead;
+    }
+    return total;
+  }, 0);
+};
+
+/**
+ * Validate that attachments array won't exceed Firestore document size limit
+ * Firestore has 1MB (1,048,576 bytes) limit per document
+ * @param {Array} attachments - Array of attachment objects
+ * @param {number} safeThreshold - Safe size limit in bytes (default 700KB to allow room for other fields)
+ * @returns {Object} {valid: boolean, size: number, maxSize: number, message: string}
+ */
+export const validateAttachmentsSize = (attachments, safeThreshold = 700 * 1024) => {
+  const totalSize = calculateAttachmentsSize(attachments);
+  const valid = totalSize <= safeThreshold;
+
+  return {
+    valid,
+    size: totalSize,
+    maxSize: safeThreshold,
+    message: valid
+      ? 'Attachments size is acceptable'
+      : `Total attachment size (${formatFileSize(totalSize)}) exceeds safe limit (${formatFileSize(safeThreshold)}). Please upload fewer files or compress images.`
+  };
 };

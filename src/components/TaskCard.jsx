@@ -4,7 +4,7 @@ import { Card, CardContent, Button, Chip, TextField, MenuItem, Dialog, DialogTit
 import { Calendar, BookOpen, CheckCircle, ArrowRight, ArrowLeft, X, Edit3, AlertCircle, Bell, MoreVertical, Trash2, Copy, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import gsap from 'gsap';
 import { createTaskRevisionRequest } from '../utils/firestore';
-import { uploadFile } from '../utils/fileUpload';
+import { uploadFile, validateAttachmentsSize } from '../utils/fileUpload';
 import { useAuth } from '../context/AuthContext';
 import AttachmentList from './AttachmentList';
 import MarkdownDisplay from './MarkdownDisplay';
@@ -203,6 +203,15 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
     if (uploadingRevision) {
       alert('Please wait for all files to finish uploading');
       return;
+    }
+
+    // Validate total attachment size before submitting
+    if (revisionAttachments.length > 0) {
+      const validation = validateAttachmentsSize(revisionAttachments);
+      if (!validation.valid) {
+        alert(validation.message);
+        return;
+      }
     }
 
     setSubmittingRevision(true);
