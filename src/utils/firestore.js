@@ -14,6 +14,7 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { query as fbQuery } from 'firebase/firestore';
 
 // ============ GLOBAL TASKS ============
 export const createGlobalTask = async (taskData) => {
@@ -236,6 +237,22 @@ export const getAllUserIdsWithData = async () => {
   } catch (error) {
     console.error('Error fetching user IDs:', error);
     return [];
+  }
+};
+
+// Return user document by email (or null if not found)
+export const getUserByEmail = async (email) => {
+  try {
+    const q = fbQuery(collection(db, 'users'), where('email', '==', email));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const docSnap = querySnapshot.docs[0];
+      return { id: docSnap.id, ...docSnap.data() };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching user by email:', error);
+    return null;
   }
 };
 

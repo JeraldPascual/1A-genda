@@ -4,10 +4,11 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
+  sendPasswordResetEmail,
   updateProfile
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { getUserData, createUserDocument, updateUserLastLogin } from '../utils/firestore';
+import { getUserData, createUserDocument, updateUserLastLogin, getUserByEmail } from '../utils/firestore';
 
 const AuthContext = createContext({});
 
@@ -98,6 +99,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const resetPassword = async (email) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  };
+
   const isAdmin = () => {
     return userData?.role === 'admin';
   };
@@ -109,6 +119,7 @@ export const AuthProvider = ({ children }) => {
     signIn,
     signUp,
     signOut,
+    resetPassword,
     isAdmin,
   };
 

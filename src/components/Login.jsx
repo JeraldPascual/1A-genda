@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { TextField, Button, Dialog, DialogContent, IconButton } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { LogIn, LayoutDashboard, AlertCircle, X } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 const Login = ({ onSwitchToRegister }) => {
   const [email, setEmail] = useState('');
@@ -10,6 +11,12 @@ const Login = ({ onSwitchToRegister }) => {
   const [loading, setLoading] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const { signIn } = useAuth();
+  const { resetPassword } = useAuth();
+  const [showForgotDialog, setShowForgotDialog] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotMessage, setForgotMessage] = useState('');
+  const [forgotError, setForgotError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -253,6 +260,16 @@ const Login = ({ onSwitchToRegister }) => {
                   },
                 }}
               />
+              
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotDialog(true)}
+                  className="text-sm text-cyan-300 hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
 
               <Button
                 type="submit"
@@ -275,6 +292,79 @@ const Login = ({ onSwitchToRegister }) => {
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
             </form>
+
+            {/* Forgot Password Dialog */}
+            <Dialog
+              open={showForgotDialog}
+              onClose={() => setShowForgotDialog(false)}
+              maxWidth="xs"
+              fullWidth
+              PaperProps={{ sx: { borderRadius: '1rem' } }}
+            >
+              <DialogContent>
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-lg font-semibold">Reset Password</h4>
+                    <IconButton onClick={() => setShowForgotDialog(false)} size="small">
+                      <X />
+                    </IconButton>
+                  </div>
+
+                  <p className="text-sm text-slate-500 mb-3">Enter your account email and we'll send a link to reset your password.</p>
+
+                  <TextField
+                    id="forgot-email"
+                    type="email"
+                    label="Email Address"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="student@school.edu"
+                    required
+                    fullWidth
+                    variant="outlined"
+                    InputProps={{ startAdornment: <Mail className="mr-2" /> }}
+                    sx={{ mb: 3 }}
+                  />
+
+                  {forgotMessage && (
+                    <div className={`mb-3 text-sm ${forgotError ? 'text-rose-500' : 'text-emerald-500'}`}>
+                      {forgotMessage}
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outlined"
+                      onClick={() => setShowForgotDialog(false)}
+                      fullWidth
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      onClick={async () => {
+                        setForgotError(false);
+                        setForgotMessage('');
+                        setForgotLoading(true);
+                        const emailToUse = forgotEmail || email;
+                        const res = await resetPassword(emailToUse);
+                        setForgotLoading(false);
+                        if (res.success) {
+                          setForgotMessage('Password reset email sent. Check your inbox.');
+                          setForgotError(false);
+                        } else {
+                          setForgotMessage(res.error || 'Failed to send reset email.');
+                          setForgotError(true);
+                        }
+                      }}
+                    >
+                      {forgotLoading ? 'Sending...' : 'Send Reset Link'}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
 
             <div className="mt-6 text-center">
               <p className="text-slate-400 text-sm">
