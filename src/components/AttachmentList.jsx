@@ -77,17 +77,17 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
           return (
             <div
               key={index}
-              className="relative group rounded-lg overflow-hidden border dark:border-slate-700/50 light:border-blue-200"
+              className="relative group rounded-lg overflow-hidden b-2order dark:border-slate-700/50 light:border-blue-200"
             >
               {isImage ? (
                 <div
-                  className="relative w-full cursor-pointer"
+                  className="relative w-full cursor-pointer overflow-auto max-h-[60vh]"
                   onClick={() => openFullscreen(file)}
                 >
                   <img
                     src={file.url}
                     alt={file.name}
-                    className="w-full h-auto"
+                    className="w-full h-auto max-h-[60vh] object-contain"
                     loading="lazy"
                   />
                   {/* Three-dot menu button */}
