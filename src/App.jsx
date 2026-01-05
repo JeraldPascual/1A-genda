@@ -13,6 +13,7 @@ import AdminPanel from './components/AdminPanel';
 import StudentModularDashboard from './components/StudentModularDashboard';
 import GlobalSearch from './components/GlobalSearch';
 import InstallPrompt from './components/InstallPrompt';
+import NetworkStatus from './components/NetworkStatus';
 import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon, Search, Download } from 'lucide-react';
 import gsap from 'gsap';
 import muiTheme from './theme/muiTheme';
@@ -137,6 +138,9 @@ function App() {
       <div className="sticky top-0 z-50 overflow-x-hidden">
         <AnnouncementTicker key={`announcement-${refreshKey}`} />
       </div>
+
+      {/* Network status banner (online/offline) */}
+      <NetworkStatus />
 
       {/* Header - Sticky below ticker */}
       <header
