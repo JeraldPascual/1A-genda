@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
 @import "tailwindcss";
 
 :root {
@@ -84,7 +82,8 @@ html, body {
 }
 
 body {
-  font-family: Inter, system-ui, -apple-system, sans-serif;
+  /* Use Figtree as the primary UI font; fall back to system fonts */
+  font-family: 'Figtree', Inter, system-ui, -apple-system, sans-serif;
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
