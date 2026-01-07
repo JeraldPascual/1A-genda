@@ -226,7 +226,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
                   {uploading ? `Uploading... ${uploadProgress}%` : 'Click to upload files'}
                 </label>
                 <p className="text-xs text-slate-400 mt-1">
-                  Supported: Images, PDF, Word, Excel, PowerPoint, Text, ZIP (Max 5MB per file)
+                  Supported: Images, PDF, Word, Excel, PowerPoint, Text, ZIP (Max 2MB per file)
                 </p>
 
                 {attachments.length > 0 && (

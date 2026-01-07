@@ -1035,7 +1035,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                   <p className="text-sm text-red-400">{uploadTaskError}</p>
                 </div>
               )}
-              <p className="text-xs text-slate-400">Max 5MB per file. Supported: Images, PDF, DOC, TXT</p>
+              <p className="text-xs text-slate-400">Max 2MB per file. Supported: Images, PDF, DOC, TXT</p>
             </div>
           </div>
 
@@ -1118,7 +1118,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                 />
               </label>
               <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">
-                Supported: Images, PDF, Word, Excel, PowerPoint, Text, ZIP (Max 5MB per file)
+                Supported: Images, PDF, Word, Excel, PowerPoint, Text, ZIP (Max 2MB per file)
               </p>
 
               {/* Uploaded Files List */}
@@ -2251,7 +2251,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                     />
                   </label>
                   <p className="text-xs dark:text-dark-text-muted light:text-light-text-secondary">
-                    Supported: Images, PDF, Word, Excel, PowerPoint, Text, ZIP (Max 5MB per file)
+                    Supported: Images, PDF, Word, Excel, PowerPoint, Text, ZIP (Max 2MB per file)
                   </p>
 
                   {/* Uploaded Files List */}

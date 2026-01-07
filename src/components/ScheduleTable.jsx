@@ -45,13 +45,13 @@ const ScheduleTable = ({ userBatch }) => {
         { time: '2:30 PM–4:00 PM', subject: 'UTS 101', fullName: 'Understanding the Self', room: 'Building C SH3', instructor: 'Prof. Verde' },
       ],
       THURSDAY: [
-        { time: '8:30 AM–10:00 AM', subject: 'IT 105', fullName: 'Programming 2', room: 'Building B Room 204', instructor: 'Prof. Sansano' },
-        { time: '11:00 AM–1:00 PM', subject: 'IT 106', fullName: 'Platform Technologies', room: 'Building B Room 304', instructor: 'Prof. Flores' },
+        { time: '7:00 AM–10:00 AM', subject: 'IT 105', fullName: 'Programming 2', room: 'Building B Room 204', instructor: 'Prof. Sansano' },
+        { time: '10:00 AM–1:00 PM', subject: 'IT 106', fullName: 'Platform Technologies', room: 'Building B Room 304', instructor: 'Prof. Flores' },
       ],
       FRIDAY: [
 
         { time: '7:00 AM–10:00 PM', subject: 'IT 107', fullName: 'Human-Computer Interaction', room: 'Building B Room 205', instructor: 'Prof. Hernandez' },
-        { time: '11:00 AM–1:00 PM', subject: 'IT 106', fullName: 'Platform Technologies, Online', room: 'Online(Changeable)', instructor: 'Prof. Flores', online: true },
+        { time: '11:00 AM–1:00 PM', subject: 'IT 106', fullName: 'Platform Technologies, Online', room: 'Online(Changeable)', instructor: 'Prof. Flores', },
         { time: '2:00 PM–4:00 PM', subject: 'PAL 101', fullName: 'Panitikan at Lipunan', room: 'PhilChi Bldg.', instructor: 'Prof. Benito' },
       ],
       SATURDAY: [

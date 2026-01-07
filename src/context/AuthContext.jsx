@@ -7,6 +7,7 @@ import {
   sendPasswordResetEmail,
   updateProfile
 } from 'firebase/auth';
+import { setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { getUserData, createUserDocument, updateUserLastLogin, getUserByEmail } from '../utils/firestore';
 
@@ -44,8 +45,11 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
-  const signIn = async (email, password) => {
+  // signIn: supports `remember` flag. Default is false (session-only).
+  const signIn = async (email, password, remember = false) => {
     try {
+      // set persistence: local when remember=true, session when false
+      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
       const result = await signInWithEmailAndPassword(auth, email, password);
       return { success: true, user: result.user };
     } catch (error) {

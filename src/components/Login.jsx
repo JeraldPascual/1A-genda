@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TextField, Button, Dialog, DialogContent, IconButton } from '@mui/material';
+import { TextField, Button, Dialog, DialogContent, IconButton, Checkbox, FormControlLabel, Tooltip } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { LogIn, LayoutDashboard, AlertCircle, X } from 'lucide-react';
 import { Mail } from 'lucide-react';
@@ -10,8 +10,8 @@ const Login = ({ onSwitchToRegister }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
-  const { signIn } = useAuth();
-  const { resetPassword } = useAuth();
+  const { signIn, resetPassword } = useAuth();
+  const [remember, setRemember] = useState(false);
   const [showForgotDialog, setShowForgotDialog] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotLoading, setForgotLoading] = useState(false);
@@ -23,7 +23,7 @@ const Login = ({ onSwitchToRegister }) => {
     setError('');
     setLoading(true);
 
-    const result = await signIn(email, password);
+    const result = await signIn(email, password, remember);
 
     if (!result.success) {
       setError(result.error);
@@ -260,16 +260,8 @@ const Login = ({ onSwitchToRegister }) => {
                   },
                 }}
               />
-              
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setShowForgotDialog(true)}
-                  className="text-sm text-cyan-300 hover:underline"
-                >
-                  Forgot password?
-                </button>
-              </div>
+
+              {/* Removed duplicate 'Forgot password?' button (kept the side-by-side one) */}
 
               <Button
                 type="submit"
@@ -291,18 +283,55 @@ const Login = ({ onSwitchToRegister }) => {
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
-            </form>
 
-            {/* Forgot Password Dialog */}
-            <Dialog
-              open={showForgotDialog}
-              onClose={() => setShowForgotDialog(false)}
-              maxWidth="xs"
-              fullWidth
-              PaperProps={{ sx: { borderRadius: '1rem' } }}
-            >
-              <DialogContent>
-                <div className="p-4">
+              <div className="flex items-center justify-between mt-2">
+                <Tooltip title="Don't use on shared/public devices" arrow placement="top">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={remember}
+                        onChange={(e) => setRemember(e.target.checked)}
+                        size="small"
+                        sx={{ color: '#06b6d4' }}
+                      />
+                    }
+                    label={
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-slate-300">Remember me</span>
+                        <Tooltip
+                          title={
+                            remember
+                              ? "Keeps you signed in after closing the browser"
+                              : "Sign-in lasts for the current browser session"
+                          }
+                          arrow
+                        >
+                          <span className="text-xs text-slate-400">{remember ? 'Persistent' : 'Session'}</span>
+                        </Tooltip>
+                      </div>
+                    }
+                  />
+                </Tooltip>
+
+                <button
+                  type="button"
+                  onClick={() => setShowForgotDialog(true)}
+                  className="text-sm text-cyan-300 hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
+
+              {/* Forgot-password dialog */}
+              <Dialog
+                open={showForgotDialog}
+                onClose={() => setShowForgotDialog(false)}
+                maxWidth="xs"
+                fullWidth
+                PaperProps={{ sx: { borderRadius: '1rem' } }}
+              >
+                <DialogContent>
+                  <div className="p-4">
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-lg font-semibold">Reset Password</h4>
                     <IconButton onClick={() => setShowForgotDialog(false)} size="small">
@@ -364,7 +393,9 @@ const Login = ({ onSwitchToRegister }) => {
                   </div>
                 </div>
               </DialogContent>
-            </Dialog>
+              </Dialog>
+
+            </form>
 
             <div className="mt-6 text-center">
               <p className="text-slate-400 text-sm">

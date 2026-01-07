@@ -32,6 +32,11 @@ const ResourceLinks = () => {
         </h2>
       </div>
 
+      {/* Notice about external hosting for large files */}
+      <div className="mb-4 p-3 rounded-md bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-sm">
+        <strong>Note:</strong> Large files (PPTs, PDFs, slide decks, and other course materials) are hosted externally in the course Notion workspace. Click the resource card or "Open in New Tab" to view/download files on Notion.
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {resources.map((resource) => {
           const Icon = resource.icon;
