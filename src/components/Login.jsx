@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TextField, Button, Dialog, DialogContent, IconButton, Checkbox, FormControlLabel, Tooltip } from '@mui/material';
+import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 import { LogIn, LayoutDashboard, AlertCircle, X } from 'lucide-react';
 import { Mail } from 'lucide-react';
@@ -17,6 +18,7 @@ const Login = ({ onSwitchToRegister }) => {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotMessage, setForgotMessage] = useState('');
   const [forgotError, setForgotError] = useState(false);
+  const { showToast } = useNotification();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +31,15 @@ const Login = ({ onSwitchToRegister }) => {
       setError(result.error);
     }
 
-    setLoading(false);
+      setLoading(false);
+
+      if (result.success) {
+        // Use global notification so it survives redirects
+        showToast(remember ? 'Signed in — session will persist' : 'Signed in — session-only', 'success');
+
+        // Close the dialog after a short delay so user sees the UI transition
+        setTimeout(() => setShowLoginDialog(false), 250);
+      }
   };
 
   return (
@@ -42,6 +52,8 @@ const Login = ({ onSwitchToRegister }) => {
         `,
         backgroundSize: '4rem 4rem'
       }}></div>
+
+      {/* Notifications are handled globally by NotificationProvider */}
 
       {/* Scattered gradient rectangles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
