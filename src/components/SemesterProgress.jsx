@@ -49,7 +49,7 @@ const SemesterProgress = () => {
   };
 
   return (
-    <div className="glass-card dark:!bg-transparent light:!bg-blue-600 rounded-xl p-6 shadow-lg">
+    <div className="glass-card dark:bg-transparent! light:!bg-blue-600 rounded-xl p-6 shadow-lg">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <TrendingUp className="w-6 h-6 dark:text-primary-500 light:text-light-text-primary" />
@@ -83,6 +83,18 @@ const SemesterProgress = () => {
           </p>
         </div>
       )}
+
+      {/* Reference link for academic year important dates/events */}
+      <div className="mt-6 text-center">
+        <a
+          href="https://www.facebook.com/share/p/1CBwBr2ZBP/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block text-xs underline dark:text-dark-text-muted light:text-light-text-muted hover:opacity-80"
+        >
+          See important academic year dates/events (Facebook post)
+        </a>
+      </div>
     </div>
   );
 };
