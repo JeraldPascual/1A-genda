@@ -272,39 +272,39 @@ const AnnouncementPanel = () => {
         <div
           key={announcement.id}
           ref={(el) => (cardRefs.current[index] = el)}
-          className="glass-card dark:!bg-transparent light:!bg-blue-600 border-2 dark:border-slate-700 light:!border-blue-500 rounded-2xl p-6 flex items-start gap-4 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02]"
+          className="glass-card dark:!bg-transparent light:bg-white border-2 dark:border-slate-700 light:border-gray-200 rounded-2xl p-6 flex items-start gap-4 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02]"
         >
-          <div className={`shrink-0 p-3 rounded-xl ${getAnnouncementTextColor(announcement.type)} dark:bg-opacity-10 light:!bg-blue-700 ${getGlowColor(announcement.type)} shadow-lg`}>
+          <div className={`shrink-0 p-3 rounded-xl ${getAnnouncementTextColor(announcement.type)} dark:bg-opacity-10 light:bg-gray-100 ${getGlowColor(announcement.type)} shadow-lg`}>
             {getAnnouncementIcon(announcement.type)}
           </div>
           <div className="flex-1 min-w-0 overflow-hidden">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <h4 className={`font-bold text-lg ${getAnnouncementTextColor(announcement.type)} light:!text-white break-words`}>
+                <h4 className={`font-bold text-lg ${getAnnouncementTextColor(announcement.type)} light:text-light-text-primary break-words`}>
                 {announcement.title}
               </h4>
               <span className={`text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap ${
                 announcement.type === 'urgent'
-                  ? 'dark:bg-rose-500/20 light:!bg-blue-700 dark:text-rose-400 light:!text-white border dark:border-rose-500/30 light:!border-blue-500'
-                  : announcement.type === 'celebration'
-                  ? 'dark:bg-emerald-500/20 light:!bg-blue-700 dark:text-emerald-400 light:!text-white border dark:border-emerald-500/30 light:!border-blue-500'
-                  : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white border dark:border-sky-500/30 light:!border-blue-500'
+                    ? 'dark:bg-rose-500/20 light:bg-gray-100 dark:text-rose-400 light:text-light-text-primary border dark:border-rose-500/30 light:border-gray-200'
+                    : announcement.type === 'celebration'
+                    ? 'dark:bg-emerald-500/20 light:bg-gray-100 dark:text-emerald-400 light:text-light-text-primary border dark:border-emerald-500/30 light:border-gray-200'
+                    : 'dark:bg-sky-500/20 light:bg-gray-100 dark:text-sky-400 light:text-light-text-primary border dark:border-sky-500/30 light:border-gray-200'
               }`}>
                 {announcement.type.toUpperCase()}
               </span>
-              {announcement.attachments && announcement.attachments.length > 0 && (
-                <span className="text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap dark:bg-purple-500/20 light:!bg-blue-700 dark:text-purple-400 light:!text-white border dark:border-purple-500/30 light:!border-blue-500 flex items-center gap-1">
+                {announcement.attachments && announcement.attachments.length > 0 && (
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap dark:bg-purple-500/20 light:bg-gray-100 dark:text-purple-400 light:text-light-text-primary border dark:border-purple-500/30 light:border-gray-200 flex items-center gap-1">
                   <Paperclip className="w-3 h-3" />
                   {announcement.attachments.length} {announcement.attachments.length === 1 ? 'file' : 'files'}
                 </span>
               )}
             </div>
-            <div className="dark:text-dark-text-muted light:!text-white/80 text-sm mb-3 line-clamp-2 break-words markdown-card-preview">
+              <div className="dark:text-dark-text-muted light:text-light-text-muted text-sm mb-3 line-clamp-2 break-words markdown-card-preview">
               <MarkdownDisplay content={announcement.message} />
             </div>
-            <button
-              onClick={() => setSelectedAnnouncement(announcement)}
-              className="flex items-center gap-2 text-sm font-semibold dark:text-sky-400 light:!text-white dark:hover:text-sky-300 light:hover:!text-blue-100 transition-colors"
-            >
+              <button
+                onClick={() => setSelectedAnnouncement(announcement)}
+                className="flex items-center gap-2 text-sm font-semibold dark:text-sky-400 light:text-light-text-primary dark:hover:text-sky-300 light:hover:text-sky-600 transition-colors"
+              >
               <span>Read More</span>
               <ChevronDown className="w-4 h-4" />
             </button>

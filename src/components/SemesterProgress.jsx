@@ -52,15 +52,15 @@ const SemesterProgress = () => {
     <div className="glass-card dark:!bg-transparent light:!bg-blue-600 rounded-xl p-6 shadow-lg">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <TrendingUp className="w-6 h-6 dark:text-primary-500 light:!text-white" />
+          <TrendingUp className="w-6 h-6 dark:text-primary-500 light:text-light-text-primary" />
           <div>
-            <h3 className="text-lg font-semibold dark:text-dark-text-primary light:!text-white">Semester Progress</h3>
-            <p className="text-sm dark:text-dark-text-muted light:!text-white/90">{getProgressMessage()}</p>
+            <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary">Semester Progress</h3>
+            <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted">{getProgressMessage()}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-3xl font-bold dark:text-primary-500 light:!text-white">{Math.round(progress)}%</p>
-          <p className="text-xs dark:text-dark-text-muted light:!text-white/90 flex items-center justify-end gap-1">
+          <p className="text-3xl font-bold dark:text-primary-500 light:text-light-text-primary">{Math.round(progress)}%</p>
+          <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted flex items-center justify-end gap-1">
             <Calendar className="w-3 h-3" />
             {daysLeft} days left
           </p>
@@ -78,7 +78,7 @@ const SemesterProgress = () => {
 
       {settings.className && (
         <div className="mt-4 text-center">
-          <p className="text-sm dark:text-dark-text-secondary light:!text-white/90">
+          <p className="text-sm dark:text-dark-text-secondary light:text-light-text-muted">
             <span className="font-semibold">{settings.className}</span>
           </p>
         </div>

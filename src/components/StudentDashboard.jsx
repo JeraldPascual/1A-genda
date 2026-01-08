@@ -115,41 +115,41 @@ const StudentDashboard = () => {
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary">Student Demographics</h2>
+          <h2 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary">Student Demographics</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-hidden max-w-full">
-        <div className="dark:bg-slate-900/30 light:!bg-blue-600 border dark:border-slate-800/50 light:!border-blue-500 p-6 rounded-xl hover:border-sky-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+        <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-sky-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
           <div className="relative z-10">
-            <p className="text-3xl font-bold dark:text-sky-400 light:!text-white">{stats.totalStudents}</p>
-            <p className="text-sm dark:text-dark-text-muted light:!text-white/80 mt-1">Total Students</p>
+              <p className="text-3xl font-bold dark:text-sky-400 light:text-light-text-primary">{stats.totalStudents}</p>
+              <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mt-1">Total Students</p>
           </div>
         </div>
 
-        <div className="dark:bg-slate-900/30 light:!bg-blue-600 border dark:border-slate-800/50 light:!border-blue-500 p-6 rounded-xl hover:border-emerald-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+        <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-emerald-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
           <div className="relative z-10">
-            <p className="text-3xl font-bold dark:text-emerald-400 light:!text-white">{stats.activeStudents}</p>
-            <p className="dark:text-dark-text-muted light:!text-white/80 text-sm mt-2">Active Students</p>
+            <p className="text-3xl font-bold dark:text-emerald-400 light:text-light-text-primary">{stats.activeStudents}</p>
+              <p className="dark:text-dark-text-muted light:text-light-text-muted text-sm mt-2">Active Students</p>
           </div>
         </div>
 
-        <div className="dark:bg-slate-900/30 light:!bg-blue-600 border dark:border-slate-800/50 light:!border-blue-500 p-6 rounded-xl hover:border-amber-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+        <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-amber-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
           <div className="relative z-10">
-            <p className="text-3xl font-bold dark:text-amber-400 light:!text-white">{stats.averageCompletion}%</p>
-            <p className="dark:text-dark-text-muted light:!text-white/80 text-sm mt-2">Avg. Completion</p>
+            <p className="text-3xl font-bold dark:text-amber-400 light:text-light-text-primary">{stats.averageCompletion}%</p>
+              <p className="dark:text-dark-text-muted light:text-light-text-muted text-sm mt-2">Avg. Completion</p>
           </div>
         </div>
 
-        <div className="dark:bg-slate-900/30 light:!bg-blue-600 border dark:border-slate-800/50 light:!border-blue-500 p-6 rounded-xl hover:border-purple-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+        <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-purple-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
           <div className="relative z-10">
-            <div className="flex gap-4">
+              <div className="flex gap-4">
               <div>
-                <p className="text-2xl font-bold dark:text-amber-400 light:!text-white">{stats.batch1A1Count}</p>
-                <p className="text-xs dark:text-dark-text-muted light:!text-white/80">Batch 1A1</p>
+                <p className="text-2xl font-bold dark:text-amber-400 light:text-light-text-primary">{stats.batch1A1Count}</p>
+                  <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted">Batch 1A1</p>
               </div>
               <div>
-                <p className="text-2xl font-bold dark:text-purple-400 light:!text-white">{stats.batch1A2Count}</p>
-                <p className="text-xs dark:text-dark-text-muted light:!text-white/80">Batch 1A2</p>
+                <p className="text-2xl font-bold dark:text-purple-400 light:text-light-text-primary">{stats.batch1A2Count}</p>
+                  <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted">Batch 1A2</p>
               </div>
             </div>
           </div>
@@ -158,17 +158,17 @@ const StudentDashboard = () => {
 
       {/* New Request Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-x-hidden max-w-full">
-        <div className="dark:bg-slate-900/30 light:!bg-blue-600 border dark:border-purple-800/50 light:!border-blue-500 p-6 rounded-xl hover:border-purple-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+        <div className="dark:bg-slate-900/30 light:bg-white border dark:border-purple-800/50 light:border-gray-200 p-6 rounded-xl hover:border-purple-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
           <div className="relative z-10">
-            <p className="text-3xl font-bold dark:text-purple-400 light:!text-white">{stats.totalRevisionRequests}</p>
-            <p className="text-sm dark:text-dark-text-muted light:!text-white/80 mt-1">Revision Requests</p>
+            <p className="text-3xl font-bold dark:text-purple-400 light:text-light-text-primary">{stats.totalRevisionRequests}</p>
+              <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mt-1">Revision Requests</p>
           </div>
         </div>
 
         <div className="dark:bg-slate-900/30 light:!bg-blue-600 border dark:border-blue-800/50 light:!border-blue-500 p-6 rounded-xl hover:border-blue-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
           <div className="relative z-10">
             <p className="text-3xl font-bold dark:text-blue-400 light:!text-white">{stats.totalContentSubmissions}</p>
-            <p className="text-sm dark:text-dark-text-muted light:!text-white/80 mt-1">Content Submissions</p>
+              <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mt-1">Content Submissions</p>
           </div>
         </div>
       </div>

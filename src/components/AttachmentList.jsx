@@ -96,16 +96,16 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                       e.stopPropagation();
                       toggleMenu(index);
                     }}
-                    className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 rounded-full transition-all z-20"
+                    className="absolute top-2 right-2 p-2 rounded-full transition-all z-20 dark:bg-black/50 dark:hover:bg-black/70 light:bg-white/70 light:hover:bg-white/80"
                     title="Options"
                   >
-                    <MoreVertical className="w-4 h-4 text-white" />
+                    <MoreVertical className="w-4 h-4 dark:text-white light:text-light-text-primary" />
                   </button>
 
                   {/* Dropdown menu */}
                   {activeMenu === index && (
                     <div
-                      className="absolute top-12 right-2 bg-white dark:bg-slate-800 border dark:border-slate-700 light:border-blue-200 rounded-lg shadow-lg py-1 min-w-[150px] z-30"
+                      className="absolute top-12 right-2 bg-white dark:bg-slate-800 border dark:border-slate-700 light:border-gray-200 rounded-lg shadow-lg py-1 min-w-[150px] z-30"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
@@ -122,20 +122,20 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                   )}
 
                   {/* Filename overlay at bottom */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/70 to-transparent p-3 pointer-events-none">
-                    <p className="text-sm font-medium text-white truncate">
-                      {file.name}
-                    </p>
-                    <p className="text-xs text-gray-300">
-                      {formatFileSize(file.size)}
-                    </p>
-                  </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/70 to-transparent p-3 pointer-events-none">
+                      <p className="text-sm font-medium text-white truncate">
+                        {file.name}
+                      </p>
+                      <p className="text-xs text-gray-300">
+                        {formatFileSize(file.size)}
+                      </p>
+                    </div>
                 </div>
               ) : (
-                <div className="relative p-4 dark:bg-slate-900/40 light:bg-blue-50">
+                <div className="relative p-4 dark:bg-slate-900/40 light:bg-gray-50">
                   <div className="flex items-center gap-3">
-                    <div className="shrink-0 w-12 h-12 flex items-center justify-center dark:bg-sky-500/20 light:bg-blue-100 rounded">
-                      <Icon className="w-6 h-6 dark:text-sky-400 light:text-blue-600" />
+                    <div className="shrink-0 w-12 h-12 flex items-center justify-center dark:bg-sky-500/20 light:bg-gray-100 rounded">
+                      <Icon className="w-6 h-6 dark:text-sky-400 light:text-light-text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium dark:text-dark-text-primary light:text-light-text-primary truncate">
@@ -158,7 +158,7 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
 
                   {/* Dropdown menu */}
                   {activeMenu === index && (
-                    <div className="absolute top-12 right-2 bg-white dark:bg-slate-800 border dark:border-slate-700 light:border-blue-200 rounded-lg shadow-lg py-1 min-w-[150px] z-10">
+                    <div className="absolute top-12 right-2 bg-white dark:bg-slate-800 border dark:border-slate-700 light:border-gray-200 rounded-lg shadow-lg py-1 min-w-[150px] z-10">
                       <button
                         onClick={() => handleDownload(file.url, file.name)}
                         className="w-full px-4 py-2 text-left text-sm dark:text-dark-text-primary light:text-light-text-primary hover:bg-sky-500/10 flex items-center gap-2"

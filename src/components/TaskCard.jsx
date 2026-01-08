@@ -274,7 +274,7 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
     <>
     <Card
       ref={cardRef}
-      className={`!mb-3 !transition-all !duration-200 ${getPriorityColor(task.priority)} group hover:!shadow-2xl overflow-hidden max-w-full dark:!bg-transparent light:!bg-blue-600`}
+      className={`!mb-3 !transition-all !duration-200 ${getPriorityColor(task.priority)} group hover:!shadow-2xl overflow-hidden max-w-full dark:!bg-transparent light:bg-white`}
       sx={{
         '&:hover': {
           borderColor: 'primary.main',
@@ -283,7 +283,7 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
     >
       <CardContent className="!p-4">
         <div className="flex justify-between items-start mb-3 gap-2">
-          <h3 className="font-semibold dark:text-dark-text-primary light:!text-white flex-1 text-sm leading-tight break-words overflow-wrap-anywhere">
+          <h3 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary flex-1 text-sm leading-tight break-words overflow-wrap-anywhere">
             {task.title}
           </h3>
           <div className="flex items-center gap-1 shrink-0">
@@ -310,13 +310,13 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
 
         {task.description && (
           <div className="mb-3">
-            <div className="text-xs dark:text-dark-text-secondary light:!text-white/90 leading-relaxed line-clamp-2 markdown-card-preview">
+            <div className="text-xs dark:text-dark-text-secondary light:text-light-text-muted leading-relaxed line-clamp-2 markdown-card-preview">
               <MarkdownDisplay content={task.description} />
             </div>
             {(isLongDescription(task.description) || (task.attachments && task.attachments.length > 0)) && (
               <button
                 onClick={() => setShowDescriptionModal(true)}
-                className="mt-2 flex items-center gap-1 text-xs font-semibold dark:text-sky-400 light:!text-white/90 dark:hover:text-sky-300 light:hover:!text-white transition-colors"
+                className="mt-2 flex items-center gap-1 text-xs font-semibold dark:text-sky-400 light:text-light-text-primary dark:hover:text-sky-300 light:hover:text-light-text-primary transition-colors"
               >
                 <span>{task.attachments && task.attachments.length > 0 ? 'View Details & Attachments' : 'Read More'}</span>
               </button>
@@ -327,29 +327,29 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
         {!task.description && task.attachments && task.attachments.length > 0 && (
           <div className="mb-3">
             <button
-              onClick={() => setShowDescriptionModal(true)}
-              className="flex items-center gap-1 text-xs font-semibold dark:text-sky-400 light:!text-white/90 dark:hover:text-sky-300 light:hover:!text-white transition-colors"
+                onClick={() => setShowDescriptionModal(true)}
+                className="flex items-center gap-1 text-xs font-semibold dark:text-sky-400 light:text-light-text-primary dark:hover:text-sky-300 light:hover:text-light-text-primary transition-colors"
             >
               <span>View Attachments</span>
             </button>
           </div>
         )}
 
-        <div className="flex items-center flex-wrap gap-2 text-xs dark:text-dark-text-muted light:!text-white mb-3">
+        <div className="flex items-center flex-wrap gap-2 text-xs dark:text-dark-text-muted light:text-light-text-muted mb-3">
           {task.subject && (
-            <span className="dark:bg-primary-600/10 light:!bg-blue-700 dark:text-primary-400 light:!text-white px-2 py-1 rounded flex items-center gap-1 dark:border-primary-600/20 light:!border-blue-500 border">
+            <span className="dark:bg-primary-600/10 light:bg-gray-100 dark:text-primary-400 light:text-light-text-primary px-2 py-1 rounded flex items-center gap-1 dark:border-primary-600/20 light:border-gray-200 border">
               <BookOpen className="w-3 h-3" />
               <span className="font-medium">{task.subject}</span>
             </span>
           )}
           {task.dueDate && (
-            <span className="flex items-center gap-1 px-2 py-1 dark:bg-slate-700/50 light:!bg-blue-700 rounded border dark:border-slate-600/30 light:!border-blue-500">
+            <span className="flex items-center gap-1 px-2 py-1 dark:bg-slate-700/50 light:bg-gray-100 rounded border dark:border-slate-600/30 light:border-gray-200">
               <Calendar className="w-3 h-3" />
               <span>{formatDate(task.dueDate)}</span>
             </span>
           )}
           {task.attachments && task.attachments.length > 0 && (
-            <span className="flex items-center gap-1 px-2 py-1 dark:bg-sky-600/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white rounded border dark:border-sky-600/30 light:!border-blue-500">
+            <span className="flex items-center gap-1 px-2 py-1 dark:bg-sky-600/20 light:bg-gray-100 dark:text-sky-400 light:text-light-text-primary rounded border dark:border-sky-600/30 light:border-gray-200">
               <Paperclip className="w-3 h-3" />
               <span>{task.attachments.length}</span>
             </span>

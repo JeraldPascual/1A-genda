@@ -12,10 +12,10 @@ const KanbanColumn = ({
 
   const getColumnColor = (id) => {
     switch (id) {
-      case 'todo': return 'dark:bg-slate-800 light:!bg-blue-600';
-      case 'pending': return 'dark:bg-amber-900/40 light:!bg-blue-600';
-      case 'done': return 'dark:bg-emerald-900/40 light:!bg-blue-600';
-      default: return 'dark:bg-slate-800 light:!bg-blue-600';
+      case 'todo': return 'dark:bg-slate-800 light:bg-white';
+      case 'pending': return 'dark:bg-amber-900/40 light:bg-white';
+      case 'done': return 'dark:bg-emerald-900/40 light:bg-white';
+      default: return 'dark:bg-slate-800 light:bg-white';
     }
   };
 
@@ -45,7 +45,7 @@ const KanbanColumn = ({
             {getColumnIcon(column.id)}
             <span className="uppercase tracking-wide">{column.title}</span>
           </h2>
-          <span className="dark:bg-dark-bg-primary light:!bg-blue-600 dark:text-dark-text-secondary light:text-white font-semibold text-xs px-2.5 py-1 rounded-md dark:border-dark-border light:border-blue-500 border">
+          <span className="dark:bg-dark-bg-primary light:bg-gray-100 dark:text-dark-text-secondary light:text-light-text-primary font-semibold text-xs px-2.5 py-1 rounded-md dark:border-dark-border light:border-gray-200 border">
             {tasks.length}
           </span>
         </div>

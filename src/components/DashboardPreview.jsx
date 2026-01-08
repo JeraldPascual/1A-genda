@@ -58,7 +58,7 @@ const DashboardPreview = ({ onTabChange }) => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Megaphone className="w-5 h-5 text-sky-400" />
-              <h3 className="text-lg font-semibold dark:text-dark-text-primary light:!text-white">
+              <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary">
                 Recent Announcements
               </h3>
             </div>
@@ -79,7 +79,7 @@ const DashboardPreview = ({ onTabChange }) => {
 
           <div className="space-y-3">
             {announcements.length === 0 ? (
-              <p className="text-sm dark:text-dark-text-muted light:!text-white/80 text-center py-4">
+              <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted text-center py-4">
                 No announcements yet
               </p>
             ) : (
@@ -90,15 +90,15 @@ const DashboardPreview = ({ onTabChange }) => {
                   onClick={() => onTabChange(0)}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h4 className="font-semibold text-sm dark:text-dark-text-primary light:!text-white line-clamp-1">
+                    <h4 className="font-semibold text-sm dark:text-dark-text-primary light:text-light-text-primary line-clamp-1">
                       {announcement.title}
                     </h4>
                     <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${
                       announcement.type === 'urgent'
-                        ? 'dark:bg-rose-500/20 light:!bg-blue-700 dark:text-rose-400 light:!text-white'
+                        ? 'dark:bg-rose-500/20 light:!bg-blue-700 dark:text-rose-400 light:text-light-text-primary'
                         : announcement.type === 'celebration'
-                        ? 'dark:bg-emerald-500/20 light:!bg-blue-700 dark:text-emerald-400 light:!text-white'
-                        : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white'
+                        ? 'dark:bg-emerald-500/20 light:!bg-blue-700 dark:text-emerald-400 light:text-light-text-primary'
+                        : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary'
                     }`}>
                       {announcement.type.toUpperCase()}
                     </span>
@@ -116,27 +116,27 @@ const DashboardPreview = ({ onTabChange }) => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-sky-400" />
-              <h3 className="text-lg font-semibold dark:text-dark-text-primary light:!text-white">
+              <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary">
                 Upcoming Classes
               </h3>
             </div>
-            <Button
-              size="small"
-              endIcon={<ChevronRight className="w-4 h-4" />}
-              onClick={() => onTabChange(1)}
-              sx={{
-                color: 'var(--color-primary)',
-                textTransform: 'none',
-                fontSize: '0.875rem',
-                fontWeight: 600
-              }}
-            >
-              Full Schedule
-            </Button>
-          </div>
-
-          <div className="space-y-2">
-            {schedule.map((classItem, idx) => (
+              <div
+                key={idx}
+                className="dark:bg-slate-800/50 light:!bg-blue-700 rounded-lg p-3 border dark:border-slate-700/50 light:!border-blue-500 cursor-pointer hover:scale-[1.02] transition-transform"
+                onClick={() => onTabChange(1)}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold dark:text-sky-400 light:text-light-text-primary">
+                    {classItem.day}
+                  </span>
+                  <span className="text-xs dark:text-dark-text-muted light:text-light-text-muted">
+                    {classItem.time}
+                  </span>
+                </div>
+                <p className="text-sm font-medium dark:text-dark-text-primary light:text-light-text-primary line-clamp-1 mt-1">
+                  {classItem.subject}
+                </p>
+              </div>
               <div
                 key={idx}
                 className="dark:bg-slate-800/50 light:!bg-blue-700 rounded-lg p-3 border dark:border-slate-700/50 light:!border-blue-500 cursor-pointer hover:scale-[1.02] transition-transform"

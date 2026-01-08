@@ -33,9 +33,9 @@ const ResourceLinks = () => {
       </div>
 
       {/* Notice about external hosting for large files */}
-      <div className="mb-4 p-3 rounded-md bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-sm">
-        <strong>Note:</strong> Large files (PPTs, PDFs, slide decks, and other course materials) are hosted externally in the course Notion workspace. Click the resource card or "Open in New Tab" to view/download files on Notion.
-      </div>
+        <div className="mb-4 p-3 rounded-md bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-sm dark:text-yellow-200 light:text-yellow-800">
+          <strong>Note:</strong> Large files (PPTs, PDFs, slide decks, and other course materials) are hosted externally in the course Notion workspace. Click the resource card or "Open in New Tab" to view/download files on Notion.
+        </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {resources.map((resource) => {
@@ -53,11 +53,11 @@ const ResourceLinks = () => {
                   <Icon className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold dark:text-dark-text-primary light:!text-white mb-1 flex items-center gap-2">
+                    <h3 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary mb-1 flex items-center gap-2">
                     {resource.title}
                     <ExternalLink className="w-4 h-4 dark:text-sky-400 light:!text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                   </h3>
-                  <p className="text-xs dark:text-dark-text-muted light:!text-white/90 leading-relaxed">
+                    <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted leading-relaxed">
                     {resource.description}
                   </p>
                 </div>
@@ -66,7 +66,7 @@ const ResourceLinks = () => {
                 variant="outlined"
                 size="small"
                 endIcon={<ExternalLink className="w-3 h-3" />}
-                className="!mt-4 !w-full !normal-case !text-sm !font-medium dark:!border-slate-700 light:!border-blue-400 dark:!text-sky-400 light:!text-white hover:!border-sky-500 hover:!bg-sky-500/5"
+                className="!mt-4 !w-full !normal-case !text-sm !font-medium dark:!border-slate-700 light:!border-blue-400 dark:!text-sky-400 light:text-light-text-primary hover:!border-sky-500 hover:!bg-sky-500/5"
                 onClick={(e) => {
                   e.stopPropagation();
                   openResource(resource.url);

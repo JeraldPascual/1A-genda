@@ -184,26 +184,21 @@ function App() {
               <div className="flex items-center gap-2">
                 <IconButton
                   onClick={() => setShowSearch(true)}
-                  className="glass-effect"
+                  title="Search (Ctrl+K)"
                   sx={{
                     color: 'var(--color-text-primary)',
-                    '&:hover': {
-                      backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                    },
+                    '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.1)' },
                   }}
-                  title="Search (Ctrl+K)"
                 >
                   <Search className="w-5 h-5" />
                 </IconButton>
 
                 <IconButton
                   onClick={handleThemeToggle}
-                  className="glass-effect"
+                  title={theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
                   sx={{
                     color: 'var(--color-text-primary)',
-                    '&:hover': {
-                      backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                    },
+                    '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.1)' },
                   }}
                 >
                   {theme === 'dark' ? (
@@ -347,7 +342,7 @@ function App() {
           <Button
             onClick={handleSignOut}
             variant="contained"
-            className="!normal-case !font-semibold dark:!text-white light:!text-white"
+            className="!normal-case !font-semibold dark:!text-white light:text-light-text-primary"
             sx={{
               backgroundColor: '#ef4444',
               '&:hover': {
@@ -412,7 +407,7 @@ function App() {
           <Button
             onClick={confirmLightMode}
             variant="contained"
-            className="!normal-case !font-semibold dark:!text-white light:!text-white"
+            className="!normal-case !font-semibold dark:!text-white light:text-light-text-primary"
             sx={{
               backgroundColor: '#f59e0b',
               '&:hover': {

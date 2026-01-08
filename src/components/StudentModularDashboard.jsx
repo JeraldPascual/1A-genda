@@ -50,7 +50,7 @@ const StudentModularDashboard = ({ userBatch, onTabChange }) => {
 
   return (
     <div className="space-y-6">
-      <div className="glass-card dark:!bg-transparent light:!bg-blue-600 border-2 dark:border-slate-700 light:!border-blue-500 rounded-xl overflow-hidden">
+      <div className="glass-card dark:!bg-transparent light:bg-white border-2 dark:border-slate-700 light:border-gray-200 rounded-xl overflow-hidden">
         <Tabs
           value={activeTab}
           onChange={handleTabChange}

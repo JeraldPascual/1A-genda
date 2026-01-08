@@ -139,13 +139,13 @@ const ScheduleTable = ({ userBatch }) => {
               <div className="flex items-center gap-2 mb-3">
                 <div className={`px-3 py-1 rounded-lg font-bold ${
                   classes.length === 0
-                    ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:!text-white'
-                    : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white'
+                    ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:text-light-text-primary'
+                    : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary'
                 }`}>
                   {day}
                 </div>
                 {classes.length === 0 && (
-                  <span className="text-sm dark:text-dark-text-muted light:!text-white/80 italic">
+                  <span className="text-sm dark:text-dark-text-muted light:text-light-text-muted italic">
                     No classes
                   </span>
                 )}
@@ -161,22 +161,22 @@ const ScheduleTable = ({ userBatch }) => {
                       <div className="flex items-start justify-between gap-3 mb-2">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className={`font-bold text-sm ${getSubjectTextColor(classItem.subject)} light:!text-white`}>
+                            <span className={`font-bold text-sm ${getSubjectTextColor(classItem.subject)} light:text-light-text-primary`}>
                               {classItem.subject}
                             </span>
                             {classItem.online && (
-                              <span className="text-xs px-2 py-0.5 rounded-full dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white border dark:border-sky-500/30 light:!border-blue-500">
+                              <span className="text-xs px-2 py-0.5 rounded-full dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary border dark:border-sky-500/30 light:!border-blue-500">
                                 Online
                               </span>
                             )}
                           </div>
-                          <p className="text-xs dark:text-dark-text-muted light:!text-white/90 mb-2">
+                          <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted mb-2">
                             {classItem.fullName}
                           </p>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs dark:text-dark-text-muted light:!text-white/90">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs dark:text-dark-text-muted light:text-light-text-muted">
                         <div className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           <span>{classItem.time}</span>

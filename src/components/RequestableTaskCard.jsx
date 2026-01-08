@@ -125,7 +125,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
 
   return (
     <Card
-      className={`!mb-3 !transition-all !duration-200 ${getPriorityColor(task.priority)} opacity-70 hover:opacity-100 max-w-full dark:!bg-transparent light:!bg-blue-600`}
+      className={`!mb-3 !transition-all !duration-200 ${getPriorityColor(task.priority)} opacity-70 hover:opacity-100 max-w-full dark:!bg-transparent light:bg-white`}
       sx={{
         backgroundColor: 'rgba(15, 23, 42, 0.4)',
         backdropFilter: 'blur(16px)',
@@ -135,7 +135,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
     >
       <CardContent className="!p-4">
         <div className="flex items-start justify-between gap-3 mb-3">
-          <h3 className="text-lg font-semibold dark:text-dark-text-primary light:!text-white line-clamp-2 flex-1">
+          <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary line-clamp-2 flex-1">
             {task.title}
           </h3>
           <Chip
@@ -152,12 +152,12 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
         </div>
 
         {task.description && (
-          <p className="text-sm dark:text-dark-text-muted light:!text-white/90 mb-3 line-clamp-2">
+          <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mb-3 line-clamp-2">
             {task.description}
           </p>
         )}
 
-        <div className="flex flex-wrap items-center gap-3 mb-3 text-xs dark:text-dark-text-muted light:!text-white">
+        <div className="flex flex-wrap items-center gap-3 mb-3 text-xs dark:text-dark-text-muted light:text-light-text-muted">
           {task.subject && (
             <div className="flex items-center gap-1">
               <BookOpen className="w-4 h-4" />
@@ -172,8 +172,8 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
           )}
         </div>
 
-        <div className="p-3 dark:bg-primary-900 light:!bg-blue-700 bg-opacity-20 border dark:border-primary-500 light:!border-blue-500 border-opacity-30 rounded-lg mb-3">
-          <p className="text-xs dark:text-primary-300 light:!text-white leading-relaxed">
+          <div className="p-3 dark:bg-primary-900 light:bg-gray-100 bg-opacity-20 border dark:border-primary-500 light:border-gray-200 border-opacity-30 rounded-lg mb-3">
+          <p className="text-xs dark:text-primary-300 light:text-light-text-primary leading-relaxed">
             <strong>Different Batch Task:</strong> This task is assigned to batch <strong>{task.batch}</strong>.
             {userBatch && ` You are in batch ${userBatch}.`} You can request access if you need to work on this task.
           </p>
@@ -186,7 +186,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
             {/* Only show reason field for 1A2 users */}
             {userBatch === '1A2' && (
               <div className="mb-3">
-                <label className="block text-xs font-medium mb-1 dark:text-dark-text-muted light:text-white">Reason for requesting this task</label>
+                <label className="block text-xs font-medium mb-1 dark:text-dark-text-muted light:text-light-text-primary">Reason for requesting this task</label>
                 <textarea
                   className="w-full rounded border border-slate-400 dark:bg-slate-800 dark:text-dark-text-primary light:bg-white light:text-black p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   rows={2}
