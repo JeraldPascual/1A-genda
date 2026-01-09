@@ -50,7 +50,7 @@ const ScheduleTable = ({ userBatch }) => {
       ],
       FRIDAY: [
 
-        { time: '7:00 AM–10:00 PM', subject: 'IT 107', fullName: 'Human-Computer Interaction', room: 'Building B Room 205', instructor: 'Prof. Hernandez' },
+        { time: '7:00 AM–10:00 AM', subject: 'IT 107', fullName: 'Human-Computer Interaction', room: 'Building B Room 205', instructor: 'Prof. Hernandez' },
         { time: '11:00 AM–1:00 PM', subject: 'IT 106', fullName: 'Platform Technologies, Online', room: 'Online(Changeable)', instructor: 'Prof. Flores', },
         { time: '2:00 PM–4:00 PM', subject: 'PAL 101', fullName: 'Panitikan at Lipunan', room: 'PhilChi Bldg.', instructor: 'Prof. Benito' },
       ],
