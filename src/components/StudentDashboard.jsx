@@ -112,8 +112,32 @@ const StudentDashboard = () => {
     );
   }
 
+  // Feature 1: Current date display
+  const todayString = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
   return (
     <div className="space-y-6">
+      {/* Current Date and Google Calendar Link */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-6">
+        <div>
+          <span className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary">{todayString}</span>
+        </div>
+        <div>
+          <a
+            href="https://calendar.google.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-4 py-2 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition-colors text-sm"
+          >
+            Open Google Calendar
+          </a>
+        </div>
+      </div>
       <div className="mb-6">
           <h2 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary">Student Demographics</h2>
       </div>

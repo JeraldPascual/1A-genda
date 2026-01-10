@@ -14,6 +14,7 @@ import StudentModularDashboard from './components/StudentModularDashboard';
 import GlobalSearch from './components/GlobalSearch';
 import InstallPrompt from './components/InstallPrompt';
 import NetworkStatus from './components/NetworkStatus';
+import InfoBar from './components/InfoBar';
 import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon, Search, Download } from 'lucide-react';
 import gsap from 'gsap';
 import muiTheme from './theme/muiTheme';
@@ -142,6 +143,7 @@ function App() {
       {/* Network status banner (online/offline) */}
       <NetworkStatus />
 
+
       {/* Header - Sticky below ticker */}
       <header
         ref={headerRef}
@@ -226,6 +228,9 @@ function App() {
           </div>
         </div>
       </header>
+
+      {/* InfoBar below header for all users */}
+      <InfoBar />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 overflow-x-hidden">
