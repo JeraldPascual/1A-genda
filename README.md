@@ -205,6 +205,23 @@ The application will be available at [http://localhost:5173](http://localhost:51
 
 ---
 
+
+## Advanced Features
+
+- **InfoBar**: Real-time weather, date, and time for SJDM, PH, using Open-Meteo API.
+- **GlobalSearch**: Search across tasks, announcements, and submissions with instant navigation.
+- **PomodoroTimer**: Built-in Pomodoro timer for productivity, with notifications.
+- **NetworkStatus**: Real-time online/offline detection with auto-reconnect banner.
+- **InstallPrompt**: Smart install prompt for PWA on iOS/Android, with localStorage-based dismissal.
+- **StudentModularDashboard**: Tabbed dashboard for students, with dynamic content (announcements, schedule, resources, analytics, Pomodoro, etc.).
+- **MarkdownDisplay**: Secure, styled markdown rendering with XSS protection and GitHub Flavored Markdown support.
+- **LinkifiedText**: Auto-linking of URLs in text, with safe external link handling.
+- **AttachmentList**: Fullscreen image viewer, download menu, and support for images, PDFs, Office docs, text, and ZIP files.
+- **AnnouncementTicker**: GSAP-powered infinite scroll for announcements, color-coded by type.
+- **Custom Theming**: Tailwind and Material-UI integration, dark/light mode, persistent user preference.
+
+---
+
 ## Component Architecture
 
 ### Main Components
