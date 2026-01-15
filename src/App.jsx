@@ -20,10 +20,30 @@ import gsap from 'gsap';
 import muiTheme from './theme/muiTheme';
 import { getAllGlobalTasks } from './utils/firestore';
 import { exportTasksToPDF } from './utils/pdfExport';
+import { MultiStepLoader as Loader } from './components/ui/multi-step-loader';
+
+// Site-specific loading messages for the page-load overlay
+const loadingStates = [
+  { text: 'Loading user profile' },
+  { text: 'Fetching announcements' },
+  { text: 'Preparing your dashboard' },
+  { text: 'Syncing tasks and boards' },
+  { text: 'Loading semester progress' },
+  { text: 'Applying theme & preferences' },
+  { text: 'Checking network & status' },
+  { text: 'Almost ready — entering 1A-genda' },
+];
 
 function App() {
   const { user, userData, signOut, isAdmin } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const [pageLoading, setPageLoading] = useState(true);
+  const [windowLoaded, setWindowLoaded] = useState(false);
+  const [resourcesReady, setResourcesReady] = useState(true); // assume ready unless we start loading resources
+  const loadStartRef = useRef(Date.now());
+  const MIN_LOAD_MS = 1200; // minimum time to show the loader
+  const [animationDone, setAnimationDone] = useState(false);
+  const [forceLoaderOnce, setForceLoaderOnce] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
@@ -69,9 +89,74 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showSearch]);
 
+  // Track window load and ensure the loader remains visible until resources finish loading
+  useEffect(() => {
+    const onLoad = () => setWindowLoaded(true);
+
+    if (document.readyState === 'complete') {
+      onLoad();
+    } else {
+      window.addEventListener('load', onLoad);
+    }
+
+    return () => window.removeEventListener('load', onLoad);
+  }, []);
+
+  // If user already saw the animated intro, mark animationDone immediately
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const seen = localStorage.getItem('msl_seen_v1');
+      if (seen) setAnimationDone(true);
+    } catch (e) {
+      setAnimationDone(true);
+    }
+  }, []);
+
+  // When resourcesReady flips from false -> true, run a one-cycle loader
+  const prevResourcesReadyRef = useRef(resourcesReady);
+  useEffect(() => {
+    if (prevResourcesReadyRef.current === false && resourcesReady === true) {
+      setForceLoaderOnce(true);
+    }
+    prevResourcesReadyRef.current = resourcesReady;
+  }, [resourcesReady]);
+
+  // If this navigation is a reload, force a one-cycle so manual reloads show the animation once.
+  useEffect(() => {
+    try {
+      const nav = performance.getEntriesByType?.('navigation')?.[0];
+      const type = nav?.type || (performance?.navigation?.type || 'navigate');
+      if (type === 'reload') {
+        setForceLoaderOnce(true);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  // Hide loader only when window and resources are ready and minimum display time has elapsed
+  useEffect(() => {
+    if (!(windowLoaded && resourcesReady && animationDone)) return;
+
+    const elapsed = Date.now() - (loadStartRef.current || 0);
+    const remaining = Math.max(0, MIN_LOAD_MS - elapsed);
+    const t = setTimeout(() => setPageLoading(false), remaining);
+    return () => clearTimeout(t);
+  }, [windowLoaded, resourcesReady, animationDone]);
+
   const handleSignOut = async () => {
     setShowLogoutDialog(false);
-    await signOut();
+    // show loader while signing out
+    setAnimationDone(false);
+    setForceLoaderOnce(true);
+    setPageLoading(true);
+    setResourcesReady(false);
+    try {
+      await signOut();
+    } finally {
+      setResourcesReady(true);
+    }
   };
 
   const handleRefresh = () => {
@@ -86,11 +171,18 @@ function App() {
 
   const loadTasks = async () => {
     if (!isAdmin() && userData?.batch) {
-      const tasksData = await getAllGlobalTasks();
-      const filteredTasks = tasksData.filter(task =>
-        !task.batch || task.batch === 'all' || task.batch === userData.batch
-      );
-      setTasks(filteredTasks);
+      // mark resources as loading so the global loader waits
+      setResourcesReady(false);
+      try {
+        const tasksData = await getAllGlobalTasks();
+        const filteredTasks = tasksData.filter(task =>
+          !task.batch || task.batch === 'all' || task.batch === userData.batch
+        );
+        setTasks(filteredTasks);
+      } finally {
+        // resources finished (either success or fail)
+        setResourcesReady(true);
+      }
     }
   };
 
@@ -102,6 +194,39 @@ function App() {
     if (user && !isAdmin()) {
       loadTasks();
     }
+  }, [user, userData, isAdmin]);
+
+  // Watch auth transitions (login/logout) and show loader during auth transitions
+  const prevUserRef = useRef(user);
+  useEffect(() => {
+    // user became logged in
+    if (prevUserRef.current == null && user != null) {
+      loadStartRef.current = Date.now();
+      setAnimationDone(false);
+      setForceLoaderOnce(true);
+      setPageLoading(true);
+      // If we need to fetch resources for the logged-in user, ensure the loader waits
+      if (!isAdmin() && userData?.batch) {
+        setResourcesReady(false);
+        // trigger task load immediately
+        loadTasks();
+      } else {
+        setResourcesReady(true);
+      }
+    }
+
+    // user became logged out
+    if (prevUserRef.current != null && user == null) {
+      loadStartRef.current = Date.now();
+      setAnimationDone(false);
+      setForceLoaderOnce(true);
+      setPageLoading(true);
+      setResourcesReady(true);
+      // hide shortly after to avoid stuck overlay if nothing else is loading
+      setTimeout(() => setPageLoading(false), 600);
+    }
+
+    prevUserRef.current = user;
   }, [user, userData, isAdmin]);
 
   const handleThemeToggle = () => {
@@ -123,6 +248,8 @@ function App() {
   if (!user) {
     return (
       <ThemeProvider theme={muiTheme}>
+        {/* Page-load loader overlay (also on auth screens) */}
+        <Loader loadingStates={loadingStates} loading={pageLoading} duration={1800} forceRunOnce={forceLoaderOnce} onAnimationComplete={() => { setAnimationDone(true); setForceLoaderOnce(false); }} />
         {showRegister ? (
           <Register onSwitchToLogin={() => setShowRegister(false)} />
         ) : (
@@ -134,6 +261,8 @@ function App() {
 
   return (
     <ThemeProvider theme={muiTheme}>
+      {/* Page-load loader overlay */}
+      <Loader loadingStates={loadingStates} loading={pageLoading} duration={1800} forceRunOnce={forceLoaderOnce} onAnimationComplete={() => { setAnimationDone(true); setForceLoaderOnce(false); }} />
       <div className="min-h-screen max-w-full">
       {/* Announcement Ticker - Sticky at top */}
       <div className="sticky top-0 z-50 overflow-x-hidden">

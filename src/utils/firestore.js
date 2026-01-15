@@ -656,7 +656,6 @@ export const approveContentSubmissionRequest = async (requestId, requestData) =>
       if (taskResult.success) {
         // Delete the request after successful task creation to clean up Firestore
         await deleteDoc(doc(db, 'contentSubmissionRequests', requestId));
-        console.log('Task created successfully with ID:', taskResult.id);
         return { success: true, contentId: taskResult.id, type: 'task' };
       }
       console.error('Failed to create task:', taskResult.error);

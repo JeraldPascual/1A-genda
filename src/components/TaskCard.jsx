@@ -116,7 +116,7 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
     const diffTime = dueDate.getTime() - now.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    console.log('Task:', task.title, 'Due Date:', dueDate, 'Now:', now, 'Diff Days:', diffDays);
+
 
     if (diffDays < 0) {
       return { type: 'overdue', message: 'Overdue!', days: Math.abs(diffDays) };

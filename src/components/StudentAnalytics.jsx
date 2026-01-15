@@ -30,11 +30,6 @@ const StudentAnalytics = () => {
 
       setTasks(filteredTasks);
       setProgress(progressData);
-      console.log('Analytics Data:', {
-        totalTasks: filteredTasks.length,
-        progressEntries: progressData.length,
-        completedTasks: progressData.filter(p => p.status === 'done').length
-      });
     } catch (error) {
       console.error('Error loading analytics data:', error);
     }
