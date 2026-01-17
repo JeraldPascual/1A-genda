@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests, getAllGlobalTasks } from '../utils/firestore';
+import { getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests, getAllGlobalTasks } from '../../utils/firestore';
 
 const StudentDashboard = () => {
   const [students, setStudents] = useState([]);

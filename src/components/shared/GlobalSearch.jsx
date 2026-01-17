@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, X, Calendar, BookOpen, Megaphone, FileText } from 'lucide-react';
-import { getAllGlobalTasks, getActiveAnnouncements, getContentSubmissionRequests } from '../utils/firestore';
-import { useAuth } from '../context/AuthContext';
+import { getAllGlobalTasks, getActiveAnnouncements, getContentSubmissionRequests } from '../../utils/firestore';
+import { useAuth } from '../../context/AuthContext';
 
 const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
   const { userData } = useAuth();

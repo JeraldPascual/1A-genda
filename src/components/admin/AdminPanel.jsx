@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem, LinearProgress, IconButton, Typography } from '@mui/material';
-import { createGlobalTask, createAnnouncement, getAllGlobalTasks, getActiveAnnouncements, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, getTaskCreationRequests, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, getTaskRevisionRequests, approveTaskRevisionRequest, rejectTaskRevisionRequest, getContentSubmissionRequests, approveContentSubmissionRequest, rejectContentSubmissionRequest, getAllStudentProgress, getAllUsers, getAnnouncementRevisionRequests, approveAnnouncementRevisionRequest, rejectAnnouncementRevisionRequest } from '../utils/firestore';
-import { useAuth } from '../context/AuthContext';
+import { createGlobalTask, createAnnouncement, getAllGlobalTasks, getActiveAnnouncements, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, getTaskCreationRequests, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, getTaskRevisionRequests, approveTaskRevisionRequest, rejectTaskRevisionRequest, getContentSubmissionRequests, approveContentSubmissionRequest, rejectContentSubmissionRequest, getAllStudentProgress, getAllUsers, getAnnouncementRevisionRequests, approveAnnouncementRevisionRequest, rejectAnnouncementRevisionRequest } from '../../utils/firestore';
+import { useAuth } from '../../context/AuthContext';
 import { Timestamp } from 'firebase/firestore';
 import { PlusCircle, Megaphone, CheckCircle, AlertCircle, Shield, ListTodo, Trash2, Eye, Users, UserCheck, Zap, Target, Inbox, Edit, X, FileEdit, Send, Download, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
-import StudentProgressTracker from './StudentProgressTracker';
+import StudentProgressTracker from '../student/StudentProgressTracker';
 import StudentDashboard from './StudentDashboard';
-import AttachmentList from './AttachmentList';
-import MarkdownEditor from './MarkdownEditor';
-import MarkdownDisplay from './MarkdownDisplay';
-import { exportTasksToPDF, exportStudentProgressToPDF, exportAnnouncementsToPDF } from '../utils/pdfExport';
-import { uploadFile, formatFileSize, getFileIcon, validateAttachmentsSize } from '../utils/fileUpload';
+import AttachmentList from '../shared/AttachmentList';
+import MarkdownEditor from '../shared/MarkdownEditor';
+import MarkdownDisplay from '../shared/MarkdownDisplay';
+import { exportTasksToPDF, exportStudentProgressToPDF, exportAnnouncementsToPDF } from '../../utils/pdfExport';
+import { uploadFile, formatFileSize, getFileIcon, validateAttachmentsSize } from '../../utils/fileUpload';
 
 const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   const { user } = useAuth();

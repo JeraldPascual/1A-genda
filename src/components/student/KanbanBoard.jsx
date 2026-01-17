@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem } from '@mui/material';
 import KanbanColumn from './KanbanColumn';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import {
   getAllGlobalTasks,
   getStudentProgress,
   updateStudentProgress,
   createTaskCreationRequest,
   getTaskCreationRequests
-} from '../utils/firestore';
+} from '../../utils/firestore';
 import confetti from 'canvas-confetti';
 import { PlusCircle, Upload, Paperclip, X as XIcon, Image as ImageIcon, File as FileIcon } from 'lucide-react';
-import { uploadFile, formatFileSize } from '../utils/fileUpload';
-import MarkdownEditor from './MarkdownEditor';
+import { uploadFile, formatFileSize } from '../../utils/fileUpload';
+import MarkdownEditor from '../shared/MarkdownEditor';
 
 const KanbanBoard = () => {
   const { user, isAdmin, userData } = useAuth();

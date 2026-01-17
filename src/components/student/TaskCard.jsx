@@ -3,12 +3,12 @@ import { createPortal } from 'react-dom';
 import { Card, CardContent, Button, Chip, TextField, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Menu, LinearProgress, Typography } from '@mui/material';
 import { Calendar, BookOpen, CheckCircle, ArrowRight, ArrowLeft, X, Edit3, AlertCircle, Bell, MoreVertical, Trash2, Copy, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import gsap from 'gsap';
-import { createTaskRevisionRequest } from '../utils/firestore';
-import { uploadFile, validateAttachmentsSize } from '../utils/fileUpload';
-import { useAuth } from '../context/AuthContext';
-import AttachmentList from './AttachmentList';
-import MarkdownDisplay from './MarkdownDisplay';
-import MarkdownEditor from './MarkdownEditor';
+import { createTaskRevisionRequest } from '../../utils/firestore';
+import { uploadFile, validateAttachmentsSize } from '../../utils/fileUpload';
+import { useAuth } from '../../context/AuthContext';
+import AttachmentList from '../shared/AttachmentList';
+import MarkdownDisplay from '../shared/MarkdownDisplay';
+import MarkdownEditor from '../shared/MarkdownEditor';
 
 const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userData }) => {
   const cardRef = useRef(null);

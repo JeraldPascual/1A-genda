@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { getAllGlobalTasks, getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests } from '../utils/firestore';
+import { getAllGlobalTasks, getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests } from '../../utils/firestore';
 import { Users, CheckCircle, Circle, TrendingUp, FileEdit, Send, Download } from 'lucide-react';
-import { exportStudentProgressToPDF } from '../utils/pdfExport';
+import { exportStudentProgressToPDF } from '../../utils/pdfExport';
 
 const StudentProgressTracker = () => {
   const [students, setStudents] = useState([]);

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Card, CardContent, Button, Chip } from '@mui/material';
 import { Calendar, BookOpen, Send, CheckCircle, Clock, Upload, Paperclip, X as XIcon, Image as ImageIcon, File as FileIcon } from 'lucide-react';
-import { createTaskRequest } from '../utils/firestore';
-import { uploadFile, formatFileSize } from '../utils/fileUpload';
+import { createTaskRequest } from '../../utils/firestore'; 
+import { uploadFile, formatFileSize } from '../../utils/fileUpload';
 
 const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
   const [requesting, setRequesting] = useState(false);
@@ -12,7 +12,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
   const [attachments, setAttachments] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadError, setUploadError] = useState(''); = useState(0);
+  const [uploadError, setUploadError] = useState('');
 
   const handleFileUpload = async (event) => {
     const files = Array.from(event.target.files);
@@ -125,7 +125,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
 
   return (
     <Card
-      className={`!mb-3 !transition-all !duration-200 ${getPriorityColor(task.priority)} opacity-70 hover:opacity-100 max-w-full dark:!bg-transparent light:bg-white`}
+      className={`mb-3! transition-all! duration-200! ${getPriorityColor(task.priority)} opacity-70 hover:opacity-100 max-w-full dark:bg-transparent! light:bg-white`}
       sx={{
         backgroundColor: 'rgba(15, 23, 42, 0.4)',
         backdropFilter: 'blur(16px)',
@@ -133,7 +133,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
       }}
     >
-      <CardContent className="!p-4">
+      <CardContent className="p-4!">
         <div className="flex items-start justify-between gap-3 mb-3">
           <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary line-clamp-2 flex-1">
             {task.title}
@@ -202,7 +202,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
             {/* File Upload Section - only for 1A2 */}
             {userBatch === '1A2' && (
               <div className="mb-3">
-                <label className="block text-xs font-medium mb-2 dark:text-sky-400 light:text-blue-600 flex items-center gap-2">
+                <label className="text-xs font-medium mb-2 dark:text-sky-400 light:text-blue-600 flex items-center gap-2">
                   <Upload className="w-4 h-4" />
                   Attach Files (Optional)
                 </label>

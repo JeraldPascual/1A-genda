@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Image as ImageIcon, FileText, FileSpreadsheet, File as FileIcon, Download, MoreVertical, X } from 'lucide-react';
-import { formatFileSize } from '../utils/fileUpload';
+import { formatFileSize } from '../../utils/fileUpload';
 
 const AttachmentList = ({ attachments = [], className = '' }) => {
   const [activeMenu, setActiveMenu] = useState(null);

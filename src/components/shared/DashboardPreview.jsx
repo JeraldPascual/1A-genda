@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, Button } from '@mui/material';
 import { Calendar, Megaphone, Send, ChevronRight, Clock, MapPin } from 'lucide-react';
-import { getActiveAnnouncements, getContentSubmissionRequests } from '../utils/firestore';
-import { useAuth } from '../context/AuthContext';
+import { getActiveAnnouncements, getContentSubmissionRequests } from '../../utils/firestore';
+import { useAuth } from '../../context/AuthContext';
 
 const DashboardPreview = ({ onTabChange }) => {
   const { user, userData } = useAuth();
@@ -53,7 +53,7 @@ const DashboardPreview = ({ onTabChange }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Announcements Preview */}
-      <Card className="dark:!bg-transparent light:!bg-blue-600">
+        <Card className="dark:bg-transparent light:!bg-blue-600">
         <CardContent className="!p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ const DashboardPreview = ({ onTabChange }) => {
 
       {/* Schedule Preview */}
       <Card className="dark:!bg-transparent light:!bg-blue-600">
-        <CardContent className="!p-6">
+        <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-sky-400" />
@@ -161,7 +161,7 @@ const DashboardPreview = ({ onTabChange }) => {
 
       {/* My Submissions Preview */}
       <Card className="dark:!bg-transparent light:!bg-blue-600">
-        <CardContent className="!p-6">
+        <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Send className="w-5 h-5 text-sky-400" />

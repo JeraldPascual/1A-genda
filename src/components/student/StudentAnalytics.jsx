@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { LineChart, Line, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Calendar, BookOpen, Target } from 'lucide-react';
-import { getAllGlobalTasks, getStudentProgress } from '../utils/firestore';
-import { useAuth } from '../context/AuthContext';
+import { getAllGlobalTasks, getStudentProgress } from '../../utils/firestore';
+import { useAuth } from '../../context/AuthContext';
 
 const StudentAnalytics = () => {
   const { user, userData } = useAuth();

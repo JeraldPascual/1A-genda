@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
-import { getActiveAnnouncements, createAnnouncementRevisionRequest } from '../utils/firestore';
+import { getActiveAnnouncements, createAnnouncementRevisionRequest } from '../../utils/firestore';
 import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X, Download, Paperclip, FileEdit, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, LinearProgress, IconButton, Typography } from '@mui/material';
-import { exportAnnouncementsToPDF } from '../utils/pdfExport';
-import { uploadFile, validateAttachmentsSize } from '../utils/fileUpload';
-import { useAuth } from '../context/AuthContext';
+import { exportAnnouncementsToPDF } from '../../utils/pdfExport';
+import { uploadFile, validateAttachmentsSize } from '../../utils/fileUpload';
+import { useAuth } from '../../context/AuthContext';
 import gsap from 'gsap';
 import AttachmentList from './AttachmentList';
 import MarkdownDisplay from './MarkdownDisplay';

@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Tabs, Tab, Box, Tooltip } from '@mui/material';
 import { Calendar, Megaphone, BookOpen, Send, TrendingUp, Clock } from 'lucide-react';
-import AnnouncementPanel from './AnnouncementPanel';
+import AnnouncementPanel from '../shared/AnnouncementPanel';
 import ScheduleTable from './ScheduleTable';
 import ResourceLinks from './ResourceLinks';
-import ContentSubmissionPanel from './ContentSubmissionPanel';
+import ContentSubmissionPanel from '../admin/ContentSubmissionPanel';
 import StudentAnalytics from './StudentAnalytics';
 import PomodoroTimer from './PomodoroTimer';
-import { useAuth } from '../context/AuthContext';
-import { getClassSettings } from '../utils/firestore';
+import { useAuth } from '../../context/AuthContext';
+import { getClassSettings } from '../../utils/firestore';
 
 // Minimal, single-definition component. Only the Resources badge is active.
 const StudentModularDashboard = ({ userBatch, onTabChange }) => {

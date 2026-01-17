@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getClassSettings } from '../utils/firestore';
+import { getClassSettings } from '../../utils/firestore';
 import { Calendar, TrendingUp } from 'lucide-react';
 
 const SemesterProgress = () => {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import quotesData from '../data/quotes.json';
+import quotesData from '../../data/quotes.json';
 
 const DailyQuote = () => {
   const [quote, setQuote] = useState({ text: '', author: '' });
