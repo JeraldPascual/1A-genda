@@ -1,3 +1,12 @@
+/**
+ * ContentSubmissionPanel component allows students to submit new tasks or announcements for admin review, with file attachments and status tracking.
+ * Integrates with Firestore for submission and polling, and supports markdown editing for rich content.
+ *
+ * Usage:
+ * Use this component in student dashboards or submission pages to enable content proposals. Requires AuthContext for user data.
+ *
+ * Avoid mutating form state directly or bypassing the provided upload and submission logic to prevent bugs and data loss.
+ */
 import { useState, useEffect } from 'react';
 import { Card, CardContent, Button, TextField, MenuItem, Chip, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Plus, Send, Calendar, BookOpen, Bell, CheckCircle, Clock, X, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';

@@ -1,3 +1,12 @@
+/**
+ * StudentDashboard component displays student demographics, progress statistics, and request activity for administrators.
+ * Fetches all relevant data from Firestore and computes completion rates and batch counts.
+ *
+ * Usage:
+ * Use this component in the admin panel to provide an overview of student activity and progress. Requires admin privileges.
+ *
+ * Avoid bypassing the provided data fetching logic or mutating state directly to ensure accurate statistics and UI stability.
+ */
 import { useState, useEffect } from 'react';
 import { getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests, getAllGlobalTasks } from '../../utils/firestore';
 

@@ -1,3 +1,16 @@
+/**
+ * AdminPanel component provides the main interface for class administrators to manage tasks, announcements, requests, and student progress.
+ * Integrates with Firestore for CRUD operations and displays multiple tabs for different admin functions.
+ *
+ * Props:
+ * - onTaskCreated (function): Callback after a new task is created.
+ * - onAnnouncementCreated (function): Callback after a new announcement is created.
+ *
+ * Usage:
+ * Use this component as the main admin dashboard. Ensure AuthContext is available and user has admin privileges.
+ *
+ * Avoid bypassing provided utility functions or mutating state directly to prevent data and UI bugs.
+ */
 import { useState, useEffect } from 'react';
 import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem, LinearProgress, IconButton, Typography } from '@mui/material';
 import { createGlobalTask, createAnnouncement, getAllGlobalTasks, getActiveAnnouncements, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, getTaskCreationRequests, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, getTaskRevisionRequests, approveTaskRevisionRequest, rejectTaskRevisionRequest, getContentSubmissionRequests, approveContentSubmissionRequest, rejectContentSubmissionRequest, getAllStudentProgress, getAllUsers, getAnnouncementRevisionRequests, approveAnnouncementRevisionRequest, rejectAnnouncementRevisionRequest } from '../../utils/firestore';
