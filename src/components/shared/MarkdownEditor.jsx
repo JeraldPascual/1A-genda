@@ -1,3 +1,23 @@
+/**
+ * MarkdownEditor component provides a rich text editor for writing and previewing markdown content with toolbar shortcuts.
+ * Supports undo/redo, formatting buttons, and live preview using ReactMarkdown and remark-gfm.
+ *
+ * Props:
+ * - value (string): The current markdown content.
+ * - onChange (function): Callback to update the content.
+ * - label (string): Optional label for the editor.
+ * - rows (number): Number of visible text rows.
+ * - placeholder (string): Placeholder text for the editor.
+ * - required (boolean): Whether the field is required.
+ * - size (string): Size of the input (e.g., 'small').
+ * - showToolbar (boolean): Whether to show the formatting toolbar.
+ * - defaultMode (string): Initial mode ('edit' or 'preview').
+ *
+ * Usage:
+ * Use this component for content submissions, announcements, or any feature requiring markdown input.
+ *
+ * Avoid mutating the value prop directly or bypassing the onChange handler to prevent state bugs.
+ */
 import { useState, useRef } from 'react';
 import { TextField, Button, ButtonGroup, Box, Tooltip } from '@mui/material';
 import { Eye, Edit, Bold, Italic, Link, Code, List, ListOrdered, Quote, Undo, Redo, Heading1, Heading2, Heading3 } from 'lucide-react';

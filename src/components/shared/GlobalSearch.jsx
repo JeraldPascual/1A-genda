@@ -1,3 +1,17 @@
+/**
+ * GlobalSearch component provides a modal search interface for users to find tasks, announcements, and content submissions across the application.
+ * It fetches all relevant data, filters by user batch, and allows navigation to the appropriate section upon result selection.
+ *
+ * Props:
+ * - isOpen (boolean): Whether the search modal is open.
+ * - onClose (function): Callback to close the modal.
+ * - onNavigate (function): Callback to navigate to a specific tab or section based on result type.
+ *
+ * Usage:
+ * Use this component at the root level to provide global search functionality. Ensure AuthContext is available.
+ *
+ * Avoid direct DOM manipulation or bypassing the provided navigation callbacks to prevent navigation bugs.
+ */
 import { useState, useEffect, useRef } from 'react';
 import { Search, X, Calendar, BookOpen, Megaphone, FileText } from 'lucide-react';
 import { getAllGlobalTasks, getActiveAnnouncements, getContentSubmissionRequests } from '../../utils/firestore';

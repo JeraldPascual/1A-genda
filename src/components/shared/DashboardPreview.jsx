@@ -1,3 +1,15 @@
+/**
+ * DashboardPreview component displays a summary of recent announcements, content submissions, and a static schedule preview for the current user batch.
+ * Fetches data from Firestore and adapts the schedule based on the user's batch from AuthContext.
+ *
+ * Props:
+ * - onTabChange (function): Callback to switch dashboard tabs when a preview item is clicked.
+ *
+ * Usage:
+ * Use this component in dashboard or home views to provide users with a quick overview of their schedule, announcements, and recent submissions.
+ *
+ * Avoid hardcoding schedule data outside the preview or bypassing AuthContext to prevent data mismatches and bugs.
+ */
 import { useState, useEffect } from 'react';
 import { Card, CardContent, Button } from '@mui/material';
 import { Calendar, Megaphone, Send, ChevronRight, Clock, MapPin } from 'lucide-react';

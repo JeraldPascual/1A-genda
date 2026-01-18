@@ -1,3 +1,16 @@
+/**
+ * LinkifiedText component scans plain text for URLs and renders them as clickable, safe external links.
+ * Automatically adds https:// to 'www.' links and prevents event propagation on link clicks.
+ *
+ * Props:
+ * - text (string): The text to scan and render with links.
+ * - className (string): Optional additional class names for the container.
+ *
+ * Usage:
+ * Use this component to safely display user or admin text with automatic URL linking in announcements, tasks, or comments.
+ *
+ * Avoid injecting raw HTML or bypassing the linkification logic to prevent XSS and navigation bugs.
+ */
 import { ExternalLink } from 'lucide-react';
 
 const LinkifiedText = ({ text, className = '' }) => {

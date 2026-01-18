@@ -1,3 +1,16 @@
+/**
+ * AttachmentList component displays a list of file attachments with icons, download options, and fullscreen image viewing.
+ * Handles various file types, normalizes file objects, and manages UI state for menus and fullscreen mode.
+ *
+ * Props:
+ * - attachments (array): List of file objects to display. Each should have url, name, size, and type.
+ * - className (string): Optional additional class names for the container.
+ *
+ * Usage:
+ * Use this component to render attachments for announcements, tasks, or submissions. Supports images, PDFs, Office docs, and more.
+ *
+ * Avoid mutating the attachments array or bypassing the provided download/fullscreen handlers to prevent UI bugs.
+ */
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Image as ImageIcon, FileText, FileSpreadsheet, File as FileIcon, Download, MoreVertical, X } from 'lucide-react';

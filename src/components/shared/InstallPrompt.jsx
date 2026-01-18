@@ -1,3 +1,12 @@
+/**
+ * InstallPrompt component displays a smart prompt for users to add the PWA to their home screen on iOS or Android.
+ * Detects device type, install state, and dismissal, and shows the prompt only when appropriate.
+ *
+ * Usage:
+ * Place this component at the root of your app to encourage installation as a PWA. It manages its own visibility and localStorage state.
+ *
+ * Avoid forcing the prompt to show or bypassing the built-in detection logic to prevent user annoyance and redundant prompts.
+ */
 import { useState, useEffect } from 'react';
 import { Download, X, Smartphone, Share } from 'lucide-react';
 import { Button } from '@mui/material';

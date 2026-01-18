@@ -1,3 +1,12 @@
+/**
+ * AnnouncementTicker component displays a horizontally scrolling ticker of active announcements with GSAP animation.
+ * Fetches announcements from Firestore, supports color-coding by type, and shows a message if there are no announcements.
+ *
+ * Usage:
+ * Place this component at the top of dashboards or landing pages to keep users informed of recent announcements.
+ *
+ * Avoid direct DOM manipulation outside of GSAP and do not bypass the announcement fetching logic to prevent animation or data bugs.
+ */
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { getActiveAnnouncements } from '../../utils/firestore';

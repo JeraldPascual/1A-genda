@@ -1,3 +1,16 @@
+/**
+ * MarkdownDisplay component renders markdown content as sanitized HTML with custom styles and GitHub Flavored Markdown support.
+ * Applies strict sanitization to prevent XSS and ensures all links are safe for external navigation.
+ *
+ * Props:
+ * - content (string): The markdown string to render.
+ * - className (string, optional): Additional class names for the container.
+ *
+ * Usage:
+ * Use this component to safely display user-generated or admin-provided markdown in announcements, tasks, or submissions.
+ *
+ * Avoid injecting unsanitized HTML or bypassing the provided markdown pipeline to prevent security vulnerabilities.
+ */
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 

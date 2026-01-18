@@ -1,3 +1,12 @@
+/**
+ * DailyQuote component displays a daily inspirational quote, selected deterministically per day and cached in localStorage.
+ * Uses a local JSON file for quotes and ensures the same quote is shown for a given day.
+ *
+ * Usage:
+ * Place this component in a dashboard or landing page to provide users with a motivational quote.
+ *
+ * Avoid mutating the quotes data or bypassing the cache logic to prevent inconsistent daily quotes.
+ */
 import { useState, useEffect } from 'react';
 import quotesData from '../../data/quotes.json';
 

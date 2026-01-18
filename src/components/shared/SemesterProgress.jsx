@@ -1,3 +1,14 @@
+/**
+ * SemesterProgress component visualizes the current semester's progress as a percentage bar and days remaining.
+ * Fetches semester start/end dates and class name from Firestore, and computes progress and contextual messages.
+ *
+ * Usage:
+ * Place this component in dashboards or overviews to inform users of the semester timeline and motivate progress.
+ *
+ * Avoid hardcoding date logic or mutating Firestore data directly. Always use the provided utility functions for consistency.
+ *
+ * Returns null if class settings are not yet loaded.
+ */
 import { useEffect, useState } from 'react';
 import { getClassSettings } from '../../utils/firestore';
 import { Calendar, TrendingUp } from 'lucide-react';

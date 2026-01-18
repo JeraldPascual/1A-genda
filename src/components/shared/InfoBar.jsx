@@ -1,3 +1,12 @@
+/**
+ * InfoBar component displays real-time weather, date, and time for SJDM, PH, updating every second and fetching weather every 10 minutes.
+ * Uses Open-Meteo API for weather and local time formatting for display.
+ *
+ * Usage:
+ * Place this component below the header or in a prominent location to provide users with up-to-date local information.
+ *
+ * Avoid hardcoding location or bypassing the fetchWeather helper to ensure maintainability and accuracy.
+ */
 import { useEffect, useState } from 'react';
 
 // Helper to fetch weather for SJDM, PH (Open-Meteo API, no key needed)

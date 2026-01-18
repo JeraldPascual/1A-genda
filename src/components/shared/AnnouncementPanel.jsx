@@ -1,3 +1,12 @@
+/**
+ * AnnouncementPanel component displays a list of active announcements with revision, export, and attachment features.
+ * Allows users to request revisions, upload files, and view announcement details. Integrates with Firestore and AuthContext.
+ *
+ * Usage:
+ * Use this component in dashboards or announcement pages to provide full announcement management and revision request functionality.
+ *
+ * Avoid bypassing the provided revision/export logic or mutating announcement state directly to prevent data and UI bugs.
+ */
 import { useEffect, useState, useRef } from 'react';
 import { getActiveAnnouncements, createAnnouncementRevisionRequest } from '../../utils/firestore';
 import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X, Download, Paperclip, FileEdit, Image as ImageIcon, File as FileIcon } from 'lucide-react';
