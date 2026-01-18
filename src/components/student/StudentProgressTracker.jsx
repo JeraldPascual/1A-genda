@@ -1,3 +1,12 @@
+/**
+ * StudentProgressTracker component displays a table of all students, their task completion, and request activity for admin or analytics views.
+ * Fetches all relevant data from Firestore and computes completion rates and batch counts.
+ *
+ * Usage:
+ * Use this component in admin dashboards or analytics pages to monitor student progress and engagement.
+ *
+ * Avoid bypassing the provided data fetching logic or mutating state directly to ensure accurate statistics and UI stability.
+ */
 import { useState, useEffect } from 'react';
 import { getAllGlobalTasks, getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests } from '../../utils/firestore';
 import { Users, CheckCircle, Circle, TrendingUp, FileEdit, Send, Download } from 'lucide-react';

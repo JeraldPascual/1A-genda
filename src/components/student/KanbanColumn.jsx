@@ -1,3 +1,20 @@
+/**
+ * KanbanColumn component renders a single column in the Kanban board, displaying tasks for a specific state.
+ * Receives column metadata, tasks, and callbacks for moving tasks between columns.
+ *
+ * Props:
+ * - column (object): Column metadata (id, title).
+ * - tasks (array): List of tasks in this column.
+ * - onMoveTask (function): Callback to move a task to another column.
+ * - isAdmin (boolean): Whether the current user is an admin.
+ * - allColumns (array): All columns in the board.
+ * - userData (object): Current user data.
+ *
+ * Usage:
+ * Use this component within KanbanBoard to render each task state column.
+ *
+ * Avoid mutating the tasks array directly or bypassing the provided callbacks to prevent state bugs.
+ */
 import TaskCard from './TaskCard';
 import { ListTodo, CheckCircle2 } from 'lucide-react';
 

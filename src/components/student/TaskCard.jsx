@@ -1,3 +1,20 @@
+/**
+ * TaskCard component displays a single task with details, revision request, and movement between columns.
+ * Handles modals, file uploads, and integrates with Firestore for revision requests.
+ *
+ * Props:
+ * - task (object): The task data to display.
+ * - onMoveTask (function): Callback to move the task between columns.
+ * - isAdmin (boolean): Whether the current user is an admin.
+ * - currentColumn (string): The current column ID.
+ * - allColumns (array): All columns in the board.
+ * - userData (object): Current user data.
+ *
+ * Usage:
+ * Use this component within KanbanColumn or task lists to display and manage individual tasks.
+ *
+ * Avoid mutating the task object directly or bypassing the provided callbacks to prevent state and data bugs.
+ */
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Card, CardContent, Button, Chip, TextField, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Menu, LinearProgress, Typography } from '@mui/material';

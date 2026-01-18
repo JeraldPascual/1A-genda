@@ -1,3 +1,16 @@
+/**
+ * StudentModularDashboard component provides a tabbed dashboard for students, including announcements, schedule, resources, analytics, and Pomodoro timer.
+ * Integrates with AuthContext and Firestore for user and class data, and manages tab state and resource update badges.
+ *
+ * Props:
+ * - userBatch (string): The student's batch.
+ * - onTabChange (function): Callback to handle tab changes.
+ *
+ * Usage:
+ * Use this component as the main dashboard for students to access all class features in a modular layout.
+ *
+ * Avoid mutating tab state directly or bypassing the provided tab change logic to prevent navigation bugs.
+ */
 import { useState, useEffect } from 'react';
 import { Tabs, Tab, Box, Tooltip } from '@mui/material';
 import { Calendar, Megaphone, BookOpen, Send, TrendingUp, Clock } from 'lucide-react';

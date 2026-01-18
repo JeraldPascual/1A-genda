@@ -1,7 +1,22 @@
+/**
+ * RequestableTaskCard component displays a task with the ability for students to request changes or submit attachments.
+ * Handles file uploads, request status, and integrates with Firestore for request persistence.
+ *
+ * Props:
+ * - task (object): The task data to display.
+ * - userBatch (string): The student's batch.
+ * - userId (string): The student's user ID.
+ * - existingRequest (object): Existing request data, if any.
+ *
+ * Usage:
+ * Use this component in the Kanban board or task lists to allow students to request task revisions.
+ *
+ * Avoid mutating the task or request objects directly or bypassing the provided upload/request logic to prevent bugs.
+ */
 import { useState } from 'react';
 import { Card, CardContent, Button, Chip } from '@mui/material';
 import { Calendar, BookOpen, Send, CheckCircle, Clock, Upload, Paperclip, X as XIcon, Image as ImageIcon, File as FileIcon } from 'lucide-react';
-import { createTaskRequest } from '../../utils/firestore'; 
+import { createTaskRequest } from '../../utils/firestore';
 import { uploadFile, formatFileSize } from '../../utils/fileUpload';
 
 const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {

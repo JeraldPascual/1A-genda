@@ -1,3 +1,15 @@
+/**
+ * ScheduleTable component displays the student's class schedule in a table format, with support for batch selection and full schedule view.
+ * Handles toggling between compact and full schedule, and renders instructor, room, and subject details.
+ *
+ * Props:
+ * - userBatch (string): The student's batch to display the correct schedule.
+ *
+ * Usage:
+ * Use this component in the student dashboard or schedule tab to show students their weekly class schedule.
+ *
+ * Avoid hardcoding schedule data in multiple places or bypassing the provided scheduleData structure to ensure maintainability.
+ */
 import { useState } from 'react';
 import { Calendar, Clock, MapPin, User, X } from 'lucide-react';
 import { Button } from '@mui/material';

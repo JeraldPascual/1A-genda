@@ -1,3 +1,12 @@
+/**
+ * PomodoroTimer component provides a productivity timer for work and break intervals, with notifications and session tracking.
+ * Handles timer state, mode switching, and integrates with browser notifications and audio cues.
+ *
+ * Usage:
+ * Use this component in the student dashboard to help students manage their study sessions using the Pomodoro technique.
+ *
+ * Avoid mutating timer state directly or bypassing the provided timer logic to prevent timing bugs.
+ */
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Clock, Coffee, Briefcase } from 'lucide-react';
 

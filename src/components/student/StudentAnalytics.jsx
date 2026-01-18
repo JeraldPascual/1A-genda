@@ -1,3 +1,12 @@
+/**
+ * StudentAnalytics component visualizes the student's task completion, subject breakdown, and progress trends using charts.
+ * Fetches task and progress data from Firestore and computes analytics for display.
+ *
+ * Usage:
+ * Use this component in the student dashboard to provide insights into personal academic progress and trends.
+ *
+ * Avoid mutating analytics data directly or bypassing the provided data fetching logic to ensure accurate visualizations.
+ */
 import { useState, useEffect } from 'react';
 import { LineChart, Line, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Calendar, BookOpen, Target } from 'lucide-react';

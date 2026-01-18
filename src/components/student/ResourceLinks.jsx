@@ -1,3 +1,12 @@
+/**
+ * ResourceLinks component displays a list of external resource cards for students to access course materials and files.
+ * Handles opening links in a new tab and provides a notice about external hosting for large files.
+ *
+ * Usage:
+ * Use this component in the student dashboard or resources page to provide quick access to important links.
+ *
+ * Avoid hardcoding URLs in multiple places or bypassing the openResource helper to ensure maintainability.
+ */
 import { ExternalLink, FolderOpen } from 'lucide-react';
 import { Button } from '@mui/material';
 

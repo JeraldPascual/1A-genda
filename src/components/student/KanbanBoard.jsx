@@ -1,3 +1,12 @@
+/**
+ * KanbanBoard component displays the student's personal task board with columns for task states.
+ * Handles task progress, creation requests, file uploads, and integrates with Firestore for data persistence.
+ *
+ * Usage:
+ * Use this component in the student dashboard to allow students to track and manage their tasks independently.
+ *
+ * Avoid mutating state directly or bypassing provided utility functions to prevent data and UI bugs.
+ */
 import { useState, useEffect } from 'react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem } from '@mui/material';
 import KanbanColumn from './KanbanColumn';

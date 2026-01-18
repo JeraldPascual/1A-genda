@@ -123,8 +123,8 @@ const DashboardPreview = ({ onTabChange }) => {
       </Card>
 
       {/* Schedule Preview */}
-      <Card className="dark:!bg-transparent light:!bg-blue-600">
-        <CardContent className="p-6">
+      <Card className="dark:bg-transparent! light:bg-blue-600!">
+        <CardContent className="p-6!">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-sky-400" />
@@ -132,9 +132,12 @@ const DashboardPreview = ({ onTabChange }) => {
                 Upcoming Classes
               </h3>
             </div>
+          </div>
+          <div className="space-y-3">
+            {schedule.map((classItem, idx) => (
               <div
                 key={idx}
-                className="dark:bg-slate-800/50 light:!bg-blue-700 rounded-lg p-3 border dark:border-slate-700/50 light:!border-blue-500 cursor-pointer hover:scale-[1.02] transition-transform"
+                className="dark:bg-slate-800/50 light:bg-blue-700! rounded-lg p-3 border dark:border-slate-700/50 light:border-blue-500! cursor-pointer hover:scale-[1.02] transition-transform"
                 onClick={() => onTabChange(1)}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -149,31 +152,14 @@ const DashboardPreview = ({ onTabChange }) => {
                   {classItem.subject}
                 </p>
               </div>
-              <div
-                key={idx}
-                className="dark:bg-slate-800/50 light:!bg-blue-700 rounded-lg p-3 border dark:border-slate-700/50 light:!border-blue-500 cursor-pointer hover:scale-[1.02] transition-transform"
-                onClick={() => onTabChange(1)}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold dark:text-sky-400 light:!text-white">
-                    {classItem.day}
-                  </span>
-                  <span className="text-xs dark:text-dark-text-muted light:!text-white/80">
-                    {classItem.time}
-                  </span>
-                </div>
-                <p className="text-sm font-medium dark:text-dark-text-primary light:!text-white line-clamp-1 mt-1">
-                  {classItem.subject}
-                </p>
-              </div>
             ))}
           </div>
         </CardContent>
       </Card>
 
       {/* My Submissions Preview */}
-      <Card className="dark:!bg-transparent light:!bg-blue-600">
-        <CardContent className="p-6">
+      <Card className="dark:bg-transparent! light:bg-blue-600!">
+        <CardContent className="p-6!">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Send className="w-5 h-5 text-sky-400" />
