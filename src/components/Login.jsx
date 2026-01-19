@@ -1,9 +1,17 @@
+/**
+ * Login form component for user authentication.
+ * Handles email/password login, remember me, and password reset dialog.
+ * @param {Object} props
+ * @param {function} props.onSwitchToRegister - Callback to switch to the register form.
+ * @returns {JSX.Element}
+ */
 import { useState } from 'react';
 import { TextField, Button, Dialog, DialogContent, IconButton, Checkbox, FormControlLabel, Tooltip } from '@mui/material';
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 import { LogIn, LayoutDashboard, AlertCircle, X } from 'lucide-react';
 import { Mail } from 'lucide-react';
+
 
 const Login = ({ onSwitchToRegister }) => {
   const [email, setEmail] = useState('');

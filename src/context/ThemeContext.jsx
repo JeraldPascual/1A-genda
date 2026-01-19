@@ -1,7 +1,21 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
+
+/**
+ * React context for theme (dark/light) state and toggling.
+ * Provides current theme and a toggleTheme function to consumers.
+ * @typedef {Object} ThemeContextValue
+ * @property {string} theme - The current theme, either 'dark' or 'light'.
+ * @property {function():void} toggleTheme - Toggle between dark and light themes.
+ */
 const ThemeContext = createContext();
 
+
+/**
+ * Custom hook to access theme context.
+ * Throws if used outside a ThemeProvider.
+ * @returns {ThemeContextValue}
+ */
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
@@ -10,6 +24,12 @@ export const useTheme = () => {
   return context;
 };
 
+/**
+ * Provides theme context and manages dark/light mode state.
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Child components to receive theme context.
+ * @returns {JSX.Element}
+ */
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('theme');

@@ -14,6 +14,14 @@ const CheckFilled = ({ className }) => (
   </svg>
 );
 
+/**
+ * Renders the core checklist UI for the multi-step loader.
+ * @param {Object} props
+ * @param {{text: string}[]} props.loadingStates - Array of loading step objects.
+ * @param {number} [props.value=0] - Current active step index.
+ * @param {React.RefObject} props.listRef - Ref for the checklist container.
+ * @returns {JSX.Element}
+ */
 const LoaderCore = ({ loadingStates, value = 0, listRef }) => {
   return (
     <div ref={listRef} className="flex relative flex-col justify-center max-w-xl mx-auto h-full">
@@ -40,6 +48,18 @@ const LoaderCore = ({ loadingStates, value = 0, listRef }) => {
   );
 };
 
+/**
+ * Displays a full-screen animated multi-step loader with checklist and progress animation.
+ * Handles first-time viewer animation, looping, and disables background scroll while active.
+ * @param {Object} props
+ * @param {{text: string}[]} props.loadingStates - Array of loading step objects.
+ * @param {boolean} props.loading - Whether the loader is visible/active.
+ * @param {number} [props.duration=2000] - Duration per step in ms.
+ * @param {boolean} [props.loop=true] - Whether to loop the animation.
+ * @param {function} [props.onAnimationComplete] - Callback when animation completes.
+ * @param {boolean} [props.forceRunOnce=false] - Force run the full sequence once.
+ * @returns {JSX.Element|null}
+ */
 export const MultiStepLoader = ({ loadingStates, loading, duration = 2000, loop = true, onAnimationComplete, forceRunOnce = false }) => {
   const [currentState, setCurrentState] = useState(0);
   const listRef = useRef(null);

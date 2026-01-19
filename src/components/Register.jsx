@@ -3,6 +3,13 @@ import { TextField, Button, MenuItem, Dialog, DialogContent, IconButton } from '
 import { useAuth } from '../context/AuthContext';
 import { UserPlus, LayoutDashboard, AlertCircle, X } from 'lucide-react';
 
+/**
+ * Registration form component for new user sign-up.
+ * Handles form validation, role selection, and batch input.
+ * @param {Object} props
+ * @param {function} props.onSwitchToLogin - Callback to switch to the login form.
+ * @returns {JSX.Element}
+ */
 const Register = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
     displayName: '',

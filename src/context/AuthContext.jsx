@@ -11,8 +11,28 @@ import { setPersistence, browserLocalPersistence, browserSessionPersistence } fr
 import { auth } from '../config/firebase';
 import { getUserData, createUserDocument, updateUserLastLogin, getUserByEmail } from '../utils/firestore';
 
+
+/**
+ * React context for authentication state and actions.
+ * Provides user, userData, loading, and auth methods to consumers.
+ * @typedef {Object} AuthContextValue
+ * @property {Object|null} user - The current Firebase user object, or null if not signed in.
+ * @property {Object|null} userData - Additional user data from Firestore, or null if not loaded.
+ * @property {boolean} loading - Whether auth state is still loading.
+ * @property {function} signIn - Sign in with email, password, and remember flag.
+ * @property {function} signUp - Register a new user with email, password, displayName, role, and batch.
+ * @property {function} signOut - Sign out the current user.
+ * @property {function} resetPassword - Send a password reset email.
+ * @property {function} isAdmin - Returns true if the user is an admin.
+ */
 const AuthContext = createContext({});
 
+
+/**
+ * Custom hook to access authentication context.
+ * Throws if used outside an AuthProvider.
+ * @returns {AuthContextValue}
+ */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -21,6 +41,13 @@ export const useAuth = () => {
   return context;
 };
 
+/**
+ * Provides authentication state and actions to child components.
+ * Wrap your app with this provider to enable auth context.
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Child components to receive auth context.
+ * @returns {JSX.Element}
+ */
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);

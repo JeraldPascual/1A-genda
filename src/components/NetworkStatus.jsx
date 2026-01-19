@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { WifiOff, Wifi } from 'lucide-react';
-
+/**
+ * Displays a network status banner when offline or reconnected.
+ * Listens to browser online/offline events and shows connection state.
+ * @returns {JSX.Element|null}
+ */
 const NetworkStatus = () => {
   const initialOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
   const [isOnline, setIsOnline] = useState(initialOnline);
