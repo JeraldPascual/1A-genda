@@ -376,5 +376,16 @@ Built with modern web technologies:
 
 ---
 
+
+## Potential Improvements & Roadmap
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for a list of non-breaking technical improvements and possible future features (calendar view, push notifications, analytics, i18n, etc.).
+
+For AI coding agents, see [`.github/copilot-instructions.md`](.github/copilot-instructions.md) for project-specific automation guidelines.
+
+
+---
+
 **1A-genda** - Streamlining class management, one task at a time.
+
 
