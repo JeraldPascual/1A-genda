@@ -1,3 +1,16 @@
+/**
+ * @file App.jsx
+ * @description Main application component for 1A-genda. Handles authentication, theming, global loading, dashboard routing, and top-level UI logic.
+ *
+ * Architecture:
+ * - Uses React functional components and hooks for state and lifecycle management.
+ * - Integrates with AuthContext and ThemeContext for global state.
+ * - Handles global loading overlays, keyboard shortcuts, and animated transitions.
+ * - Renders either admin or student dashboard based on user role.
+ * - Provides PDF export, refresh, and theme switching logic.
+ *
+ * @module App
+ */
 import { useState, useEffect, useRef } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
@@ -34,25 +47,119 @@ const loadingStates = [
   { text: 'Almost ready — entering 1A-genda' },
 ];
 
+/**
+ * Main application component for 1A-genda.
+ * Handles authentication, theming, global loading, dashboard routing, and top-level UI logic.
+ *
+ * @returns {JSX.Element} The rendered application UI.
+ */
 function App() {
+  /**
+   * Authenticated user object from AuthContext.
+   * @type {import('./context/AuthContext').User | null}
+   */
   const { user, userData, signOut, isAdmin } = useAuth();
+
+  /**
+   * Current theme and theme toggle function from ThemeContext.
+   * @type {{ theme: string, toggleTheme: () => void }}
+   */
   const { theme, toggleTheme } = useTheme();
+
+  /**
+   * Whether the global page loader is visible.
+   * @type {[boolean, Function]}
+   */
   const [pageLoading, setPageLoading] = useState(true);
+
+  /**
+   * Whether the window has finished loading.
+   * @type {[boolean, Function]}
+   */
   const [windowLoaded, setWindowLoaded] = useState(false);
+
+  /**
+   * Whether all async resources are ready (used for loader overlay).
+   * @type {[boolean, Function]}
+   */
   const [resourcesReady, setResourcesReady] = useState(true); // assume ready unless we start loading resources
+
+  /**
+   * Ref to track when loading started (for minimum loader duration).
+   * @type {import('react').MutableRefObject<number>}
+   */
   const loadStartRef = useRef(Date.now());
-  const MIN_LOAD_MS = 1200; // minimum time to show the loader
+
+  /**
+   * Minimum time (ms) to show the loader overlay.
+   * @type {number}
+   */
+  const MIN_LOAD_MS = 1200;
+
+  /**
+   * Whether the loader animation has finished.
+   * @type {[boolean, Function]}
+   */
   const [animationDone, setAnimationDone] = useState(false);
+
+  /**
+   * Forces the loader to run once (e.g., on reload or resource refresh).
+   * @type {[boolean, Function]}
+   */
   const [forceLoaderOnce, setForceLoaderOnce] = useState(false);
+
+  /**
+   * Whether to show the registration screen (vs login).
+   * @type {[boolean, Function]}
+   */
   const [showRegister, setShowRegister] = useState(false);
+
+  /**
+   * Key to force refresh of child components (e.g., KanbanBoard).
+   * @type {[number, Function]}
+   */
   const [refreshKey, setRefreshKey] = useState(0);
+
+  /**
+   * Whether the logout confirmation dialog is open.
+   * @type {[boolean, Function]}
+   */
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+  /**
+   * Whether the light mode warning dialog is open.
+   * @type {[boolean, Function]}
+   */
   const [showLightModeWarning, setShowLightModeWarning] = useState(false);
+
+  /**
+   * Whether the global search modal is open.
+   * @type {[boolean, Function]}
+   */
   const [showSearch, setShowSearch] = useState(false);
+
+  /**
+   * List of tasks for the current user (student only).
+   * @type {[Array<Object>, Function]}
+   */
   const [tasks, setTasks] = useState([]);
+
+  /**
+   * Ref to the header DOM element (for GSAP animation).
+   * @type {import('react').MutableRefObject<HTMLElement|null>}
+   */
   const headerRef = useRef(null);
+
+  /**
+   * Ref to the student dashboard tab change handler.
+   * @type {import('react').MutableRefObject<Function|null>}
+   */
   const studentDashboardRef = useRef(null);
 
+  /**
+   * Animate header children on user login using GSAP.
+   * Runs when user or userData changes.
+   */
   useEffect(() => {
     if (user && headerRef.current && headerRef.current.children.length > 0) {
       // Reset to visible first
@@ -71,9 +178,12 @@ function App() {
         clearProps: 'all', // Clear inline styles after animation
       });
     }
-  }, [user, userData]); // Add userData dependency
+  }, [user, userData]);
 
   // Keyboard shortcut for search (Ctrl+K or Cmd+K)
+  /**
+   * Keyboard shortcut handler for global search (Ctrl+K or Cmd+K) and Escape to close.
+   */
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -90,6 +200,9 @@ function App() {
   }, [showSearch]);
 
   // Track window load and ensure the loader remains visible until resources finish loading
+  /**
+   * Tracks window load event to control loader overlay.
+   */
   useEffect(() => {
     const onLoad = () => setWindowLoaded(true);
 
@@ -103,6 +216,9 @@ function App() {
   }, []);
 
   // If user already saw the animated intro, mark animationDone immediately
+  /**
+   * Checks if the animated loader intro has already been seen (localStorage).
+   */
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
@@ -114,6 +230,9 @@ function App() {
   }, []);
 
   // When resourcesReady flips from false -> true, run a one-cycle loader
+  /**
+   * Forces loader to run a cycle when resources become ready after being not ready.
+   */
   const prevResourcesReadyRef = useRef(resourcesReady);
   useEffect(() => {
     if (prevResourcesReadyRef.current === false && resourcesReady === true) {
@@ -123,6 +242,9 @@ function App() {
   }, [resourcesReady]);
 
   // If this navigation is a reload, force a one-cycle so manual reloads show the animation once.
+  /**
+   * Forces loader to run a cycle on page reload navigation.
+   */
   useEffect(() => {
     try {
       const nav = performance.getEntriesByType?.('navigation')?.[0];
@@ -136,6 +258,9 @@ function App() {
   }, []);
 
   // Hide loader only when window and resources are ready and minimum display time has elapsed
+  /**
+   * Hides loader overlay only when window, resources, and animation are all ready, and minimum loader time has elapsed.
+   */
   useEffect(() => {
     if (!(windowLoaded && resourcesReady && animationDone)) return;
 
@@ -145,6 +270,11 @@ function App() {
     return () => clearTimeout(t);
   }, [windowLoaded, resourcesReady, animationDone]);
 
+
+  /**
+   * Handles user sign out, showing loader during the process.
+   * @returns {Promise<void>}
+   */
   const handleSignOut = async () => {
     setShowLogoutDialog(false);
     // show loader while signing out
@@ -159,16 +289,31 @@ function App() {
     }
   };
 
+
+  /**
+   * Forces refresh of child components by incrementing refreshKey.
+   */
   const handleRefresh = () => {
     setRefreshKey(prev => prev + 1);
   };
 
+
+  /**
+   * Handles navigation from global search to a specific tab in the student dashboard.
+   * @param {number} tabIndex - The index of the tab to navigate to.
+   */
   const handleNavigateFromSearch = (tabIndex) => {
     if (studentDashboardRef.current) {
       studentDashboardRef.current(tabIndex);
     }
   };
 
+
+  /**
+   * Loads all global tasks for the current student user (filtered by batch).
+   * Sets resourcesReady to false while loading.
+   * @returns {Promise<void>}
+   */
   const loadTasks = async () => {
     if (!isAdmin() && userData?.batch) {
       // mark resources as loading so the global loader waits
@@ -186,10 +331,17 @@ function App() {
     }
   };
 
+
+  /**
+   * Exports the current user's tasks to a PDF file.
+   */
   const handleExportTasks = () => {
     exportTasksToPDF(tasks);
   };
 
+  /**
+   * Loads tasks for student users when user or userData changes.
+   */
   useEffect(() => {
     if (user && !isAdmin()) {
       loadTasks();
@@ -197,6 +349,9 @@ function App() {
   }, [user, userData, isAdmin]);
 
   // Watch auth transitions (login/logout) and show loader during auth transitions
+  /**
+   * Watches authentication transitions (login/logout) and shows loader during transitions.
+   */
   const prevUserRef = useRef(user);
   useEffect(() => {
     // user became logged in
@@ -229,6 +384,10 @@ function App() {
     prevUserRef.current = user;
   }, [user, userData, isAdmin]);
 
+
+  /**
+   * Handles theme toggle, showing warning if switching to light mode.
+   */
   const handleThemeToggle = () => {
     // If switching to light mode (currently dark), show warning
     if (theme === 'dark') {
@@ -239,6 +398,9 @@ function App() {
     }
   };
 
+  /**
+   * Confirms switching to light mode after warning dialog.
+   */
   const confirmLightMode = () => {
     setShowLightModeWarning(false);
     toggleTheme();
