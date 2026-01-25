@@ -141,11 +141,11 @@ const PomodoroTimer = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary flex items-center gap-2">
-          <Clock className="w-7 h-7" />
+          <Clock className="w-7 h-7" aria-hidden="true" />
           Pomodoro Timer
         </h2>
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary border dark:border-dark-border light:border-light-border">
-          <Briefcase className="w-4 h-4 dark:text-dark-text-muted light:text-light-text-muted" />
+        <div className="flex items-center gap-2 px-4 py-2 rounded-lg dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary border dark:border-dark-border light:border-light-border" aria-label={`Completed sessions: ${sessions}`}>
+          <Briefcase className="w-4 h-4 dark:text-dark-text-muted light:text-light-text-muted" aria-hidden="true" />
           <span className="text-sm font-semibold dark:text-dark-text-primary light:text-light-text-primary">
             {sessions} sessions
           </span>
@@ -155,15 +155,15 @@ const PomodoroTimer = () => {
       {/* Timer Card */}
       <div className="dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary rounded-2xl p-8 border dark:border-dark-border light:border-light-border shadow-lg">
         {/* Mode Indicator */}
-        <div className="flex items-center justify-center gap-2 mb-6">
+        <div className="flex items-center justify-center gap-2 mb-6" aria-label={mode === 'work' ? 'Focus time' : 'Break time'}>
           {mode === 'work' ? (
             <>
-              <Briefcase className="w-5 h-5 text-emerald-400" />
+              <Briefcase className="w-5 h-5 text-emerald-400" aria-hidden="true" />
               <span className="text-lg font-semibold text-emerald-400">Focus Time</span>
             </>
           ) : (
             <>
-              <Coffee className="w-5 h-5 text-amber-400" />
+              <Coffee className="w-5 h-5 text-amber-400" aria-hidden="true" />
               <span className="text-lg font-semibold text-amber-400">Break Time</span>
             </>
           )}
@@ -172,8 +172,8 @@ const PomodoroTimer = () => {
         {/* Timer Display */}
         <div className="relative">
           {/* Circular Progress */}
-          <div className="relative w-64 h-64 mx-auto">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+          <div className="relative w-64 h-64 mx-auto" aria-label="Pomodoro timer" role="img">
+            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
               {/* Background circle */}
               <circle
                 cx="50"
@@ -203,7 +203,7 @@ const PomodoroTimer = () => {
             {/* Time Display */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <div className="text-5xl font-bold dark:text-dark-text-primary light:text-light-text-primary font-mono">
+                <div className="text-5xl font-bold dark:text-dark-text-primary light:text-light-text-primary font-mono" aria-live="polite" aria-atomic="true">
                   {formatTime(timeLeft)}
                 </div>
                 <div className="text-sm dark:text-dark-text-muted light:text-light-text-muted mt-2">
@@ -220,16 +220,18 @@ const PomodoroTimer = () => {
             <button
               onClick={handleStart}
               className="flex items-center gap-2 px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold transition-colors shadow-lg hover:shadow-xl"
+              aria-label="Start timer"
             >
-              <Play className="w-5 h-5" />
+              <Play className="w-5 h-5" aria-hidden="true" />
               Start
             </button>
           ) : (
             <button
               onClick={handlePause}
               className="flex items-center gap-2 px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold transition-colors shadow-lg hover:shadow-xl"
+              aria-label="Pause timer"
             >
-              <Pause className="w-5 h-5" />
+              <Pause className="w-5 h-5" aria-hidden="true" />
               Pause
             </button>
           )}
@@ -237,8 +239,9 @@ const PomodoroTimer = () => {
           <button
             onClick={handleReset}
             className="flex items-center gap-2 px-6 py-3 dark:bg-dark-bg-secondary light:bg-light-bg-secondary dark:hover:bg-dark-border light:hover:bg-light-border dark:text-dark-text-primary light:text-light-text-primary rounded-lg font-semibold transition-colors border dark:border-dark-border light:border-light-border"
+            aria-label="Reset timer"
           >
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-5 h-5" aria-hidden="true" />
             Reset
           </button>
         </div>

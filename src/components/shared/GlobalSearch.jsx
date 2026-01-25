@@ -119,7 +119,17 @@ const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Global search dialog"
+      tabIndex={-1}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
+      }}
+    >
       <div
         className="w-full max-w-2xl dark:bg-dark-bg-secondary light:bg-light-bg-secondary rounded-xl shadow-2xl border dark:border-dark-border light:border-light-border overflow-hidden animate-in fade-in zoom-in duration-200"
         onClick={(e) => e.stopPropagation()}
@@ -134,11 +144,20 @@ const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 bg-transparent outline-none dark:text-dark-text-primary light:text-light-text-primary placeholder:dark:text-dark-text-muted placeholder:light:text-light-text-muted text-base"
+            aria-label="Search tasks, announcements, and submissions"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
               className="p-1 rounded-md hover:dark:bg-dark-bg-tertiary hover:light:bg-light-bg-tertiary transition-colors"
+              aria-label="Clear search"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSearchQuery('');
+                }
+              }}
             >
               <X className="w-4 h-4 dark:text-dark-text-muted light:text-light-text-muted" />
             </button>
@@ -177,6 +196,15 @@ const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
                         key={task.id}
                         className="p-3 rounded-lg dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary border dark:border-dark-border light:border-light-border hover:dark:border-primary-600 hover:light:border-primary-600 transition-all cursor-pointer"
                         onClick={() => handleResultClick('task')}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`Go to task: ${task.title}`}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleResultClick('task');
+                          }
+                        }}
                       >
                         <div className="flex items-start justify-between gap-2 mb-1">
                           <h4 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary text-sm">
@@ -230,6 +258,15 @@ const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
                         key={announcement.id}
                         className="p-3 rounded-lg dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary border dark:border-dark-border light:border-light-border hover:dark:border-primary-600 hover:light:border-primary-600 transition-all cursor-pointer"
                         onClick={() => handleResultClick('announcement')}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`Go to announcement: ${announcement.title}`}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleResultClick('announcement');
+                          }
+                        }}
                       >
                         <div className="flex items-start justify-between gap-2 mb-1">
                           <h4 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary text-sm">
@@ -265,6 +302,15 @@ const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
                         key={submission.id}
                         className="p-3 rounded-lg dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary border dark:border-dark-border light:border-light-border hover:dark:border-primary-600 hover:light:border-primary-600 transition-all cursor-pointer"
                         onClick={onClose}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`Go to submission: ${submission.title}`}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onClose();
+                          }
+                        }}
                       >
                         <div className="flex items-start justify-between gap-2 mb-1">
                           <h4 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary text-sm">

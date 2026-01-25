@@ -48,7 +48,7 @@ const MarkdownDisplay = ({ content, className = '' }) => {
   };
 
   return (
-    <div className={`markdown-content ${className}`}>
+    <div className={`markdown-content ${className}`} role="region" aria-label="Markdown content">
       <ReactMarkdown components={markdownComponents} remarkPlugins={[remarkGfm]}>
         {content || ''}
       </ReactMarkdown>

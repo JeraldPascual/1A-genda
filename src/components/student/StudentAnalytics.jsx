@@ -1,3 +1,4 @@
+
 /**
  * StudentAnalytics component visualizes the student's task completion, subject breakdown, and progress trends using charts.
  * Fetches task and progress data from Firestore and computes analytics for display.
@@ -7,43 +8,51 @@
  *
  * Avoid mutating analytics data directly or bypassing the provided data fetching logic to ensure accurate visualizations.
  */
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LineChart, Line, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Calendar, BookOpen, Target } from 'lucide-react';
 import { getAllGlobalTasks, getStudentProgress } from '../../utils/firestore';
 import { useAuth } from '../../context/AuthContext';
 
 const StudentAnalytics = () => {
-  const { user, userData } = useAuth();
-  const [tasks, setTasks] = useState([]);
-  const [progress, setProgress] = useState([]);
-  const [loading, setLoading] = useState(true);
+    // ...existing state and function declarations...
 
-  useEffect(() => {
-    loadData();
-  }, []);
+    // ...existing state and function declarations...
 
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const [tasksData, progressData] = await Promise.all([
-        getAllGlobalTasks(),
-        getStudentProgress(user.uid)
-      ]);
 
-      // Filter tasks by batch
-      const userBatch = userData?.batch;
-      const filteredTasks = tasksData.filter(task =>
-        !task.batch || task.batch === 'all' || task.batch === userBatch
-      );
+    const { user, userData } = useAuth();
+    const [tasks, setTasks] = useState([]);
+    const [progress, setProgress] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-      setTasks(filteredTasks);
-      setProgress(progressData);
-    } catch (error) {
-      console.error('Error loading analytics data:', error);
-    }
-    setLoading(false);
-  };
+    const loadData = React.useCallback(async () => {
+      setLoading(true);
+      try {
+        const [tasksData, progressData] = await Promise.all([
+          getAllGlobalTasks(),
+          getStudentProgress(user.uid)
+        ]);
+
+        // Filter tasks by batch
+        const userBatch = userData?.batch;
+        const filteredTasks = tasksData.filter(task =>
+          !task.batch || task.batch === 'all' || task.batch === userBatch
+        );
+
+        setTasks(filteredTasks);
+        setProgress(progressData);
+      } catch (error) {
+        console.error('Error loading analytics data:', error);
+      }
+      setLoading(false);
+    }, [user, userData]);
+
+    useEffect(() => {
+      if (user && userData) {
+        loadData();
+      }
+    }, [user, userData, loadData]);
+
 
   // Calculate completion rate data
   const getCompletionData = () => {
@@ -132,20 +141,12 @@ const StudentAnalytics = () => {
   const total = tasks.length;
   const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-  // Auto-reload: Poll for updates every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      loadData();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [user.uid, userData?.batch]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="inline-block w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <div className="text-center" aria-live="polite" aria-busy="true">
+          <div className="inline-block w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4" aria-hidden="true"></div>
           <p className="dark:text-dark-text-muted light:text-light-text-muted">Loading analytics...</p>
         </div>
       </div>
@@ -155,7 +156,8 @@ const StudentAnalytics = () => {
   return (
     <div className="space-y-6">
       {/* Header Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4" role="region" aria-labelledby="analytics-header-stats">
+        <h2 id="analytics-header-stats" className="sr-only">Student Analytics Summary</h2>
         <div className="dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary rounded-xl p-6 border dark:border-dark-border light:border-light-border">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold dark:text-dark-text-muted light:text-light-text-muted uppercase tracking-wide">Completion Rate</h3>
@@ -166,7 +168,6 @@ const StudentAnalytics = () => {
             {completed} of {total} tasks completed
           </p>
         </div>
-
         <div className="dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary rounded-xl p-6 border dark:border-dark-border light:border-light-border">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold dark:text-dark-text-muted light:text-light-text-muted uppercase tracking-wide">Total Tasks</h3>
@@ -177,7 +178,6 @@ const StudentAnalytics = () => {
             {total - completed} remaining
           </p>
         </div>
-
         <div className="dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary rounded-xl p-6 border dark:border-dark-border light:border-light-border">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold dark:text-dark-text-muted light:text-light-text-muted uppercase tracking-wide">Upcoming</h3>
@@ -188,10 +188,11 @@ const StudentAnalytics = () => {
             Due in next 7 days
           </p>
         </div>
-      </div>
+      </section>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6" role="region" aria-labelledby="analytics-charts">
+        <h2 id="analytics-charts" className="sr-only">Analytics Charts</h2>
         {/* Completion Pie Chart */}
         <div className="dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary rounded-xl p-6 border dark:border-dark-border light:border-light-border">
           <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary mb-4 flex items-center gap-2">
@@ -206,7 +207,6 @@ const StudentAnalytics = () => {
                 cy="50%"
                 labelLine={false}
                 label={({name, value}) => {
-                  // On mobile, show shorter labels
                   if (window.innerWidth < 640) {
                     return `${value}`;
                   }
@@ -238,7 +238,6 @@ const StudentAnalytics = () => {
             </PieChart>
           </ResponsiveContainer>
         </div>
-
         {/* Subject Breakdown Bar Chart */}
         <div className="dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary rounded-xl p-6 border dark:border-dark-border light:border-light-border">
           <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary mb-4 flex items-center gap-2">
@@ -273,15 +272,15 @@ const StudentAnalytics = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </section>
 
       {/* Upcoming Deadlines Timeline */}
-      <div className="dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary rounded-xl p-6 border dark:border-dark-border light:border-light-border">
+      <section className="dark:bg-dark-bg-tertiary light:bg-light-bg-tertiary rounded-xl p-6 border dark:border-dark-border light:border-light-border" role="region" aria-labelledby="analytics-upcoming-deadlines">
+        <h2 id="analytics-upcoming-deadlines" className="sr-only">Upcoming Deadlines</h2>
         <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary mb-4 flex items-center gap-2">
           <Calendar className="w-5 h-5" />
           Upcoming Deadlines
         </h3>
-
         {upcomingDeadlines.length === 0 ? (
           <div className="text-center py-8 dark:text-dark-text-muted light:text-light-text-muted">
             <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
@@ -320,7 +319,6 @@ const StudentAnalytics = () => {
                     </span>
                   </div>
                 </div>
-
                 <div className="text-right">
                   <p className="text-sm font-semibold dark:text-dark-text-primary light:text-light-text-primary">
                     {task.dueDate}
@@ -341,7 +339,7 @@ const StudentAnalytics = () => {
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 };

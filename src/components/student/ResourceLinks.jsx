@@ -35,7 +35,7 @@ const ResourceLinks = () => {
   return (
     <div className="mb-8">
       <div className="flex items-center gap-3 mb-6">
-        <ExternalLink className="w-7 h-7 text-sky-400" />
+        <ExternalLink className="w-7 h-7 text-sky-400" aria-hidden="true" />
         <h2 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary">
           Resources & Links
         </h2>
@@ -53,20 +53,29 @@ const ResourceLinks = () => {
             <div
               key={resource.id}
               className="dark:bg-slate-900/30 light:!bg-blue-600 border dark:border-slate-800/50 light:!border-blue-500 rounded-xl p-5 hover:border-sky-500/30 hover:shadow-lg hover:shadow-sky-500/10 transition-all group cursor-pointer"
+              role="button"
+              tabIndex={0}
+              aria-label={`Open resource: ${resource.title}`}
               onClick={() => openResource(resource.url)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  openResource(resource.url);
+                }
+              }}
             >
               <div className="flex items-start gap-4">
                 <div
                   className={`p-3 ${resource.color} rounded-lg ${resource.shadowColor} shadow-lg group-hover:scale-110 transition-transform`}
                 >
-                  <Icon className="w-6 h-6 text-white" />
+                  <Icon className="w-6 h-6 text-white" aria-hidden="true" />
                 </div>
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary mb-1 flex items-center gap-2">
+                  <h3 className="font-semibold dark:text-dark-text-primary light:text-light-text-primary mb-1 flex items-center gap-2">
                     {resource.title}
-                    <ExternalLink className="w-4 h-4 dark:text-sky-400 light:!text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ExternalLink className="w-4 h-4 dark:text-sky-400 light:!text-white opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
                   </h3>
-                    <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted leading-relaxed">
+                  <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted leading-relaxed">
                     {resource.description}
                   </p>
                 </div>
@@ -74,12 +83,13 @@ const ResourceLinks = () => {
               <Button
                 variant="outlined"
                 size="small"
-                endIcon={<ExternalLink className="w-3 h-3" />}
-                className="!mt-4 !w-full !normal-case !text-sm !font-medium dark:!border-slate-700 light:!border-blue-400 dark:!text-sky-400 light:text-light-text-primary hover:!border-sky-500 hover:!bg-sky-500/5"
-                onClick={(e) => {
+                endIcon={<ExternalLink className="w-3 h-3" aria-hidden="true" />}
+                className="mt-4! w-full! normal-case! text-sm! font-medium! dark:border-slate-700! light:border-blue-400 dark:text-sky-400! light:text-light-text-primary hover:border-sky-500! hover:bg-sky-500/5!"
+                onClick={e => {
                   e.stopPropagation();
                   openResource(resource.url);
                 }}
+                aria-label={`Open ${resource.title} in new tab`}
               >
                 Open in New Tab
               </Button>

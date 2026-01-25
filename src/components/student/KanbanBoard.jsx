@@ -398,9 +398,18 @@ const KanbanBoard = () => {
       )}
 
       {/* Task Request Dialog */}
-      <Dialog open={showRequestDialog} onClose={handleRequestDialogClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Request New Task for 1A2</DialogTitle>
+      <Dialog
+        open={showRequestDialog}
+        onClose={handleRequestDialogClose}
+        maxWidth="sm"
+        fullWidth
+        aria-label="Task creation request dialog"
+        role="dialog"
+        aria-modal="true"
+      >
+        <DialogTitle id="task-request-dialog-title">Request New Task for 1A2</DialogTitle>
         <DialogContent
+          aria-labelledby="task-request-dialog-title"
           sx={{
             pt: 1,
             pb: 1,

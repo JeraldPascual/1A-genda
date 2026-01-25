@@ -57,10 +57,11 @@ const DailyQuote = () => {
 
       setLoading(false);
     };
-
     fetchQuote();
-  }, []);  return (
-    <div className="text-center mb-8">
+  }, []);
+
+  return (
+    <div className="text-center mb-8" aria-live="polite" aria-atomic="true">
       {loading ? (
         <div className="animate-pulse">
           <div className="h-6 dark:bg-dark-bg-secondary light:bg-light-bg-secondary rounded w-2/3 mx-auto mb-2"></div>
@@ -78,6 +79,6 @@ const DailyQuote = () => {
       )}
     </div>
   );
-};
+}
 
 export default DailyQuote;

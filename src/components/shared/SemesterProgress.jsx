@@ -78,7 +78,7 @@ const SemesterProgress = () => {
         </div>
       </div>
 
-      <div className="relative w-full h-4 dark:bg-dark-bg-primary light:!bg-blue-700 rounded-full overflow-hidden border dark:border-dark-border light:!border-blue-500">
+      <div className="relative w-full h-4 dark:bg-dark-bg-primary light:!bg-blue-700 rounded-full overflow-hidden border dark:border-dark-border light:!border-blue-500" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Semester progress">
         <div
           className={`absolute top-0 left-0 h-full ${getProgressColor()} transition-all duration-1000 ease-out rounded-full shadow-lg`}
           style={{ width: `${progress}%` }}
@@ -86,6 +86,7 @@ const SemesterProgress = () => {
           <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
         </div>
       </div>
+      <div className="sr-only" aria-live="polite">{getProgressMessage()} {Math.round(progress)}% complete, {daysLeft} days left.</div>
 
       {settings.className && (
         <div className="mt-4 text-center">

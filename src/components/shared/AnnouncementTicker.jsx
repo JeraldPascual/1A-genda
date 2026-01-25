@@ -120,6 +120,15 @@ const AnnouncementTicker = () => {
                 key={`${announcement.id}-${index}`}
                 className="inline-flex items-center mx-10 text-white cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => setSelectedAnnouncement(announcement)}
+                tabIndex={0}
+                role="button"
+                aria-label={`View announcement: ${announcement.title}`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelectedAnnouncement(announcement);
+                  }
+                }}
               >
                 <span className="mr-2 flex-shrink-0">
                   {getAnnouncementIcon(announcement.type)}
@@ -138,11 +147,29 @@ const AnnouncementTicker = () => {
 
 
       {selectedAnnouncement && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setSelectedAnnouncement(null)}>
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          onClick={() => setSelectedAnnouncement(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Announcement details"
+          tabIndex={-1}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setSelectedAnnouncement(null);
+          }}
+        >
           <div className="glass-effect rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setSelectedAnnouncement(null)}
               className="sticky top-4 float-right z-10 p-2 bg-slate-800/80 hover:bg-slate-700/90 rounded-lg transition-colors shadow-lg mr-4 backdrop-blur-sm"
+              aria-label="Close announcement details"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSelectedAnnouncement(null);
+                }
+              }}
             >
               <X className="w-5 h-5" />
             </button>

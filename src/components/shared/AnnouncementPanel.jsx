@@ -323,12 +323,30 @@ const AnnouncementPanel = () => {
 
       {/* Modal for full description */}
       {selectedAnnouncement && (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setSelectedAnnouncement(null)}>
+        <div
+          className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          onClick={() => setSelectedAnnouncement(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Announcement details"
+          tabIndex={-1}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setSelectedAnnouncement(null);
+          }}
+        >
           <div className="glass-effect rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
             {/* Sticky Close Button */}
             <button
               onClick={() => setSelectedAnnouncement(null)}
               className="sticky top-4 float-right z-10 p-2 bg-slate-800/80 hover:bg-slate-700/90 rounded-lg transition-colors shadow-lg mr-4 backdrop-blur-sm"
+              aria-label="Close announcement details"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSelectedAnnouncement(null);
+                }
+              }}
             >
               <X className="w-5 h-5 dark:text-dark-text-muted light:text-light-text-muted" />
             </button>
@@ -397,9 +415,12 @@ const AnnouncementPanel = () => {
         onClose={() => setRevisionDialog({ open: false, announcement: null })}
         maxWidth="md"
         fullWidth
+        aria-label="Request announcement revision dialog"
+        role="dialog"
+        aria-modal="true"
       >
-        <DialogTitle>Request Announcement Revision</DialogTitle>
-        <DialogContent>
+        <DialogTitle id="revision-dialog-title">Request Announcement Revision</DialogTitle>
+        <DialogContent aria-labelledby="revision-dialog-title">
           {revisionDialog.announcement && (
             <div className="space-y-4 mt-2">
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -509,6 +530,14 @@ const AnnouncementPanel = () => {
                           size="small"
                           onClick={() => removeRevisionAttachment(index)}
                           disabled={uploadingRevision}
+                          aria-label={`Remove attachment ${file.name}`}
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              removeRevisionAttachment(index);
+                            }
+                          }}
                         >
                           <X className="w-4 h-4" />
                         </IconButton>
@@ -521,13 +550,31 @@ const AnnouncementPanel = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setRevisionDialog({ open: false, announcement: null })}>
+          <Button
+            onClick={() => setRevisionDialog({ open: false, announcement: null })}
+            aria-label="Cancel revision request"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setRevisionDialog({ open: false, announcement: null });
+              }
+            }}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleSubmitRevisionRequest}
             variant="contained"
             disabled={uploadingRevision || !revisionReason.trim() || !revisedTitle.trim() || !revisedMessage.trim()}
+            aria-label="Submit revision request"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleSubmitRevisionRequest();
+              }
+            }}
           >
             Submit Request
           </Button>
@@ -545,11 +592,29 @@ const AnnouncementPanel = () => {
 
       {/* Modal for viewing all announcements */}
       {showAllAnnouncements && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setShowAllAnnouncements(false)}>
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          onClick={() => setShowAllAnnouncements(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="All announcements"
+          tabIndex={-1}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setShowAllAnnouncements(false);
+          }}
+        >
           <div className="glass-effect rounded-2xl max-w-4xl w-full max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setShowAllAnnouncements(false)}
               className="sticky top-4 float-right z-10 p-2 bg-slate-800/80 hover:bg-slate-700/90 rounded-lg transition-colors shadow-lg mr-4 backdrop-blur-sm"
+              aria-label="Close all announcements"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setShowAllAnnouncements(false);
+                }
+              }}
             >
               <X className="w-5 h-5" />
             </button>

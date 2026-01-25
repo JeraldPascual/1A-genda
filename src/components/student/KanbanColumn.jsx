@@ -55,7 +55,7 @@ const KanbanColumn = ({
   };
 
   return (
-    <div className="flex-1">
+    <div className="flex-1" role="region" aria-label={`Kanban column: ${column.title}`}>
       <div className={`${getColumnColor(column.id)} rounded-t-xl p-3 md:p-4 border-b dark:border-dark-border light:border-gray-200 light:shadow-lg dark:shadow-lg`}>
         <div className="flex items-center justify-between">
           <h2 className={`font-display font-semibold text-base md:text-lg flex items-center gap-2 ${getColumnTextColor(column.id)}`}>

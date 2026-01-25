@@ -49,6 +49,8 @@ export default function InfoBar() {
     <div
       className="w-full bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 text-white flex flex-row justify-end items-center px-2 sm:px-6 py-1 shadow"
       style={{ minHeight: '2.25rem' }}
+        aria-live="polite"
+        aria-atomic="true"
     >
       <div className="flex flex-row gap-3 items-center text-xs md:text-xs font-medium w-full justify-end">
         <div className="flex items-center gap-1">

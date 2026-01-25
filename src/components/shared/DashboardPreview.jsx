@@ -84,6 +84,14 @@ const DashboardPreview = ({ onTabChange }) => {
                 fontSize: '0.875rem',
                 fontWeight: 600
               }}
+              aria-label="View all announcements"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onTabChange(0);
+                }
+              }}
             >
               View All
             </Button>
@@ -100,6 +108,15 @@ const DashboardPreview = ({ onTabChange }) => {
                   key={announcement.id}
                   className="dark:bg-slate-800/50 light:!bg-blue-700 rounded-lg p-3 border dark:border-slate-700/50 light:!border-blue-500 cursor-pointer hover:scale-[1.02] transition-transform"
                   onClick={() => onTabChange(0)}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Go to announcement: ${announcement.title}`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onTabChange(0);
+                    }
+                  }}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <h4 className="font-semibold text-sm dark:text-dark-text-primary light:text-light-text-primary line-clamp-1">

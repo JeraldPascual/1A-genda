@@ -1034,10 +1034,13 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                       </div>
                       <button
                         type="button"
+                        aria-label="Remove attachment"
                         onClick={() => removeTaskAttachment(index)}
                         className="p-1 hover:bg-red-500/20 rounded transition-colors shrink-0"
+                        tabIndex={0}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { removeTaskAttachment(index); } }}
                       >
-                        <X className="w-4 h-4 text-red-400" />
+                        <X className="w-4 h-4 text-red-400" aria-hidden="true" />
                       </button>
                     </div>
                   ))}
@@ -1056,8 +1059,9 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
             type="submit"
             disabled={loading}
             className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+            aria-label={loading ? 'Creating Task' : 'Create Global Task'}
           >
-            <PlusCircle className="w-5 h-5" />
+            <PlusCircle className="w-5 h-5" aria-hidden="true" />
             <span>{loading ? 'Creating Task...' : 'Create Global Task'}</span>
           </button>
         </form>
@@ -1074,11 +1078,13 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
             <input
               type="text"
               name="title"
+              id="announcement-title"
               value={announcementForm.title}
               onChange={handleAnnouncementChange}
               className="w-full px-4 py-3 dark:bg-slate-900/40 light:bg-white border dark:border-slate-700/50 light:border-gray-200 rounded-lg focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/50 focus:outline-none dark:text-dark-text-primary light:text-light-text-primary placeholder-slate-500 transition-all"
               placeholder="e.g., Class Suspended"
               required
+              aria-label="Announcement Title"
             />
           </div>
 
@@ -1152,10 +1158,13 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                       </div>
                       <button
                         type="button"
+                        aria-label="Remove attachment"
                         onClick={() => removeAnnouncementAttachment(index)}
                         className="p-1 hover:bg-red-500/20 rounded transition-colors"
+                        tabIndex={0}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { removeAnnouncementAttachment(index); } }}
                       >
-                        <X className="w-4 h-4 text-red-400" />
+                        <X className="w-4 h-4 text-red-400" aria-hidden="true" />
                       </button>
                     </div>
                   ))}
@@ -1175,8 +1184,9 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
             type="submit"
             disabled={loading || uploadingAnnouncement}
             className="w-full bg-secondary-600 hover:bg-secondary-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+            aria-label={uploadingAnnouncement ? 'Uploading files' : loading ? 'Creating Announcement' : 'Broadcast Announcement'}
           >
-            <Megaphone className="w-5 h-5" />
+            <Megaphone className="w-5 h-5" aria-hidden="true" />
             <span>
               {uploadingAnnouncement
                 ? 'Uploading files...'
@@ -1495,12 +1505,18 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                     <button
                       onClick={() => handleApproveTaskCreation(request)}
                       className="flex-1 px-4 py-2 bg-emerald-600 bg-opacity-20 hover:bg-opacity-30 border border-emerald-600 border-opacity-30 text-emerald-400 rounded-lg transition-all font-semibold text-sm"
+                      aria-label="Approve and create task"
+                      tabIndex={0}
+                      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { handleApproveTaskCreation(request); } }}
                     >
                       ✓ Approve & Create Task
                     </button>
                     <button
                       onClick={() => handleRejectTaskCreation(request.id)}
                       className="flex-1 px-4 py-2 bg-danger-600 bg-opacity-20 hover:bg-opacity-30 border border-danger-600 border-opacity-30 text-danger-400 rounded-lg transition-all font-semibold text-sm"
+                      aria-label="Reject task creation request"
+                      tabIndex={0}
+                      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { handleRejectTaskCreation(request.id); } }}
                     >
                       ✗ Reject
                     </button>
@@ -1635,6 +1651,9 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                         onClick={() => handleApproveRevisionRequest(request.id, request)}
                         disabled={loading}
                         startIcon={<CheckCircle className="w-4 h-4" />}
+                        aria-label="Approve and apply revision changes"
+                        tabIndex={0}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { handleApproveRevisionRequest(request.id, request); } }}
                       >
                         Approve & Apply Changes
                       </Button>
@@ -1645,6 +1664,9 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                         onClick={() => handleRejectRevisionRequest(request.id)}
                         disabled={loading}
                         startIcon={<X className="w-4 h-4" />}
+                        aria-label="Reject revision request"
+                        tabIndex={0}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { handleRejectRevisionRequest(request.id); } }}
                       >
                         Reject
                       </Button>
@@ -2028,8 +2050,16 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       )}
 
       {/* Edit Task Dialog */}
-      <Dialog open={editTaskDialog.open} onClose={() => setEditTaskDialog({ open: false, task: null })} maxWidth="sm" fullWidth>
-        <DialogTitle>Edit Task</DialogTitle>
+      <Dialog
+        open={editTaskDialog.open}
+        onClose={() => setEditTaskDialog({ open: false, task: null })}
+        maxWidth="sm"
+        fullWidth
+        aria-modal="true"
+        role="dialog"
+        aria-labelledby="edit-task-dialog-title"
+      >
+        <DialogTitle id=" edit-task-dialog-title">Edit Task</DialogTitle>
         <DialogContent>
           {editTaskDialog.task && (
             <div className="space-y-4 mt-2">
@@ -2207,8 +2237,16 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       </Dialog>
 
       {/* Edit Announcement Dialog */}
-      <Dialog open={editAnnouncementDialog.open} onClose={() => setEditAnnouncementDialog({ open: false, announcement: null })} maxWidth="sm" fullWidth>
-        <DialogTitle>Edit Announcement</DialogTitle>
+      <Dialog
+        open={editAnnouncementDialog.open}
+        onClose={() => setEditAnnouncementDialog({ open: false, announcement: null })}
+        maxWidth="sm"
+        fullWidth
+        aria-modal="true"
+        role="dialog"
+        aria-labelledby="edit-announcement-dialog-title"
+      >
+        <DialogTitle id="edit-announcement-dialog-title">Edit Announcement</DialogTitle>
         <DialogContent>
           {editAnnouncementDialog.announcement && (
             <div className="space-y-4 mt-2">

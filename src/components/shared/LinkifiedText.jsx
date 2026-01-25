@@ -38,6 +38,7 @@ const LinkifiedText = ({ text, className = '' }) => {
               rel="noopener noreferrer"
               className="text-sky-400 hover:text-sky-300 underline decoration-sky-400/50 hover:decoration-sky-300 transition-colors inline-flex items-center gap-1 break-all"
               onClick={(e) => e.stopPropagation()}
+              aria-label={`External link: ${part}`}
             >
               {part}
               <ExternalLink className="w-3 h-3 inline shrink-0" />

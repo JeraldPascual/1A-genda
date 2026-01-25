@@ -43,12 +43,28 @@ const InstallPrompt = () => {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-w-sm animate-slide-up">
+    <div
+      className="fixed bottom-6 right-6 z-50 max-w-sm animate-slide-up"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Install app prompt"
+      tabIndex={-1}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') handleDismiss();
+      }}
+    >
       <div className="dark:bg-dark-bg-secondary light:bg-light-bg-secondary rounded-xl p-4 shadow-2xl border dark:border-dark-border light:border-light-border backdrop-blur-lg">
         <button
           onClick={handleDismiss}
           className="absolute top-2 right-2 p-1 hover:bg-gray-700/50 rounded-lg transition-colors"
-          aria-label="Dismiss"
+          aria-label="Dismiss install prompt"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleDismiss();
+            }
+          }}
         >
           <X className="w-4 h-4 dark:text-dark-text-muted light:text-light-text-muted" />
         </button>
@@ -93,10 +109,18 @@ const InstallPrompt = () => {
           onClick={handleDismiss}
           variant="contained"
           className="normal-case! font-semibold! py-2.5! rounded-lg!"
+          aria-label="Dismiss install prompt"
+          tabIndex={0}
           sx={{
             background: 'linear-gradient(135deg, #38bdf8 0%, #2563eb 100%)',
             '&:hover': {
               background: 'linear-gradient(135deg, #0ea5e9 0%, #1d4ed8 100%)',
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleDismiss();
             }
           }}
         >

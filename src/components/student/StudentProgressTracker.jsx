@@ -93,9 +93,9 @@ const StudentProgressTracker = () => {
   return (
     <div className="overflow-x-hidden max-w-full">
       <div className="flex items-center gap-3 mb-6">
-        <Users className="w-8 h-8 text-primary-500" />
+        <Users className="w-8 h-8 text-primary-500" aria-hidden="true" />
         <div>
-          <h2 className="text-2xl font-display font-bold text-dark-text-primary">
+          <h2 className="text-2xl font-display font-bold text-dark-text-primary" id="progress-tracker-heading">
             Student Progress Tracker
           </h2>
           <p className="text-sm text-dark-text-muted">
@@ -105,27 +105,27 @@ const StudentProgressTracker = () => {
       </div>
 
       {students.length === 0 ? (
-        <div className="text-center py-12 text-dark-text-muted">
-          <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
+        <div className="text-center py-12 text-dark-text-muted" role="status" aria-live="polite">
+          <Users className="w-12 h-12 mx-auto mb-3 opacity-30" aria-hidden="true" />
           <p>No students registered yet</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4" role="table" aria-label="Student Progress Table" aria-describedby="progress-tracker-heading">
           {/* Table Header - Hidden on mobile */}
-          <div className="hidden lg:grid gap-3 pb-3 border-b border-dark-border" style={{ gridTemplateColumns: '200px 1fr 120px' }}>
-            <div className="text-sm font-semibold text-dark-text-secondary uppercase tracking-wide">
+          <div className="hidden lg:grid gap-3 pb-3 border-b border-dark-border" style={{ gridTemplateColumns: '200px 1fr 120px' }} role="row">
+            <div className="text-sm font-semibold text-dark-text-secondary uppercase tracking-wide" role="columnheader" tabIndex={0} aria-label="Student Name">
               Student
             </div>
-            <div className="text-sm font-semibold text-dark-text-secondary uppercase tracking-wide">
+            <div className="text-sm font-semibold text-dark-text-secondary uppercase tracking-wide" role="columnheader" tabIndex={0} aria-label="Task Progress">
               Task Progress
             </div>
-            <div className="text-sm font-semibold text-dark-text-secondary uppercase tracking-wide text-right">
+            <div className="text-sm font-semibold text-dark-text-secondary uppercase tracking-wide text-right" role="columnheader" tabIndex={0} aria-label="Completion Rate">
               Completion
             </div>
           </div>
 
           {/* Student Rows */}
-          <div className="space-y-3 max-h-[600px] overflow-y-auto">
+          <div className="space-y-3 max-h-150 overflow-y-auto">
             {students.map((student) => {
               const studentTasks = getStudentTasks(student.batch);
               const completionRate = getStudentCompletionRate(student.uid, student.batch);
@@ -138,9 +138,12 @@ const StudentProgressTracker = () => {
                   key={student.uid}
                   className="flex flex-col lg:grid gap-3 p-4 bg-slate-900/30 border border-slate-800/50 rounded-lg hover:border-sky-500/30 hover:shadow-lg hover:shadow-sky-500/10 transition-all"
                   style={{ gridTemplateColumns: 'lg:200px 1fr lg:120px' }}
+                  role="row"
+                  tabIndex={0}
+                  aria-label={`Student ${student.displayName || student.email}`}
                 >
                   {/* Student Info */}
-                  <div className="flex flex-col justify-center mb-2 lg:mb-0">
+                  <div className="flex flex-col justify-center mb-2 lg:mb-0" role="cell">
                     <p className="font-semibold text-dark-text-primary text-sm">
                       {student.displayName || student.email}
                     </p>
@@ -149,7 +152,7 @@ const StudentProgressTracker = () => {
                   </div>
 
                   {/* Task Progress */}
-                  <div className="flex flex-wrap gap-2 items-center mb-3 lg:mb-0">
+                  <div className="flex flex-wrap gap-2 items-center mb-3 lg:mb-0" role="cell">
                     {studentTasks.length === 0 ? (
                       <span className="text-xs text-dark-text-muted">No tasks available</span>
                     ) : (
@@ -166,18 +169,22 @@ const StudentProgressTracker = () => {
                                 : 'bg-slate-700/50 border-slate-600/30 text-slate-400'
                             }`}
                             title={task.title}
+                            role="button"
+                            tabIndex={0}
+                            aria-pressed={isDone}
+                            aria-label={`Task: ${task.title}, Status: ${isDone ? 'Completed' : 'Incomplete'}`}
                           >
                             {isDone ? (
-                              <CheckCircle className="w-3.5 h-3.5" />
+                              <CheckCircle className="w-3.5 h-3.5" aria-hidden="true" />
                             ) : (
-                              <Circle className="w-3.5 h-3.5" />
+                              <Circle className="w-3.5 h-3.5" aria-hidden="true" />
                             )}
-                            <span className="text-xs font-medium truncate max-w-[100px]">
+                            <span className="text-xs font-medium truncate max-w-25">
                               {task.title}
                             </span>
 
                             {/* Tooltip */}
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-dark-bg-primary border border-dark-border rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-dark-bg-primary border border-dark-border rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10" role="tooltip" aria-label={`Task: ${task.title}${task.subject ? ', Subject: ' + task.subject : ''}`}>
                               <p className="text-xs font-semibold text-dark-text-primary">
                                 {task.title}
                               </p>
@@ -192,7 +199,7 @@ const StudentProgressTracker = () => {
                   </div>
 
                   {/* Completion Rate */}
-                  <div className="flex flex-col items-start lg:items-end justify-center gap-1">
+                  <div className="flex flex-col items-start lg:items-end justify-center gap-1" role="cell">
                     <button
                       onClick={() => {
                         const studentProgress = progressData.filter(p => p.userId === student.uid);
@@ -200,8 +207,9 @@ const StudentProgressTracker = () => {
                       }}
                       className="mb-2 px-2 py-1 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-600/30 text-emerald-400"
                       title="Export to PDF"
+                      aria-label={`Export progress for ${student.displayName || student.email} to PDF`}
                     >
-                      <Download className="w-3 h-3" />
+                      <Download className="w-3 h-3" aria-hidden="true" />
                       Export
                     </button>
                     <div className="flex items-center gap-2">
@@ -213,6 +221,7 @@ const StudentProgressTracker = () => {
                             ? 'text-amber-400'
                             : 'text-danger-400'
                         }`}
+                        aria-hidden="true"
                       />
                       <span
                         className={`text-lg font-bold ${
@@ -222,6 +231,7 @@ const StudentProgressTracker = () => {
                             ? 'text-amber-400'
                             : 'text-danger-400'
                         }`}
+                        aria-label={`Completion rate: ${completionRate}%`}
                       >
                         {completionRate}%
                       </span>
@@ -229,7 +239,7 @@ const StudentProgressTracker = () => {
                     <p className="text-xs text-dark-text-muted">
                       {completedCount} of {studentTasks.length} tasks
                     </p>
-                    <div className="w-full lg:w-20 h-1.5 bg-dark-bg-primary rounded-full overflow-hidden">
+                    <div className="w-full lg:w-20 h-1.5 bg-dark-bg-primary rounded-full overflow-hidden" aria-hidden="true">
                       <div
                         className={`h-full transition-all duration-500 ${
                           completionRate >= 75

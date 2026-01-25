@@ -111,6 +111,17 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                     }}
                     className="absolute top-2 right-2 p-2 rounded-full transition-all z-20 dark:bg-black/50 dark:hover:bg-black/70 light:bg-white/70 light:hover:bg-white/80"
                     title="Options"
+                    aria-label="Attachment options"
+                    aria-haspopup="menu"
+                    aria-expanded={activeMenu === index}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleMenu(index);
+                      }
+                    }}
                   >
                     <MoreVertical className="w-4 h-4 dark:text-white light:text-light-text-primary" />
                   </button>
@@ -120,6 +131,9 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                     <div
                       className="absolute top-12 right-2 bg-white dark:bg-slate-800 border dark:border-slate-700 light:border-gray-200 rounded-lg shadow-lg py-1 min-w-[150px] z-30"
                       onClick={(e) => e.stopPropagation()}
+                      role="menu"
+                      aria-label="Attachment options menu"
+                      tabIndex={-1}
                     >
                       <button
                         onClick={(e) => {
@@ -127,6 +141,16 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                           handleDownload(file.url, file.name);
                         }}
                         className="w-full px-4 py-2 text-left text-sm dark:text-dark-text-primary light:text-light-text-primary hover:bg-sky-500/10 flex items-center gap-2"
+                        role="menuitem"
+                        tabIndex={0}
+                        aria-label={`Download ${file.name}`}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDownload(file.url, file.name);
+                          }
+                        }}
                       >
                         <Download className="w-4 h-4" />
                         Download
@@ -165,16 +189,41 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
                     onClick={() => toggleMenu(index)}
                     className="absolute top-2 right-2 p-2 hover:bg-sky-500/20 rounded-full transition-all"
                     title="Options"
+                    aria-label="Attachment options"
+                    aria-haspopup="menu"
+                    aria-expanded={activeMenu === index}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleMenu(index);
+                      }
+                    }}
                   >
                     <MoreVertical className="w-4 h-4 dark:text-dark-text-primary light:text-light-text-primary" />
                   </button>
 
                   {/* Dropdown menu */}
                   {activeMenu === index && (
-                    <div className="absolute top-12 right-2 bg-white dark:bg-slate-800 border dark:border-slate-700 light:border-gray-200 rounded-lg shadow-lg py-1 min-w-[150px] z-10">
+                    <div className="absolute top-12 right-2 bg-white dark:bg-slate-800 border dark:border-slate-700 light:border-gray-200 rounded-lg shadow-lg py-1 min-w-[150px] z-10"
+                      role="menu"
+                      aria-label="Attachment options menu"
+                      tabIndex={-1}
+                    >
                       <button
                         onClick={() => handleDownload(file.url, file.name)}
                         className="w-full px-4 py-2 text-left text-sm dark:text-dark-text-primary light:text-light-text-primary hover:bg-sky-500/10 flex items-center gap-2"
+                        role="menuitem"
+                        tabIndex={0}
+                        aria-label={`Download ${file.name}`}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDownload(file.url, file.name);
+                          }
+                        }}
                       >
                         <Download className="w-4 h-4" />
                         Download
@@ -193,6 +242,12 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
         <div
           className="fixed inset-0 z-0"
           onClick={() => setActiveMenu(null)}
+          tabIndex={0}
+          aria-label="Close attachment menu"
+          role="presentation"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setActiveMenu(null);
+          }}
         />
       )}
 
@@ -202,11 +257,26 @@ const AttachmentList = ({ attachments = [], className = '' }) => {
           className="fixed inset-0 bg-black/95 flex items-center justify-center p-4"
           style={{ zIndex: 9999 }}
           onClick={closeFullscreen}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Fullscreen image viewer"
+          tabIndex={-1}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') closeFullscreen();
+          }}
         >
           <button
             onClick={closeFullscreen}
             className="absolute top-4 right-4 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all"
             title="Close"
+            aria-label="Close fullscreen image"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                closeFullscreen();
+              }
+            }}
           >
             <X className="w-6 h-6 text-white" />
           </button>

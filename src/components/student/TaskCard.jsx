@@ -297,6 +297,9 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
           borderColor: 'primary.main',
         },
       }}
+      tabIndex={0}
+      role="region"
+      aria-label={`Task card: ${task.title}`}
     >
       <CardContent className="!p-4">
         <div className="flex justify-between items-start mb-3 gap-2">

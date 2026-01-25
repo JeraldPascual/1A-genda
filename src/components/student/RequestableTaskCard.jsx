@@ -147,6 +147,9 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
         border: '1px solid rgba(71, 85, 105, 0.3)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
       }}
+      tabIndex={0}
+      role="region"
+      aria-label={`Requestable task card: ${task.title}`}
     >
       <CardContent className="p-4!">
         <div className="flex items-start justify-between gap-3 mb-3">

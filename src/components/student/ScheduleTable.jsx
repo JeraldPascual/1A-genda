@@ -115,11 +115,12 @@ const ScheduleTable = ({ userBatch }) => {
 
   return (
     <>
-      <div className="space-y-4">
+
+      <div className="space-y-4" role="region" aria-labelledby="schedule-table-heading">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <Calendar className="w-6 h-6 text-sky-400" />
-            <h3 className="text-xl font-bold dark:text-dark-text-primary light:text-light-text-primary">
+            <Calendar className="w-6 h-6 text-sky-400" aria-hidden="true" />
+            <h3 className="text-xl font-bold dark:text-dark-text-primary light:text-light-text-primary" id="schedule-table-heading">
               Class Schedule — {userBatch}
             </h3>
           </div>
@@ -133,6 +134,7 @@ const ScheduleTable = ({ userBatch }) => {
                 fontSize: '0.875rem',
                 fontWeight: 600
               }}
+              aria-label={`View full schedule, ${allClasses.length} classes`}
             >
               {`View Full Schedule (${allClasses.length})`}
             </Button>
@@ -140,92 +142,98 @@ const ScheduleTable = ({ userBatch }) => {
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-        {displayedDays.map((day) => {
-          const classes = showFullSchedule ? schedule[day] : (displayedSchedule[day] || []);
-
-          return (
-            <div
-              key={day}
-              className="glass-card dark:!bg-transparent light:!bg-blue-600 border-2 dark:border-slate-700 light:!border-blue-500 rounded-xl p-4 shadow-lg"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <div className={`px-3 py-1 rounded-lg font-bold ${
-                  classes.length === 0
-                    ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:text-light-text-primary'
-                    : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary'
-                }`}>
-                  {day}
+          {displayedDays.map((day) => {
+            const classes = showFullSchedule ? schedule[day] : (displayedSchedule[day] || []);
+            return (
+              <div
+                key={day}
+                className="glass-card dark:bg-transparent! light:!bg-blue-600 border-2 dark:border-slate-700 light:!border-blue-500 rounded-xl p-4 shadow-lg"
+                role="region"
+                aria-label={`Schedule for ${day}`}
+                tabIndex={0}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <div className={`px-3 py-1 rounded-lg font-bold ${
+                    classes.length === 0
+                      ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:text-light-text-primary'
+                      : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary'
+                  }`}>
+                    {day}
+                  </div>
+                  {classes.length === 0 && (
+                    <span className="text-sm dark:text-dark-text-muted light:text-light-text-muted italic">
+                      No classes
+                    </span>
+                  )}
                 </div>
-                {classes.length === 0 && (
-                  <span className="text-sm dark:text-dark-text-muted light:text-light-text-muted italic">
-                    No classes
-                  </span>
+                {classes.length > 0 && (
+                  <div className="space-y-3">
+                    {classes.map((classItem, idx) => (
+                      <div
+                        key={idx}
+                        className={`bg-linear-to-br ${getSubjectColor(classItem.subject)} border-2 rounded-lg p-3 transition-all duration-200 hover:scale-[1.02]`}
+                        role="group"
+                        aria-label={`Class: ${classItem.subject}, ${classItem.fullName}, ${classItem.time}, Room: ${classItem.room || 'N/A'}, Instructor: ${classItem.instructor}`}
+                        tabIndex={0}
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className={`font-bold text-sm ${getSubjectTextColor(classItem.subject)} light:text-light-text-primary`}>
+                                {classItem.subject}
+                              </span>
+                              {classItem.online && (
+                                <span className="text-xs px-2 py-0.5 rounded-full dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary border dark:border-sky-500/30 light:!border-blue-500">
+                                  Online
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted mb-2">
+                              {classItem.fullName}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs dark:text-dark-text-muted light:text-light-text-muted">
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" aria-hidden="true" />
+                            <span>{classItem.time}</span>
+                          </div>
+                          {classItem.room && (
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-3 h-3" aria-hidden="true" />
+                              <span>{classItem.room}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1">
+                            <User className="w-3 h-3" aria-hidden="true" />
+                            <span>{classItem.instructor}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
-
-              {classes.length > 0 && (
-                <div className="space-y-3">
-                  {classes.map((classItem, idx) => (
-                    <div
-                      key={idx}
-                      className={`bg-gradient-to-br ${getSubjectColor(classItem.subject)} border-2 rounded-lg p-3 transition-all duration-200 hover:scale-[1.02]`}
-                    >
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={`font-bold text-sm ${getSubjectTextColor(classItem.subject)} light:text-light-text-primary`}>
-                              {classItem.subject}
-                            </span>
-                            {classItem.online && (
-                              <span className="text-xs px-2 py-0.5 rounded-full dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary border dark:border-sky-500/30 light:!border-blue-500">
-                                Online
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted mb-2">
-                            {classItem.fullName}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs dark:text-dark-text-muted light:text-light-text-muted">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          <span>{classItem.time}</span>
-                        </div>
-                        {classItem.room && (
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            <span>{classItem.room}</span>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-1">
-                          <User className="w-3 h-3" />
-                          <span>{classItem.instructor}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
 
     {showFullSchedule && (
-      <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setShowFullSchedule(false)}>
+      <div className="fixed inset-0 z-200 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setShowFullSchedule(false)} role="dialog" aria-modal="true" aria-label="Full class schedule dialog" tabIndex={-1}>
         <div className="glass-effect rounded-2xl max-w-4xl w-full max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => setShowFullSchedule(false)}
             className="sticky top-4 float-right z-10 p-2 bg-slate-800/80 hover:bg-slate-700/90 rounded-lg transition-colors shadow-lg mr-4 backdrop-blur-sm"
+            aria-label="Close full schedule dialog"
+            tabIndex={0}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { setShowFullSchedule(false); } }}
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <Calendar className="w-6 h-6 text-sky-400" />
+              <Calendar className="w-6 h-6 text-sky-400" aria-hidden="true" />
               <h3 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary">
                 Full Class Schedule — {userBatch}
               </h3>
@@ -236,7 +244,10 @@ const ScheduleTable = ({ userBatch }) => {
                 return (
                   <div
                     key={day}
-                    className="glass-card dark:!bg-transparent light:!bg-blue-600 border-2 dark:border-slate-700 light:!border-blue-500 rounded-xl p-4 shadow-lg"
+                    className="glass-card dark:bg-transparent! light:!bg-blue-600 border-2 dark:border-slate-700 light:!border-blue-500 rounded-xl p-4 shadow-lg"
+                    role="region"
+                    aria-label={`Schedule for ${day}`}
+                    tabIndex={0}
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <div className={`px-3 py-1 rounded-lg font-bold ${
@@ -252,13 +263,15 @@ const ScheduleTable = ({ userBatch }) => {
                         </span>
                       )}
                     </div>
-
                     {classes.length > 0 && (
                       <div className="space-y-3">
                         {classes.map((classItem, idx) => (
                           <div
                             key={idx}
-                            className={`bg-gradient-to-br ${getSubjectColor(classItem.subject)} border-2 rounded-lg p-3 transition-all duration-200 hover:scale-[1.02]`}
+                            className={`bg-linear-to-br ${getSubjectColor(classItem.subject)} border-2 rounded-lg p-3 transition-all duration-200 hover:scale-[1.02]`}
+                            role="group"
+                            aria-label={`Class: ${classItem.subject}, ${classItem.fullName}, ${classItem.time}, Room: ${classItem.room || 'N/A'}, Instructor: ${classItem.instructor}`}
+                            tabIndex={0}
                           >
                             <div className="flex items-start justify-between gap-3 mb-2">
                               <div className="flex-1">
@@ -277,20 +290,19 @@ const ScheduleTable = ({ userBatch }) => {
                                 </p>
                               </div>
                             </div>
-
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs dark:text-dark-text-muted light:!text-white/90">
                               <div className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
+                                <Clock className="w-3 h-3" aria-hidden="true" />
                                 <span>{classItem.time}</span>
                               </div>
                               {classItem.room && (
                                 <div className="flex items-center gap-1">
-                                  <MapPin className="w-3 h-3" />
+                                  <MapPin className="w-3 h-3" aria-hidden="true" />
                                   <span>{classItem.room}</span>
                                 </div>
                               )}
                               <div className="flex items-center gap-1">
-                                <User className="w-3 h-3" />
+                                <User className="w-3 h-3" aria-hidden="true" />
                                 <span>{classItem.instructor}</span>
                               </div>
                             </div>

@@ -24,20 +24,21 @@ import { useAuth } from '../../context/AuthContext';
 import { getClassSettings } from '../../utils/firestore';
 
 // Minimal, single-definition component. Only the Resources badge is active.
-const StudentModularDashboard = ({ userBatch, onTabChange }) => {
+const StudentModularDashboard = ({ userBatch }) => {
+    // TabPanel component for accessible tab content
+    const TabPanel = ({ children, value, index, labelledby }) => (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`dashboard-tabpanel-${index}`}
+        aria-labelledby={labelledby || `dashboard-tab-${index}`}
+        tabIndex={0}
+      >
+        {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+      </div>
+    );
   const [activeTab, setActiveTab] = useState(0);
   const { user, userData } = useAuth();
-
-  useEffect(() => {
-    if (onTabChange) onTabChange(setActiveTab);
-  }, [onTabChange]);
-
-  const handleTabChange = (e, newValue) => setActiveTab(newValue);
-
-  const TabPanel = ({ children, value, index }) => (
-    <div hidden={value !== index}>{value === index && <Box sx={{ py: 3 }}>{children}</Box>}</div>
-  );
-
   const [hasResourceUpdates, setHasResourceUpdates] = useState(false);
 
   useEffect(() => {
@@ -50,25 +51,26 @@ const StudentModularDashboard = ({ userBatch, onTabChange }) => {
         const resourcesUpdated = classSettings.resourcesUpdatedAt?.toMillis?.() || 0;
         const lastLoginMillis = userData?.lastLogin?.toMillis?.() || 0;
         setHasResourceUpdates(resourcesUpdated > lastLoginMillis);
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('StudentModularDashboard: failed to check resources', err);
+    } catch {
+        // Silently ignore errors
       }
     };
     checkResources();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [user, userData]);
 
+  const handleTabChange = (e, newValue) => setActiveTab(newValue);
+
   return (
-    <div className="space-y-6">
-      <div className="glass-card dark:!bg-transparent light:bg-white border-2 dark:border-slate-700 light:border-gray-200 rounded-xl overflow-hidden">
+    <div>
+      <div>
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
+          aria-label="Student dashboard navigation tabs"
+          role="tablist"
           sx={{
             '& .MuiTab-root': {
               color: 'var(--color-text-muted)',
@@ -81,10 +83,10 @@ const StudentModularDashboard = ({ userBatch, onTabChange }) => {
             '& .MuiTabs-indicator': { backgroundColor: 'var(--color-primary)', height: '3px' },
           }}
         >
-          <Tab icon={<Megaphone className="w-5 h-5" />} iconPosition="start" label={<span className="flex items-center gap-2"><span>Announcements</span></span>} />
-          <Tab icon={<Calendar className="w-5 h-5" />} iconPosition="start" label={<span className="flex items-center gap-2"><span>Schedule</span></span>} />
+          <Tab icon={<Megaphone className="w-5 h-5" aria-hidden="true" />} iconPosition="start" label={<span className="flex items-center gap-2"><span>Announcements</span></span>} id="dashboard-tab-0" aria-controls="dashboard-tabpanel-0" />
+          <Tab icon={<Calendar className="w-5 h-5" aria-hidden="true" />} iconPosition="start" label={<span className="flex items-center gap-2"><span>Schedule</span></span>} id="dashboard-tab-1" aria-controls="dashboard-tabpanel-1" />
           <Tab
-            icon={<BookOpen className="w-5 h-5" />}
+            icon={<BookOpen className="w-5 h-5" aria-hidden="true" />}
             iconPosition="start"
             label={
               <Tooltip
@@ -101,30 +103,32 @@ const StudentModularDashboard = ({ userBatch, onTabChange }) => {
                 </span>
               </Tooltip>
             }
+            id="dashboard-tab-2"
+            aria-controls="dashboard-tabpanel-2"
+            aria-label={hasResourceUpdates ? 'Resources (new updates)' : 'Resources'}
           />
-          <Tab icon={<Send className="w-5 h-5" />} iconPosition="start" label={<span className="flex items-center gap-2"><span>Submit Content</span></span>} />
-          <Tab icon={<TrendingUp className="w-5 h-5" />} iconPosition="start" label={<span className="flex items-center gap-2"><span>Analytics</span></span>} />
-          <Tab icon={<Clock className="w-5 h-5" />} iconPosition="start" label={<span className="flex items-center gap-2"><span>Pomodoro</span></span>} />
+          <Tab icon={<Send className="w-5 h-5" aria-hidden="true" />} iconPosition="start" label={<span className="flex items-center gap-2"><span>Submit Content</span></span>} id="dashboard-tab-3" aria-controls="dashboard-tabpanel-3" />
+          <Tab icon={<TrendingUp className="w-5 h-5" aria-hidden="true" />} iconPosition="start" label={<span className="flex items-center gap-2"><span>Analytics</span></span>} id="dashboard-tab-4" aria-controls="dashboard-tabpanel-4" />
+          <Tab icon={<Clock className="w-5 h-5" aria-hidden="true" />} iconPosition="start" label={<span className="flex items-center gap-2"><span>Pomodoro</span></span>} id="dashboard-tab-5" aria-controls="dashboard-tabpanel-5" />
         </Tabs>
       </div>
-
       <div>
-        <TabPanel value={activeTab} index={0}>
+        <TabPanel value={activeTab} index={0} labelledby="dashboard-tab-0">
           <AnnouncementPanel />
         </TabPanel>
-        <TabPanel value={activeTab} index={1}>
+        <TabPanel value={activeTab} index={1} labelledby="dashboard-tab-1">
           <ScheduleTable userBatch={userBatch} />
         </TabPanel>
-        <TabPanel value={activeTab} index={2}>
+        <TabPanel value={activeTab} index={2} labelledby="dashboard-tab-2">
           <ResourceLinks />
         </TabPanel>
-        <TabPanel value={activeTab} index={3}>
+        <TabPanel value={activeTab} index={3} labelledby="dashboard-tab-3">
           <ContentSubmissionPanel />
         </TabPanel>
-        <TabPanel value={activeTab} index={4}>
+        <TabPanel value={activeTab} index={4} labelledby="dashboard-tab-4">
           <StudentAnalytics />
         </TabPanel>
-        <TabPanel value={activeTab} index={5}>
+        <TabPanel value={activeTab} index={5} labelledby="dashboard-tab-5">
           <PomodoroTimer />
         </TabPanel>
       </div>
