@@ -11,23 +11,23 @@
  *
  * @module App
  */
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { useAuth } from './context/AuthContext';
 import { useTheme } from './context/ThemeContext';
-import Login from './components/Login';
-import Register from './components/Register';
-import KanbanBoard from './components/student/KanbanBoard';
-import AnnouncementTicker from './components/shared/AnnouncementTicker';
-import SemesterProgress from './components/shared/SemesterProgress';
-import DailyQuote from './components/shared/DailyQuote';
-import AdminPanel from './components/admin/AdminPanel';
-import StudentModularDashboard from './components/student/StudentModularDashboard';
-import GlobalSearch from './components/shared/GlobalSearch';
-import InstallPrompt from './components/shared/InstallPrompt';
-import NetworkStatus from './components/NetworkStatus';
-import InfoBar from './components/shared/InfoBar';
+const Login = lazy(() => import('./components/Login'));
+const Register = lazy(() => import('./components/Register'));
+const KanbanBoard = lazy(() => import('./components/student/KanbanBoard'));
+const AnnouncementTicker = lazy(() => import('./components/shared/AnnouncementTicker'));
+const SemesterProgress = lazy(() => import('./components/shared/SemesterProgress'));
+const DailyQuote = lazy(() => import('./components/shared/DailyQuote'));
+const AdminPanel = lazy(() => import('./components/admin/AdminPanel'));
+const StudentModularDashboard = lazy(() => import('./components/student/StudentModularDashboard'));
+const GlobalSearch = lazy(() => import('./components/shared/GlobalSearch'));
+const InstallPrompt = lazy(() => import('./components/shared/InstallPrompt'));
+const NetworkStatus = lazy(() => import('./components/NetworkStatus'));
+const InfoBar = lazy(() => import('./components/shared/InfoBar'));
 import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon, Search, Download } from 'lucide-react';
 import gsap from 'gsap';
 import muiTheme from './theme/muiTheme';
@@ -536,57 +536,59 @@ function App() {
         </div>
 
         {/* Admin Panel or Student Dashboard */}
-        {isAdmin() ? (
-          <AdminPanel
-            onTaskCreated={handleRefresh}
-            onAnnouncementCreated={handleRefresh}
-          />
-        ) : (
-          <div className="space-y-8">
-            {/* Modular Dashboard with Tabs */}
-            <StudentModularDashboard
-              userBatch={userData?.batch}
-              onTabChange={(handler) => studentDashboardRef.current = handler}
+        <Suspense fallback={<Loader loadingStates={loadingStates} loading={true} duration={1200} />}>
+          {isAdmin() ? (
+            <AdminPanel
+              onTaskCreated={handleRefresh}
+              onAnnouncementCreated={handleRefresh}
             />
+          ) : (
+            <div className="space-y-8">
+              {/* Modular Dashboard with Tabs */}
+              <StudentModularDashboard
+                userBatch={userData?.batch}
+                onTabChange={(handler) => studentDashboardRef.current = handler}
+              />
 
-            {/* Task Board */}
-            <div>
-              <div className="mb-6">
-                <h2 className="text-3xl font-bold dark:text-dark-text-primary light:text-light-text-primary flex items-center gap-3 mb-3">
-                  <Target className="w-8 h-8 text-sky-400" />
-                  <span>My Task Board</span>
-                </h2>
-                <div className="flex items-center gap-3">
-                  <Button
-                    size="small"
-                    startIcon={<Download className="w-4 h-4" />}
-                    onClick={handleExportTasks}
-                    sx={{
-                      color: 'var(--color-primary)',
-                      textTransform: 'none',
-                      fontSize: '0.875rem',
-                      fontWeight: 600,
-                      '&:hover': {
-                        backgroundColor: 'rgba(56, 189, 248, 0.1)'
-                      }
-                    }}
-                  >
-                    Export PDF
-                  </Button>
-                  <Button
-                    onClick={handleRefresh}
-                    startIcon={<RefreshCw className="w-4 h-4" />}
-                    variant="contained"
-                    className="!normal-case !font-semibold !px-5 !py-2.5 !rounded-xl !shadow-lg !shadow-sky-600/30 hover:!shadow-xl hover:!shadow-sky-600/40 hover:!scale-105"
-                  >
-                    Refresh
-                  </Button>
+              {/* Task Board */}
+              <div>
+                <div className="mb-6">
+                  <h2 className="text-3xl font-bold dark:text-dark-text-primary light:text-light-text-primary flex items-center gap-3 mb-3">
+                    <Target className="w-8 h-8 text-sky-400" />
+                    <span>My Task Board</span>
+                  </h2>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      size="small"
+                      startIcon={<Download className="w-4 h-4" />}
+                      onClick={handleExportTasks}
+                      sx={{
+                        color: 'var(--color-primary)',
+                        textTransform: 'none',
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        '&:hover': {
+                          backgroundColor: 'rgba(56, 189, 248, 0.1)'
+                        }
+                      }}
+                    >
+                      Export PDF
+                    </Button>
+                    <Button
+                      onClick={handleRefresh}
+                      startIcon={<RefreshCw className="w-4 h-4" />}
+                      variant="contained"
+                      className="!normal-case !font-semibold !px-5 !py-2.5 !rounded-xl !shadow-lg !shadow-sky-600/30 hover:!shadow-xl hover:!shadow-sky-600/40 hover:!scale-105"
+                    >
+                      Refresh
+                    </Button>
+                  </div>
                 </div>
+                <KanbanBoard key={refreshKey} />
               </div>
-              <KanbanBoard key={refreshKey} />
             </div>
-          </div>
-        )}
+          )}
+        </Suspense>
       </main>
       </div>
 
