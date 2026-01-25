@@ -1,3 +1,26 @@
 {
-  "error": "This manifest has been removed. Please clear your browser cache."
+  "name": "1A-genda",
+  "short_name": "1A-genda",
+  "description": "A modern class management and task tracking app for students and administrators.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#18181b",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
