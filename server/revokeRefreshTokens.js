@@ -1,3 +1,4 @@
+/* eslint-env node */
 /*
   Example server endpoint to revoke a user's refresh tokens (force sign-out everywhere).
   - Requires Firebase Admin SDK and proper service account credentials

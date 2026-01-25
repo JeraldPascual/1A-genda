@@ -1,9 +1,7 @@
-// Emergency: self-destruct service worker
-self.addEventListener('install', function(e) {
+self.addEventListener('install', function() {
   self.skipWaiting();
 });
-
-self.addEventListener('activate', function(e) {
+self.addEventListener('activate', function() {
   self.registration.unregister()
     .then(function() {
       return self.clients.matchAll();

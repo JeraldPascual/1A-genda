@@ -36,14 +36,14 @@ const AnnouncementPanel = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const cardRefs = useRef([]);
 
-  useEffect(() => {
-    loadAnnouncements();
-  }, []);
-
   const loadAnnouncements = async () => {
     const data = await getActiveAnnouncements();
     setAnnouncements(data);
   };
+
+  useEffect(() => {
+    loadAnnouncements();
+  }, []);
 
   const handleExportAnnouncements = () => {
     exportAnnouncementsToPDF(announcements);

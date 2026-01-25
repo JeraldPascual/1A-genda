@@ -20,14 +20,14 @@ const AnnouncementTicker = () => {
   const tickerRef = useRef(null);
   const containerRef = useRef(null);
 
-  useEffect(() => {
-    loadAnnouncements();
-  }, []);
-
   const loadAnnouncements = async () => {
     const data = await getActiveAnnouncements();
     setAnnouncements(data);
   };
+
+  useEffect(() => {
+    loadAnnouncements();
+  }, []);
 
   useEffect(() => {
     if (announcements.length === 0 || !tickerRef.current) return;

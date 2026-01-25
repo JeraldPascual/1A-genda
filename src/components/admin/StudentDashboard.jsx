@@ -130,161 +130,163 @@ const StudentDashboard = () => {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Current Date and Google Calendar Link */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-6">
-        <div>
-          <span className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary">{todayString}</span>
-        </div>
-        <div>
-          <a
-            href="https://calendar.google.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block px-4 py-2 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition-colors text-sm"
-          >
-            Open Google Calendar
-          </a>
-        </div>
-      </div>
-      <div className="mb-6">
-          <h2 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary">Student Demographics</h2>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-hidden max-w-full">
-        <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-sky-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
-          <div className="relative z-10">
-              <p className="text-3xl font-bold dark:text-sky-400 light:text-light-text-primary">{stats.totalStudents}</p>
-              <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mt-1">Total Students</p>
+    <>
+      <div className="space-y-6">
+        {/* Current Date and Google Calendar Link */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-6">
+          <div>
+            <span className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary">{todayString}</span>
+          </div>
+          <div>
+            <a
+              href="https://calendar.google.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-4 py-2 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition-colors text-sm"
+            >
+              Open Google Calendar
+            </a>
           </div>
         </div>
-
-        <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-emerald-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
-          <div className="relative z-10">
-            <p className="text-3xl font-bold dark:text-emerald-400 light:text-light-text-primary">{stats.activeStudents}</p>
-              <p className="dark:text-dark-text-muted light:text-light-text-muted text-sm mt-2">Active Students</p>
-          </div>
+        <div className="mb-6">
+            <h2 className="text-2xl font-bold dark:text-dark-text-primary light:text-light-text-primary">Student Demographics</h2>
         </div>
 
-        <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-amber-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
-          <div className="relative z-10">
-            <p className="text-3xl font-bold dark:text-amber-400 light:text-light-text-primary">{stats.averageCompletion}%</p>
-              <p className="dark:text-dark-text-muted light:text-light-text-muted text-sm mt-2">Avg. Completion</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-hidden max-w-full">
+          <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-sky-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+            <div className="relative z-10">
+                <p className="text-3xl font-bold dark:text-sky-400 light:text-light-text-primary">{stats.totalStudents}</p>
+                <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mt-1">Total Students</p>
+            </div>
           </div>
-        </div>
 
-        <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-purple-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
-          <div className="relative z-10">
-              <div className="flex gap-4">
-              <div>
-                <p className="text-2xl font-bold dark:text-amber-400 light:text-light-text-primary">{stats.batch1A1Count}</p>
-                  <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted">Batch 1A1</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold dark:text-purple-400 light:text-light-text-primary">{stats.batch1A2Count}</p>
-                  <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted">Batch 1A2</p>
+          <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-emerald-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+            <div className="relative z-10">
+              <p className="text-3xl font-bold dark:text-emerald-400 light:text-light-text-primary">{stats.activeStudents}</p>
+                <p className="dark:text-dark-text-muted light:text-light-text-muted text-sm mt-2">Active Students</p>
+            </div>
+          </div>
+
+          <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-amber-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+            <div className="relative z-10">
+              <p className="text-3xl font-bold dark:text-amber-400 light:text-light-text-primary">{stats.averageCompletion}%</p>
+                <p className="dark:text-dark-text-muted light:text-light-text-muted text-sm mt-2">Avg. Completion</p>
+            </div>
+          </div>
+
+          <div className="dark:bg-slate-900/30 light:bg-white border dark:border-slate-800/50 light:border-gray-200 p-6 rounded-xl hover:border-purple-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+            <div className="relative z-10">
+                <div className="flex gap-4">
+                <div>
+                  <p className="text-2xl font-bold dark:text-amber-400 light:text-light-text-primary">{stats.batch1A1Count}</p>
+                    <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted">Batch 1A1</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold dark:text-purple-400 light:text-light-text-primary">{stats.batch1A2Count}</p>
+                    <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted">Batch 1A2</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* New Request Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-x-hidden max-w-full">
-        <div className="dark:bg-slate-900/30 light:bg-white border dark:border-purple-800/50 light:border-gray-200 p-6 rounded-xl hover:border-purple-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
-          <div className="relative z-10">
-            <p className="text-3xl font-bold dark:text-purple-400 light:text-light-text-primary">{stats.totalRevisionRequests}</p>
-              <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mt-1">Revision Requests</p>
+        {/* New Request Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-x-hidden max-w-full">
+          <div className="dark:bg-slate-900/30 light:bg-white border dark:border-purple-800/50 light:border-gray-200 p-6 rounded-xl hover:border-purple-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+            <div className="relative z-10">
+              <p className="text-3xl font-bold dark:text-purple-400 light:text-light-text-primary">{stats.totalRevisionRequests}</p>
+                <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mt-1">Revision Requests</p>
+            </div>
+          </div>
+
+          <div className="dark:bg-slate-900/30 light:!bg-blue-600 border dark:border-blue-800/50 light:!border-blue-500 p-6 rounded-xl hover:border-blue-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
+            <div className="relative z-10">
+              <p className="text-3xl font-bold dark:text-blue-400 light:!text-white">{stats.totalContentSubmissions}</p>
+                <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mt-1">Content Submissions</p>
+            </div>
           </div>
         </div>
 
-        <div className="dark:bg-slate-900/30 light:!bg-blue-600 border dark:border-blue-800/50 light:!border-blue-500 p-6 rounded-xl hover:border-blue-500/30 hover:shadow-lg transition-all group relative overflow-hidden">
-          <div className="relative z-10">
-            <p className="text-3xl font-bold dark:text-blue-400 light:!text-white">{stats.totalContentSubmissions}</p>
-              <p className="text-sm dark:text-dark-text-muted light:text-light-text-muted mt-1">Content Submissions</p>
+        <div className="glass-card rounded-xl shadow-lg overflow-hidden">
+          <div className="dark:bg-sky-500/10 light:bg-gray-50 p-4 shadow-sm">
+            <h3 className="text-lg font-bold dark:text-dark-text-primary light:text-light-text-primary">All Students ({students.length})</h3>
           </div>
-        </div>
-      </div>
 
-      <div className="glass-card rounded-xl shadow-lg overflow-hidden">
-        <div className="dark:bg-sky-500/10 light:bg-gray-50 p-4 shadow-sm">
-          <h3 className="text-lg font-bold dark:text-dark-text-primary light:text-light-text-primary">All Students ({students.length})</h3>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="">
-                <th className="text-left p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Student</th>
-                <th className="text-left p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Email</th>
-                <th className="text-center p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Batch</th>
-                <th className="text-center p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Joined</th>
-                <th className="text-center p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Tasks</th>
-                <th className="text-center p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Completion Rate</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="text-center p-8 dark:text-dark-text-muted light:text-light-text-muted">
-                    No students registered yet
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="">
+                  <th className="text-left p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Student</th>
+                  <th className="text-left p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Email</th>
+                  <th className="text-center p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Batch</th>
+                  <th className="text-center p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Joined</th>
+                  <th className="text-center p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Tasks</th>
+                  <th className="text-center p-4 text-sm font-semibold dark:text-dark-text-secondary light:text-light-text-secondary">Completion Rate</th>
                 </tr>
-              ) : (
-                students.map((student) => (
-                  <tr
-                    key={student.id}
-                    className="dark:hover:bg-sky-500/5 light:hover:bg-gray-50 transition-all"
-                  >
-                    <td className="p-4">
-                      <div>
-                        <p className="font-semibold dark:text-dark-text-primary light:text-light-text-primary">{student.displayName}</p>
-                        <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted capitalize">{student.role}</p>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <span className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary">{student.email}</span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                        student.batch === '1A1'
-                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                          : student.batch === '1A2'
-                          ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                          : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
-                      }`}>
-                        {student.batch || 'N/A'}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary">{formatDate(student.createdAt)}</span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span className="text-sm font-semibold dark:text-dark-text-primary light:text-light-text-primary">
-                        {student.completedTasks} / {student.totalTasks}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex flex-col items-center gap-2">
-                        <span className={`text-sm font-bold px-3 py-1 rounded-full border ${getCompletionColor(student.completionRate)}`}>
-                          {student.completionRate}%
-                        </span>
-                        <div className="w-full bg-slate-700/30 rounded-full h-2 overflow-hidden">
-                          <div
-                            className={`h-full ${getProgressBarColor(student.completionRate)} transition-all duration-500 rounded-full`}
-                            style={{ width: `${student.completionRate}%` }}
-                          />
-                        </div>
-                      </div>
+              </thead>
+              <tbody>
+                {students.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center p-8 dark:text-dark-text-muted light:text-light-text-muted">
+                      No students registered yet
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  students.map((student) => (
+                    <tr
+                      key={student.id}
+                      className="dark:hover:bg-sky-500/5 light:hover:bg-gray-50 transition-all"
+                    >
+                      <td className="p-4">
+                        <div>
+                          <p className="font-semibold dark:text-dark-text-primary light:text-light-text-primary">{student.displayName}</p>
+                          <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted capitalize">{student.role}</p>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <span className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary">{student.email}</span>
+                      </td>
+                      <td className="p-4 text-center">
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                          student.batch === '1A1'
+                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                            : student.batch === '1A2'
+                            ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                            : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
+                        }`}>
+                          {student.batch || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="p-4 text-center">
+                        <span className="text-sm dark:text-dark-text-secondary light:text-light-text-secondary">{formatDate(student.createdAt)}</span>
+                      </td>
+                      <td className="p-4 text-center">
+                        <span className="text-sm font-semibold dark:text-dark-text-primary light:text-light-text-primary">
+                          {student.completedTasks} / {student.totalTasks}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex flex-col items-center gap-2">
+                          <span className={`text-sm font-bold px-3 py-1 rounded-full border ${getCompletionColor(student.completionRate)}`}>
+                            {student.completionRate}%
+                          </span>
+                          <div className="w-full bg-slate-700/30 rounded-full h-2 overflow-hidden">
+                            <div
+                              className={`h-full ${getProgressBarColor(student.completionRate)} transition-all duration-500 rounded-full`}
+                              style={{ width: `${student.completionRate}%` }}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

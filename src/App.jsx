@@ -224,7 +224,7 @@ function App() {
     try {
       const seen = localStorage.getItem('msl_seen_v1');
       if (seen) setAnimationDone(true);
-    } catch (e) {
+    } catch {
       setAnimationDone(true);
     }
   }, []);
@@ -252,7 +252,7 @@ function App() {
       if (type === 'reload') {
         setForceLoaderOnce(true);
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, []);

@@ -72,7 +72,7 @@ const NetworkStatus = () => {
                       const res = await fetch('/favicon.ico', { method: 'HEAD', cache: 'no-store', signal: controller.signal });
                       clearTimeout(id);
                       return res && (res.ok || res.status === 200);
-                    } catch (err) {
+                    } catch {
                       clearTimeout(id);
                       return false;
                     }
