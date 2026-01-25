@@ -29,7 +29,7 @@ dist-ssr
 *.sw?
 .env
 .env.example
-FIRESTORE_INDEX_FIX.md
-FIRESTORE_RULES.md
-DEPLOYMENT.md
-FIRESTORE_RULES_DEPLOYMENT.md
+
+# Project docs to ignore
+FUTURE_UPDATES.md
+SHADCN_SETUP.md
