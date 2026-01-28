@@ -23,6 +23,7 @@ import gsap from 'gsap';
 import { createTaskRevisionRequest } from '../../utils/firestore';
 import { uploadFile, validateAttachmentsSize } from '../../utils/fileUpload';
 import { useAuth } from '../../context/AuthContext';
+import { hasSpecialEffects } from '../../utils/specialEffects';
 import AttachmentList from '../shared/AttachmentList';
 import MarkdownDisplay from '../shared/MarkdownDisplay';
 import MarkdownEditor from '../shared/MarkdownEditor';
@@ -415,7 +416,18 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
                 onClick={() => handleMove(previousColumn.id)}
                 variant="contained"
                 startIcon={<ArrowLeft className="w-4 h-4" />}
-                className="!flex-1 !text-xs !font-semibold !py-2.5 !bg-slate-600 hover:!bg-slate-700 !normal-case"
+                sx={hasSpecialEffects(userData) ? {
+                  background: 'linear-gradient(135deg, #F88379 0%, #db2777 100%) !important',
+                  boxShadow: '0 4px 10px rgba(236, 72, 153, 0.4) !important',
+                  border: 'none !important',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #faa099 0%, #ec4899 100%) !important',
+                    boxShadow: '0 6px 14px rgba(236, 72, 153, 0.6) !important',
+                  }
+                } : undefined}
+                className={`!flex-1 !text-xs !font-semibold !py-2.5 !normal-case ${
+                  !hasSpecialEffects(userData) ? '!bg-slate-600 hover:!bg-slate-700' : ''
+                }`}
               >
                 Back to {previousColumn.title}
               </Button>
@@ -425,7 +437,16 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
                 onClick={() => handleMove(nextColumn.id)}
                 variant="contained"
                 endIcon={<ArrowRight className="w-4 h-4" />}
-                color="success"
+                color={hasSpecialEffects(userData) ? 'secondary' : 'success'}
+                sx={hasSpecialEffects(userData) ? {
+                  background: 'linear-gradient(135deg, #F88379 0%, #db2777 100%) !important',
+                  boxShadow: '0 4px 10px rgba(236, 72, 153, 0.4) !important',
+                  border: 'none !important',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #faa099 0%, #ec4899 100%) !important',
+                    boxShadow: '0 6px 14px rgba(236, 72, 153, 0.6) !important',
+                  }
+                } : undefined}
                 className="!flex-1 !text-xs !font-semibold !py-2.5 !normal-case"
               >
                 {nextColumn.id === 'done' ? 'Mark Complete' : `Move to ${nextColumn.title}`}

@@ -35,6 +35,8 @@ import { getAllGlobalTasks } from './utils/firestore';
 import { exportTasksToPDF } from './utils/pdfExport';
 import { MultiStepLoader as Loader } from './components/ui/multi-step-loader';
 import HeartTrail from './components/shared/HeartTrail';
+import PinkThemeManager from './components/shared/PinkThemeManager';
+import BearMascot from './components/shared/BearMascot';
 import { hasSpecialEffects } from './utils/specialEffects';
 
 // Site-specific loading messages for the page-load overlay
@@ -425,102 +427,106 @@ function App() {
 
   return (
     <ThemeProvider theme={muiTheme}>
+      <PinkThemeManager />
+      <BearMascot />
       {/* Page-load loader overlay */}
       <Loader loadingStates={loadingStates} loading={pageLoading} duration={1800} forceRunOnce={forceLoaderOnce} onAnimationComplete={() => { setAnimationDone(true); setForceLoaderOnce(false); }} />
       <div className="min-h-screen max-w-full">
-      {/* Announcement Ticker - Sticky at top */}
-      <div className="sticky top-0 z-50 overflow-x-hidden">
-        <AnnouncementTicker key={`announcement-${refreshKey}`} />
-      </div>
+      {/* Header Group */}
+      <div className="relative top-0 z-50 w-full">
+        {/* Announcement Ticker */}
+        <div className="overflow-x-hidden bg-background">
+          <AnnouncementTicker key={`announcement-${refreshKey}`} />
+        </div>
 
-      {/* Network status banner (online/offline) */}
-      <NetworkStatus />
+        {/* Network status banner (online/offline) */}
+        <NetworkStatus />
 
-
-      {/* Header - Sticky below ticker */}
-      <header
-        ref={headerRef}
-        className="glass-effect sticky top-[38px] z-40 backdrop-blur-xl shadow-lg shadow-black/5"
-        style={{ opacity: 1, visibility: 'visible' }}
-      >
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-5 overflow-x-hidden">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0" style={{ opacity: 1 }}>
-            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-gradient-to-br from-sky-500 to-blue-600 rounded-lg sm:rounded-xl shadow-lg shadow-sky-500/30">
-                  <LayoutDashboard className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        {/* Header */}
+        <header
+          ref={headerRef}
+          className="glass-effect backdrop-blur-xl shadow-lg shadow-black/5"
+          style={{ opacity: 1, visibility: 'visible' }}
+        >
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-5 overflow-x-hidden">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0" style={{ opacity: 1 }}>
+              <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="p-1.5 sm:p-2 bg-gradient-to-br from-sky-500 to-blue-600 rounded-lg sm:rounded-xl shadow-lg shadow-sky-500/30">
+                    <LayoutDashboard className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  </div>
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-500 to-cyan-400">
+                    1A-genda
+                  </h1>
                 </div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-500 to-cyan-400">
-                  1A-genda
-                </h1>
-              </div>
-              {isAdmin() && (
-                <span className="bg-gradient-to-r from-sky-500/10 to-blue-500/10 text-sky-400 text-xs font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-sky-500/30 shadow-sm whitespace-nowrap">
-                  P.I.O. Admin
-                </span>
-              )}
-              {!isAdmin() && userData?.batch && (
-                <span className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-400 text-xs font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-amber-500/30 shadow-sm whitespace-nowrap">
-                  Batch {userData.batch}
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
-              <div className="text-left sm:text-right">
-                <p className="text-xs sm:text-sm font-semibold dark:text-dark-text-primary light:text-light-text-primary truncate max-w-[150px] sm:max-w-none">
-                  {userData?.displayName || user.email}
-                </p>
-                <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted">
-                  {isAdmin() ? 'Administrator' : 'Student'}
-                </p>
+                {isAdmin() && (
+                  <span className="bg-gradient-to-r from-sky-500/10 to-blue-500/10 text-sky-400 text-xs font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-sky-500/30 shadow-sm whitespace-nowrap">
+                    P.I.O. Admin
+                  </span>
+                )}
+                {!isAdmin() && userData?.batch && (
+                  <span className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-400 text-xs font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-amber-500/30 shadow-sm whitespace-nowrap">
+                    Batch {userData.batch}
+                  </span>
+                )}
               </div>
 
-              <div className="flex items-center gap-2">
-                <IconButton
-                  onClick={() => setShowSearch(true)}
-                  title="Search (Ctrl+K)"
-                  sx={{
-                    color: 'var(--color-text-primary)',
-                    '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.1)' },
-                  }}
-                >
-                  <Search className="w-5 h-5" />
-                </IconButton>
+              <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                <div className="text-left sm:text-right">
+                  <p className="text-xs sm:text-sm font-semibold dark:text-dark-text-primary light:text-light-text-primary truncate max-w-[150px] sm:max-w-none">
+                    {userData?.displayName || user.email}
+                  </p>
+                  <p className="text-xs dark:text-dark-text-muted light:text-light-text-muted">
+                    {isAdmin() ? 'Administrator' : 'Student'}
+                  </p>
+                </div>
 
-                <IconButton
-                  onClick={handleThemeToggle}
-                  title={theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
-                  sx={{
-                    color: 'var(--color-text-primary)',
-                    '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.1)' },
-                  }}
-                >
-                  {theme === 'dark' ? (
-                    <Sun className="w-5 h-5" />
-                  ) : (
-                    <Moon className="w-5 h-5" />
-                  )}
-                </IconButton>
+                <div className="flex items-center gap-2">
+                  <IconButton
+                    onClick={() => setShowSearch(true)}
+                    title="Search (Ctrl+K)"
+                    sx={{
+                      color: 'var(--color-text-primary)',
+                      '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.1)' },
+                    }}
+                  >
+                    <Search className="w-5 h-5" />
+                  </IconButton>
 
-                <Button
-                  onClick={() => setShowLogoutDialog(true)}
-                  startIcon={<LogOut className="w-4 h-4" />}
-                  variant="outlined"
-                  className="glass-effect dark:!text-dark-text-primary light:!text-light-text-primary !normal-case !font-medium !px-3 sm:!px-4 !py-2 sm:!py-2.5 !rounded-lg sm:!rounded-xl !transition-all !duration-200 hover:!shadow-lg hover:!shadow-sky-500/20"
-                  sx={{
-                    '& .MuiButton-startIcon': {
-                      margin: { xs: 0, sm: '0 8px 0 -4px' },
-                    },
-                  }}
-                >
-                  <span className="hidden sm:inline">Sign Out</span>
-                </Button>
+                  <IconButton
+                    onClick={handleThemeToggle}
+                    title={theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+                    sx={{
+                      color: 'var(--color-text-primary)',
+                      '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.1)' },
+                    }}
+                  >
+                    {theme === 'dark' ? (
+                      <Sun className="w-5 h-5" />
+                    ) : (
+                      <Moon className="w-5 h-5" />
+                    )}
+                  </IconButton>
+
+                  <Button
+                    onClick={() => setShowLogoutDialog(true)}
+                    startIcon={<LogOut className="w-4 h-4" />}
+                    variant="outlined"
+                    className="glass-effect dark:!text-dark-text-primary light:!text-light-text-primary !normal-case !font-medium !px-3 sm:!px-4 !py-2 sm:!py-2.5 !rounded-lg sm:!rounded-xl !transition-all !duration-200 hover:!shadow-lg hover:!shadow-sky-500/20"
+                    sx={{
+                      '& .MuiButton-startIcon': {
+                        margin: { xs: 0, sm: '0 8px 0 -4px' },
+                      },
+                    }}
+                  >
+                    <span className="hidden sm:inline">Sign Out</span>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
 
       {/* InfoBar below header for all users */}
       <InfoBar />

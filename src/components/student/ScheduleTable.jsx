@@ -13,8 +13,12 @@
 import { useState } from 'react';
 import { Calendar, Clock, MapPin, User, X } from 'lucide-react';
 import { Button } from '@mui/material';
+import { useAuth } from '../../context/AuthContext';
+import { hasSpecialEffects } from '../../utils/specialEffects';
+import F1Car from '../shared/F1Car';
 
 const ScheduleTable = ({ userBatch }) => {
+  const { userData } = useAuth();
   const [showFullSchedule, setShowFullSchedule] = useState(false);
 
   const scheduleData = {
@@ -153,13 +157,26 @@ const ScheduleTable = ({ userBatch }) => {
                 tabIndex={0}
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <div className={`px-3 py-1 rounded-lg font-bold ${
-                    classes.length === 0
-                      ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:text-light-text-primary'
-                      : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary'
-                  }`}>
-                    {day}
-                  </div>
+                  {hasSpecialEffects(userData) ? (
+                    <div className="flex items-center gap-4">
+                      <div className={`px-3 py-1 rounded-lg font-bold ${
+                        classes.length === 0
+                          ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:text-light-text-primary'
+                          : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary'
+                      }`}>
+                        {day}
+                      </div>
+                      <F1Car />
+                    </div>
+                  ) : (
+                    <div className={`px-3 py-1 rounded-lg font-bold ${
+                      classes.length === 0
+                        ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:text-light-text-primary'
+                        : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary'
+                    }`}>
+                      {day}
+                    </div>
+                  )}
                   {classes.length === 0 && (
                     <span className="text-sm dark:text-dark-text-muted light:text-light-text-muted italic">
                       No classes
@@ -250,13 +267,26 @@ const ScheduleTable = ({ userBatch }) => {
                     tabIndex={0}
                   >
                     <div className="flex items-center gap-2 mb-3">
-                      <div className={`px-3 py-1 rounded-lg font-bold ${
-                        classes.length === 0
-                          ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:!text-white'
-                          : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white'
-                      }`}>
-                        {day}
-                      </div>
+                      {hasSpecialEffects(userData) ? (
+                        <div className="flex items-center gap-4">
+                          <div className={`px-3 py-1 rounded-lg font-bold ${
+                            classes.length === 0
+                              ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:!text-white'
+                              : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white'
+                          }`}>
+                            {day}
+                          </div>
+                          <F1Car />
+                        </div>
+                      ) : (
+                        <div className={`px-3 py-1 rounded-lg font-bold ${
+                          classes.length === 0
+                            ? 'dark:bg-slate-700/50 light:!bg-blue-700 dark:text-slate-400 light:!text-white'
+                            : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:!text-white'
+                        }`}>
+                          {day}
+                        </div>
+                      )}
                       {classes.length === 0 && (
                         <span className="text-sm dark:text-dark-text-muted light:!text-white/80 italic">
                           No classes

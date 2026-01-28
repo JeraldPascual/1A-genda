@@ -29,6 +29,57 @@ const HEART_PATH =
 const HEART_COLOR = '#F88379';
 
 
+export function triggerPinkFireworks() {
+  // Dispatch event for other components (e.g., BearMascot)
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('allTasksCompleted'));
+  }
+
+  const duration = 5 * 1000;
+  const animationEnd = Date.now() + duration;
+  const defaults = { startVelocity: 45, spread: 360, ticks: 100, zIndex: 9999, gravity: 0.8 };
+
+  const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+  const interval = setInterval(function() {
+    const timeLeft = animationEnd - Date.now();
+
+    if (timeLeft <= 0) {
+      return clearInterval(interval);
+    }
+
+    const particleCount = 60 * (timeLeft / duration);
+    
+    // Shoot from the bottom center-ish, like real fireworks rising
+    // We use a lower y origin (closer to 1) and high velocity
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: randomInRange(0.2, 0.4), y: Math.random() - 0.2 }, // Top burst
+      colors: ['#ec4899', '#fce7f3', '#db2777', '#be185d']
+    });
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: randomInRange(0.6, 0.8), y: Math.random() - 0.2 }, // Top burst
+      colors: ['#ec4899', '#fce7f3', '#db2777', '#be185d']
+    });
+    
+    // Bottom-up launching effect (streams)
+    confetti({
+      ...defaults,
+      startVelocity: 60,
+      gravity: 0.5,
+      spread: 80,
+      particleCount: 15,
+      origin: { x: randomInRange(0.1, 0.9), y: 1 }, // Launch from bottom
+      colors: ['#ec4899', '#db2777'],
+      drift: randomInRange(-0.5, 0.5)
+    });
+
+  }, 300);
+}
+
 export function triggerHeartConfetti(options = {}) {
   const count = options.count || 29;
   const color = options.color || HEART_COLOR;
@@ -48,7 +99,7 @@ export function triggerHeartConfetti(options = {}) {
       colors: [color],
       ...options,
     });
-  } catch (e) {
+  } catch {
     // Fallback to emoji hearts if SVG fails
     confetti({
       particleCount: count,

@@ -18,7 +18,7 @@ import {
   createTaskCreationRequest,
   getTaskCreationRequests
 } from '../../utils/firestore';
-import { triggerHeartConfetti, hasSpecialEffects } from '../../utils/specialEffects';
+import { triggerHeartConfetti, triggerPinkFireworks, hasSpecialEffects } from '../../utils/specialEffects';
 import { PlusCircle, Upload, Paperclip, X as XIcon, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { uploadFile, formatFileSize } from '../../utils/fileUpload';
 import MarkdownEditor from '../shared/MarkdownEditor';
@@ -154,36 +154,6 @@ const KanbanBoard = () => {
     }
     setLoading(false);
   };
-  /**
-   * Triggers confetti effect when a task is completed.
-   * For special users, show 29-heart confetti. For others, use default confetti.
-   */
-  const triggerConfetti = () => {
-    if (hasSpecialEffects(userData)) {
-      triggerHeartConfetti();
-    } else {
-      // Default confetti (fallback for non-special users)
-      import('canvas-confetti').then(({ default: confetti }) => {
-        const count = 200;
-        const defaults = {
-          origin: { y: 0.7 },
-          zIndex: 9999,
-        };
-        function fire(particleRatio, opts) {
-          confetti({
-            ...defaults,
-            ...opts,
-            particleCount: Math.floor(count * particleRatio),
-          });
-        }
-        fire(0.25, { spread: 26, startVelocity: 55 });
-        fire(0.2, { spread: 60 });
-        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-        fire(0.1, { spread: 120, startVelocity: 45 });
-      });
-    }
-  };
 
   const handleMoveTask = async (task, newColumn) => {
     if (isAdmin()) return; // Admin can't move tasks
@@ -209,9 +179,28 @@ const KanbanBoard = () => {
           )
         );
 
-        // Trigger confetti if moved to done
+        // Trigger effects if moved to done
         if (newColumn === 'done') {
-          triggerConfetti();
+          if (hasSpecialEffects(userData)) {
+            // Heart confetti for individual task completion
+            triggerHeartConfetti();
+            
+            // Check if ALL tasks are now done
+            // Use current 'tasks' state, assuming the current task is now done
+            const allDone = tasks.every(t => 
+              t.id === task.id ? true : t.column === 'done'
+            );
+            
+            if (allDone) {
+              // Trigger big fireworks if everything is completed
+              setTimeout(() => triggerPinkFireworks(), 800); // Slight delay for dramatic effect
+            }
+          } else {
+            // Default confetti for normal users
+            import('canvas-confetti').then(({ default: confetti }) => {
+               confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            });
+          }
         }
       } else {
         console.error('Failed to update task:', result.error);
