@@ -34,6 +34,8 @@ import muiTheme from './theme/muiTheme';
 import { getAllGlobalTasks } from './utils/firestore';
 import { exportTasksToPDF } from './utils/pdfExport';
 import { MultiStepLoader as Loader } from './components/ui/multi-step-loader';
+import HeartTrail from './components/shared/HeartTrail';
+import { hasSpecialEffects } from './utils/specialEffects';
 
 // Site-specific loading messages for the page-load overlay
 const loadingStates = [
@@ -584,13 +586,18 @@ function App() {
                     </Button>
                   </div>
                 </div>
-                <KanbanBoard key={refreshKey} />
+                <KanbanBoard key={refreshKey} userData={userData} />
               </div>
             </div>
           )}
         </Suspense>
       </main>
       </div>
+
+      {/* HeartTrail: only for users with specialEffects enabled */}
+      {hasSpecialEffects(userData) && (
+        <HeartTrail enabled color="#F88379" />
+      )}
 
       {/* Logout Confirmation Dialog */}
       <Dialog
