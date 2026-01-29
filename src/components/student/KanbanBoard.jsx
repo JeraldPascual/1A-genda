@@ -124,18 +124,29 @@ const KanbanBoard = () => {
           setMyRequests(requests);
         }
 
-        // Filter tasks for user's batch
+        // Filter tasks for user's batch or specific assignment
         const userTasks = [];
 
         globalTasks.forEach(task => {
-          // Tasks without batch or 'all' batch - available to everyone
-          if (!task.batch || task.batch === 'all') {
+          // 1. Task assigned specifically to this user
+          if (task.assignedToUserId === user.uid) {
             userTasks.push({
               ...task,
               column: progressMap[task.id] || task.column || 'todo',
             });
           }
-          // Tasks matching user's batch
+          // 2. Task assigned to another user - SKIP
+          else if (task.assignedToUserId) {
+            return;
+          }
+          // 3. Tasks without batch or 'all' batch - available to everyone
+          else if (!task.batch || task.batch === 'all') {
+            userTasks.push({
+              ...task,
+              column: progressMap[task.id] || task.column || 'todo',
+            });
+          }
+          // 4. Tasks matching user's batch
           else if (task.batch === userBatch) {
             userTasks.push({
               ...task,

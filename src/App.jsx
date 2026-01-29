@@ -324,9 +324,14 @@ function App() {
       setResourcesReady(false);
       try {
         const tasksData = await getAllGlobalTasks();
-        const filteredTasks = tasksData.filter(task =>
-          !task.batch || task.batch === 'all' || task.batch === userData.batch
-        );
+        const filteredTasks = tasksData.filter(task => {
+          // 1. Assigned to me?
+          if (task.assignedToUserId === user.uid) return true;
+          // 2. Assigned to someone else?
+          if (task.assignedToUserId) return false;
+          // 3. Global or matching batch?
+          return !task.batch || task.batch === 'all' || task.batch === userData.batch;
+        });
         setTasks(filteredTasks);
       } finally {
         // resources finished (either success or fail)
@@ -433,7 +438,7 @@ function App() {
       <Loader loadingStates={loadingStates} loading={pageLoading} duration={1800} forceRunOnce={forceLoaderOnce} onAnimationComplete={() => { setAnimationDone(true); setForceLoaderOnce(false); }} />
       <div className="min-h-screen max-w-full">
       {/* Header Group */}
-      <div className="relative top-0 z-50 w-full">
+      <div className="sticky top-0 z-50 w-full">
         {/* Announcement Ticker */}
         <div className="overflow-x-hidden bg-background">
           <AnnouncementTicker key={`announcement-${refreshKey}`} />

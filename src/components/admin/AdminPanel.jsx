@@ -37,6 +37,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   const [announcementRevisionRequests, setAnnouncementRevisionRequests] = useState([]);
   const [contentSubmissionRequests, setContentSubmissionRequests] = useState([]);
   const [orphanedUsers, setOrphanedUsers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [batchFilter, setBatchFilter] = useState('all'); // Filter for viewing tasks
 
   // Edit dialogs
@@ -55,6 +56,8 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
     priority: 'medium',
     column: 'todo',
     batch: 'all', // all, 1A1, or 1A2
+    targetType: 'all', // all, batch, or user
+    assignedToUserId: '',
   });
   const [taskAttachments, setTaskAttachments] = useState([]);
   const [uploadingTask, setUploadingTask] = useState(false);
@@ -81,6 +84,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   useEffect(() => {
     if (activeTab === 'viewTasks') {
       loadTasks();
+      loadUsers();
     } else if (activeTab === 'viewAnnouncements') {
       loadAnnouncements();
     } else if (activeTab === 'taskCreationRequests') {
@@ -93,8 +97,15 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
       loadContentSubmissionRequests();
     } else if (activeTab === 'utilities') {
       loadOrphanedUsers();
+    } else if (activeTab === 'task') {
+      loadUsers();
     }
   }, [activeTab]);
+
+  const loadUsers = async () => {
+    const data = await getAllUsers();
+    setUsers(data);
+  };
 
   const loadOrphanedUsers = async () => {
     const userIds = await getAllUserIdsWithData();
@@ -544,12 +555,28 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
 
     try {
       const taskData = {
-        ...taskForm,
+        title: taskForm.title,
+        description: taskForm.description,
+        subject: taskForm.subject,
         dueDate: taskForm.dueDate ? Timestamp.fromDate(new Date(taskForm.dueDate)) : null,
+        priority: taskForm.priority,
+        column: taskForm.column,
         createdBy: user.uid,
         order: Date.now(), // Simple ordering
         attachments: taskAttachments,
       };
+
+      // Handle Target Type
+      if (taskForm.targetType === 'user') {
+        taskData.assignedToUserId = taskForm.assignedToUserId;
+        taskData.batch = 'specific_user'; // Marker for specific user task
+      } else if (taskForm.targetType === '1A1') {
+        taskData.batch = '1A1';
+      } else if (taskForm.targetType === '1A2') {
+        taskData.batch = '1A2';
+      } else {
+        taskData.batch = 'all';
+      }
 
       const result = await createGlobalTask(taskData);
 
@@ -563,6 +590,8 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
           priority: 'medium',
           column: 'todo',
           batch: 'all',
+          targetType: 'all',
+          assignedToUserId: '',
         });
         setTaskAttachments([]);
         setUploadTaskError('');
@@ -917,26 +946,46 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
               </select>
             </div>
 
-            {/* Show batch selector only for major subjects */}
-            {(taskForm.subject.includes('IT 105') || taskForm.subject.includes('IT 107') || taskForm.subject.includes('IT 106')) && (
+            <div>
+              <label className="block text-sm font-semibold text-sky-400 mb-2">
+                Target Audience *
+              </label>
+              <select
+                name="targetType"
+                value={taskForm.targetType}
+                onChange={handleTaskChange}
+                className="w-full px-4 py-3 dark:bg-slate-900/40 light:bg-white border dark:border-slate-700/50 light:border-gray-200 rounded-lg focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/50 focus:outline-none dark:text-dark-text-primary light:text-light-text-primary transition-all appearance-none cursor-pointer"
+                required
+              >
+                <option value="all">Whole Class (All Batches)</option>
+                <option value="1A1">1A1 Only</option>
+                <option value="1A2">1A2 Only</option>
+                <option value="user">Specific User</option>
+              </select>
+            </div>
+
+            {/* Conditional User Selector */}
+            {taskForm.targetType === 'user' && (
               <div>
                 <label className="block text-sm font-semibold text-sky-400 mb-2">
-                  Target Batch *
+                  Select User *
                 </label>
                 <select
-                  name="batch"
-                  value={taskForm.batch}
+                  name="assignedToUserId"
+                  value={taskForm.assignedToUserId}
                   onChange={handleTaskChange}
                   className="w-full px-4 py-3 dark:bg-slate-900/40 light:bg-white border dark:border-slate-700/50 light:border-gray-200 rounded-lg focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/50 focus:outline-none dark:text-dark-text-primary light:text-light-text-primary transition-all appearance-none cursor-pointer"
                   required
                 >
-                  <option value="all">All Students (1A1 & 1A2)</option>
-                  <option value="1A1">1A1 Only</option>
-                  <option value="1A2">1A2 Only</option>
+                  <option value="">Select a user...</option>
+                  {users
+                    .sort((a, b) => (a.displayName || a.email || '').localeCompare(b.displayName || b.email || ''))
+                    .map(user => (
+                      <option key={user.id} value={user.id}>
+                        {user.displayName || user.email} {user.batch ? `(${user.batch})` : ''}
+                      </option>
+                  ))}
                 </select>
-                <p className="text-xs text-slate-400 mt-2">
-                  Major subject tasks can be assigned to specific lab batches. Students from other batches can request access if needed.
-                </p>
               </div>
             )}
 
@@ -1272,10 +1321,16 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                                 ? 'bg-emerald-600 bg-opacity-20 text-emerald-400 border border-emerald-600 border-opacity-30'
                                 : task.batch === '1A2'
                                 ? 'bg-purple-600 bg-opacity-20 text-purple-400 border border-purple-600 border-opacity-30'
+                                : task.batch === 'specific_user'
+                                ? 'bg-orange-600 bg-opacity-20 text-orange-400 border border-orange-600 border-opacity-30'
                                 : 'bg-sky-600 bg-opacity-20 text-sky-400 border border-sky-600 border-opacity-30'
                             }`}
                           >
-                            {task.batch === 'all' ? 'All Batches' : task.batch}
+                            {task.batch === 'all'
+                              ? 'All Batches'
+                              : task.batch === 'specific_user'
+                                ? (users.find(u => u.id === task.assignedToUserId)?.name || users.find(u => u.uid === task.assignedToUserId)?.displayName || users.find(u => u.id === task.assignedToUserId)?.email || 'Specific User')
+                                : task.batch}
                           </span>
                         )}
                         {task.priority && (

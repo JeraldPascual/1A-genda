@@ -9,7 +9,7 @@ const BearMascot = () => {
   const [isBlinking, setIsBlinking] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [isJumping, setIsJumping] = useState(false);
-  const [message, setMessage] = useState("Keep going! 🐻");
+  const [message, setMessage] = useState("Keep going! 🐻🐼🐻‍❄️");
 
   useEffect(() => {
     if (hasSpecialEffects(userData)) {
@@ -23,14 +23,14 @@ const BearMascot = () => {
   useEffect(() => {
     const handleCompletion = () => {
       setIsJumping(true);
-      setMessage("WOOOO! YIPEEE 🐻");
+      setMessage("WOOOO! YIPEEE 🐻🐼🐻‍❄️");
       setShowMessage(true);
-      
+
       // Stop jumping after 5s (approx fireworks duration)
       setTimeout(() => {
         setIsJumping(false);
         setShowMessage(false);
-        setTimeout(() => setMessage("Keep going! 🐻"), 300);
+        setTimeout(() => setMessage("Keep going! 🐻🐼🐻‍❄️"), 300);
       }, 5000);
     };
 
@@ -74,37 +74,35 @@ const BearMascot = () => {
   if (!hasSpecialEffects(userData) || !isVisible) return null;
 
   return (
-    <div 
+    <div
       className="fixed bottom-0 right-8 z-50 pointer-events-auto transition-transform duration-300 ease-in-out"
       style={{ transform: isHovered ? 'translateY(0)' : 'translateY(10px)' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleBearClick}
     >
-      <div className={`relative w-32 h-32 md:w-40 md:h-40 cursor-pointer group ${isJumping ? 'animate-bounce' : ''}`}>
+      <div className={`relative w-32 h-64 md:w-40 md:h-80 cursor-pointer group ${isJumping ? 'animate-bounce' : ''}`}>
         {/* Speech Bubble */}
         <div className={`absolute -top-16 right-0 bg-white dark:bg-slate-800 p-3 rounded-2xl rounded-br-none shadow-lg transform transition-all duration-300 origin-bottom-right ${isHovered || showMessage ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}>
           <p className="text-sm font-medium text-pink-500 whitespace-nowrap">{message}</p>
         </div>
 
-        {/* Bear SVG */}
-        <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-xl">
-          <g transform="translate(0, 20)">
-            {/* Body */}
-            <path d="M50 120 C 50 120, 20 180, 100 180 C 180 180, 150 120, 150 120" fill="#8d5524" />
-            <path d="M85 130 C 85 130, 90 150, 100 150 C 110 150, 115 130, 115 130" fill="#e0ac69" />
-            
-            {/* Head */}
-            <circle cx="100" cy="80" r="50" fill="#8d5524" />
-            
-            {/* Ears */}
-            <circle cx="60" cy="50" r="15" fill="#8d5524" />
-            <circle cx="140" cy="50" r="15" fill="#8d5524" />
-            <circle cx="60" cy="50" r="8" fill="#e0ac69" />
-            <circle cx="140" cy="50" r="8" fill="#e0ac69" />
-            
-            {/* Eyes - Dynamic based on blinking */}
-            {isBlinking ? (
+        {/* Bears Stack SVG */}
+        <svg viewBox="0 0 200 400" className="w-full h-full drop-shadow-xl">
+          {/* Ice Bear (Bottom) */}
+          <g transform="translate(0, 205)">
+            <path d="M50 120 C 50 120, 20 180, 100 180 C 180 180, 150 120, 150 120" fill="#fff" stroke="#e2e8f0" strokeWidth="1" />
+            <path d="M85 130 C 85 130, 90 150, 100 150 C 110 150, 115 130, 115 130" fill="#f1f5f9" />
+            <circle cx="100" cy="80" r="50" fill="#fff" stroke="#e2e8f0" strokeWidth="1" />
+            <circle cx="60" cy="50" r="15" fill="#fff" stroke="#e2e8f0" strokeWidth="1" />
+            <circle cx="140" cy="50" r="15" fill="#fff" stroke="#e2e8f0" strokeWidth="1" />
+            <ellipse cx="100" cy="90" rx="15" ry="10" fill="#f1f5f9" />
+            <ellipse cx="100" cy="86" rx="5" ry="3" fill="#000" />
+            <path d="M95 95 Q 100 100 105 95" stroke="#000" strokeWidth="2" fill="none" />
+            <ellipse cx="60" cy="160" rx="12" ry="15" fill="#fff" stroke="#e2e8f0" strokeWidth="1" />
+            <ellipse cx="140" cy="160" rx="12" ry="15" fill="#fff" stroke="#e2e8f0" strokeWidth="1" />
+             {/* Eyes */}
+             {isBlinking ? (
               <>
                 <path d="M80 75 Q 85 78 90 75" stroke="#000" strokeWidth="2" fill="none" />
                 <path d="M110 75 Q 115 78 120 75" stroke="#000" strokeWidth="2" fill="none" />
@@ -115,23 +113,73 @@ const BearMascot = () => {
                 <circle cx="115" cy="75" r="5" fill="#000" />
               </>
             )}
-            
-            {/* Snout */}
-            <ellipse cx="100" cy="90" rx="15" ry="10" fill="#e0ac69" />
+          </g>
+
+          {/* Panda (Middle) */}
+          <g transform="translate(0, 95)">
+            <path d="M50 120 C 50 120, 20 180, 100 180 C 180 180, 150 120, 150 120" fill="#fff" stroke="#e2e8f0" strokeWidth="1" />
+            {/* Black stripes/spots */}
+            <path d="M50 120 Q 30 150 50 160 L 65 140 Z" fill="#333" />
+            <path d="M150 120 Q 170 150 150 160 L 135 140 Z" fill="#333" />
+            <path d="M85 130 C 85 130, 90 150, 100 150 C 110 150, 115 130, 115 130" fill="#f1f5f9" />
+            <circle cx="100" cy="80" r="50" fill="#fff" stroke="#e2e8f0" strokeWidth="1" />
+            {/* Ears */}
+            <circle cx="60" cy="50" r="15" fill="#333" />
+            <circle cx="140" cy="50" r="15" fill="#333" />
+            {/* Eye Patches */}
+            <ellipse cx="85" cy="75" rx="12" ry="10" fill="#333" />
+            <ellipse cx="115" cy="75" rx="12" ry="10" fill="#333" />
+            <ellipse cx="100" cy="90" rx="15" ry="10" fill="#f1f5f9" />
             <ellipse cx="100" cy="86" rx="5" ry="3" fill="#000" />
-            
-            {/* Mouth */}
             <path d="M95 95 Q 100 100 105 95" stroke="#000" strokeWidth="2" fill="none" />
-            
-            {/* Blush */}
+            <ellipse cx="60" cy="160" rx="12" ry="15" fill="#333" />
+            <ellipse cx="140" cy="160" rx="12" ry="15" fill="#333" />
+             {/* Eyes */}
+             {isBlinking ? (
+              <>
+                <path d="M80 75 Q 85 78 90 75" stroke="#fff" strokeWidth="2" fill="none" />
+                <path d="M110 75 Q 115 78 120 75" stroke="#fff" strokeWidth="2" fill="none" />
+              </>
+            ) : (
+              <>
+                <circle cx="85" cy="75" r="4" fill="#fff" />
+                <circle cx="115" cy="75" r="4" fill="#fff" />
+              </>
+            )}
             <circle cx="70" cy="90" r="5" fill="#ffb7b2" opacity="0.6" />
             <circle cx="130" cy="90" r="5" fill="#ffb7b2" opacity="0.6" />
-            
-            {/* Paws (holding the edge) */}
+          </g>
+
+          {/* Grizzly (Top) */}
+          <g transform="translate(0, -15)">
+            <path d="M50 120 C 50 120, 20 180, 100 180 C 180 180, 150 120, 150 120" fill="#8d5524" />
+            <path d="M85 130 C 85 130, 90 150, 100 150 C 110 150, 115 130, 115 130" fill="#e0ac69" />
+            <circle cx="100" cy="80" r="50" fill="#8d5524" />
+            <circle cx="60" cy="50" r="15" fill="#8d5524" />
+            <circle cx="140" cy="50" r="15" fill="#8d5524" />
+            <circle cx="60" cy="50" r="8" fill="#e0ac69" />
+            <circle cx="140" cy="50" r="8" fill="#e0ac69" />
+            <ellipse cx="100" cy="90" rx="15" ry="10" fill="#e0ac69" />
+            <ellipse cx="100" cy="86" rx="5" ry="3" fill="#000" />
+            <path d="M95 95 Q 100 100 105 95" stroke="#000" strokeWidth="2" fill="none" />
+            <circle cx="70" cy="90" r="5" fill="#ffb7b2" opacity="0.6" />
+            <circle cx="130" cy="90" r="5" fill="#ffb7b2" opacity="0.6" />
             <ellipse cx="60" cy="160" rx="12" ry="15" fill="#8d5524" />
             <ellipse cx="140" cy="160" rx="12" ry="15" fill="#8d5524" />
             <circle cx="60" cy="158" r="8" fill="#e0ac69" />
             <circle cx="140" cy="158" r="8" fill="#e0ac69" />
+             {/* Eyes */}
+             {isBlinking ? (
+              <>
+                <path d="M80 75 Q 85 78 90 75" stroke="#000" strokeWidth="2" fill="none" />
+                <path d="M110 75 Q 115 78 120 75" stroke="#000" strokeWidth="2" fill="none" />
+              </>
+            ) : (
+              <>
+                <circle cx="85" cy="75" r="5" fill="#000" />
+                <circle cx="115" cy="75" r="5" fill="#000" />
+              </>
+            )}
           </g>
         </svg>
       </div>
