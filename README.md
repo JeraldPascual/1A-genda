@@ -219,6 +219,9 @@ The application will be available at [http://localhost:5173](http://localhost:51
 - **AttachmentList**: Fullscreen image viewer, download menu, and support for images, PDFs, Office docs, text, and ZIP files.
 - **AnnouncementTicker**: GSAP-powered infinite scroll for announcements, color-coded by type.
 - **Custom Theming**: Tailwind and Material-UI integration, dark/light mode, persistent user preference.
+- **BearMascot**: Interactive 3D/2D animated mascot (We Bare Bears style) that encourages students and reacts to task completion.
+- **F1Car**: Interactive F1 racing car element with GSAP-powered drive-off animations.
+- **PinkThemeManager**: Specialized theme manager for the custom pink aesthetic mode.
 
 ---
 
@@ -284,6 +287,19 @@ The application will be available at [http://localhost:5173](http://localhost:51
 - Priority indicators
 - Due date formatting
 - Action buttons (Complete, Revise, etc.)
+
+**BearMascot.jsx** - Interactive mascot:
+- Animated stack of three bears
+- Responds to "allTasksCompleted" events with celebration
+- Interactive hover and click states with speech bubbles
+
+**F1Car.jsx** - Decorative element:
+- SVG-based F1 car visualization
+- Interactive GSAP animations on click
+
+**PinkThemeManager.jsx** - Theme Logic:
+- Dedicated manager for Pink theme specific styles
+- Handles theme persistence and application
 
 ### Context Providers
 
