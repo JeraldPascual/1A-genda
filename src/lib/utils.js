@@ -1,3 +1,6 @@
+/**
+ * Utility for conditionally merging class names.
+ */
 export function cn(...args) {
   return args
     .flat()
