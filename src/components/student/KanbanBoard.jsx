@@ -194,14 +194,14 @@ const KanbanBoard = () => {
         if (newColumn === 'done') {
           if (hasSpecialEffects(userData)) {
             // Heart confetti for individual task completion
-            triggerHeartConfetti();
-            
+            triggerHeartConfetti({ count: 100 });
+
             // Check if ALL tasks are now done
             // Use current 'tasks' state, assuming the current task is now done
-            const allDone = tasks.every(t => 
+            const allDone = tasks.every(t =>
               t.id === task.id ? true : t.column === 'done'
             );
-            
+
             if (allDone) {
               // Trigger big fireworks if everything is completed
               setTimeout(() => triggerPinkFireworks(), 800); // Slight delay for dramatic effect
@@ -209,7 +209,7 @@ const KanbanBoard = () => {
           } else {
             // Default confetti for normal users
             import('canvas-confetti').then(({ default: confetti }) => {
-               confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+               confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
             });
           }
         }
