@@ -21,6 +21,7 @@ const Register = lazy(() => import('./components/Register'));
 const KanbanBoard = lazy(() => import('./components/student/KanbanBoard'));
 const AnnouncementTicker = lazy(() => import('./components/shared/AnnouncementTicker'));
 const SemesterProgress = lazy(() => import('./components/shared/SemesterProgress'));
+const MidtermCountdown = lazy(() => import('./components/shared/MidtermCountdown'));
 const DailyQuote = lazy(() => import('./components/shared/DailyQuote'));
 const AdminPanel = lazy(() => import('./components/admin/AdminPanel'));
 const StudentModularDashboard = lazy(() => import('./components/student/StudentModularDashboard'));
@@ -546,6 +547,7 @@ function App() {
         {/* Semester Progress */}
         <div className="mb-8">
           <SemesterProgress />
+          <MidtermCountdown />
         </div>
 
         {/* Admin Panel or Student Dashboard */}

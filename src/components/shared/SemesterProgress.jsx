@@ -18,10 +18,6 @@ const SemesterProgress = () => {
   const [daysLeft, setDaysLeft] = useState(0);
   const [settings, setSettings] = useState(null);
 
-  useEffect(() => {
-    loadProgress();
-  }, []);
-
   const loadProgress = async () => {
     const classSettings = await getClassSettings();
     if (!classSettings) return;
@@ -42,6 +38,10 @@ const SemesterProgress = () => {
     setDaysLeft(Math.max(daysRemaining, 0));
   };
 
+  useEffect(() => {
+    loadProgress();
+  }, []);
+
   if (!settings) {
     return null;
   }
@@ -53,6 +53,15 @@ const SemesterProgress = () => {
   };
 
   const getProgressMessage = () => {
+    // Check for Midterm Week (Feb 9 - Feb 14, 2026)
+    const today = new Date();
+    const midTermStart = new Date('2026-02-09');
+    const midTermEnd = new Date('2026-02-14');
+    
+    if (today >= midTermStart && today <= midTermEnd) {
+      return 'Midterm Exam Week - Good Luck! 🍀';
+    }
+
     if (progress < 33) return 'Early semester - stay ahead!';
     if (progress < 66) return 'Mid semester - keep pushing!';
     if (progress < 90) return 'Finals approaching - almost there!';

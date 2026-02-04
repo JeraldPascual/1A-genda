@@ -42,7 +42,24 @@ const DailyQuote = () => {
       // Use static quotes from local JSON file
       // Consistent quote per day using date as seed
       const dateHash = today.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const selectedQuote = quotesData.quotes[dateHash % quotesData.quotes.length];
+      
+      // Check if it's Midterm Week (Feb 9 - Feb 14, 2026)
+      const currentDate = new Date();
+      const isMidtermWeek = currentDate >= new Date('2026-02-09') && currentDate <= new Date('2026-02-14');
+      
+      let availableQuotes = quotesData.quotes;
+
+      if (isMidtermWeek) {
+        const examKeywords = ['exam', 'study', 'success', 'preparation', 'work', 'focus', 'test', 'learn'];
+        const examQuotes = availableQuotes.filter(q => 
+          examKeywords.some(keyword => q.text.toLowerCase().includes(keyword))
+        );
+        if (examQuotes.length > 0) {
+          availableQuotes = examQuotes;
+        }
+      }
+
+      const selectedQuote = availableQuotes[dateHash % availableQuotes.length];
 
       const newQuote = {
         text: selectedQuote.text,
