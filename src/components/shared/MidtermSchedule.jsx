@@ -5,10 +5,10 @@ const MidtermSchedule = () => {
     {
       id: 1,
       day: 'Friday',
-      date: 'Feb 13', 
+      date: 'Feb 13',
       time: '2:30 PM - 4:00 PM',
       subject: 'Panitikan at Lipunan',
-      room: 'PhilChi Bldg.',
+      room: 'Physics Lab',
       confirmed: true
     }
   ];
@@ -32,11 +32,11 @@ const MidtermSchedule = () => {
       <div className="space-y-3">
         {exams.length > 0 ? (
           exams.map((exam) => (
-            <div 
-              key={exam.id} 
+            <div
+              key={exam.id}
               className={`p-3 rounded-lg border transition-all ${
-                exam.confirmed 
-                  ? 'bg-sky-500/5 border-sky-500/20 dark:hover:bg-sky-500/10 light:bg-blue-700/50 light:border-blue-400' 
+                exam.confirmed
+                  ? 'bg-sky-500/5 border-sky-500/20 dark:hover:bg-sky-500/10 light:bg-blue-700/50 light:border-blue-400'
                   : 'bg-slate-500/5 border-slate-500/20 border-dashed'
               }`}
             >
@@ -50,7 +50,7 @@ const MidtermSchedule = () => {
                   </span>
                 )}
               </div>
-              
+
               <div className="grid grid-cols-2 gap-y-2 text-xs dark:text-slate-400 light:!text-white/90">
                 <div className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 opacity-70" />
@@ -74,7 +74,7 @@ const MidtermSchedule = () => {
             <p className="text-sm">No confirmed schedules yet.</p>
           </div>
         )}
-        
+
         <div className="mt-4 pt-3 border-t dark:border-slate-700/50 light:border-white/20">
           <div className="flex items-start gap-2 text-xs dark:text-slate-500 light:!text-white/70">
             <AlertCircle className="w-4 h-4 shrink-0" />
