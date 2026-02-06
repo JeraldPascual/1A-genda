@@ -41,7 +41,7 @@ const MidtermCountdown = () => {
   if (status === 'past') return null;
 
   return (
-    <div className={`rounded-xl p-6 shadow-lg mb-6 border-2 transition-all duration-300 ${
+    <div className={`rounded-xl p-6 shadow-lg border-2 h-full transition-all duration-300 ${
       status === 'ongoing' 
         ? 'glass-card dark:border-amber-500/50 light:!border-orange-500 light:!bg-orange-100' 
         : 'glass-card dark:border-sky-500/30 light:!border-blue-500 light:!bg-blue-600'
