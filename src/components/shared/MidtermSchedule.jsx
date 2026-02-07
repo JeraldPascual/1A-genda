@@ -11,6 +11,17 @@ const MidtermSchedule = () => {
       room: 'Physics Lab',
       confirmed: true
     }
+    ,
+    {
+      id: 2,
+      day: 'Saturday',
+      date: 'Feb 14',
+      time: '10:00 AM - 12:00 PM',
+      subject: 'PATHFIT',
+      room: 'Room 209, Building B',
+      confirmed: true
+
+    }
   ];
 
   return (

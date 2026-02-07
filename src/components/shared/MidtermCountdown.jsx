@@ -41,14 +41,14 @@ const MidtermCountdown = () => {
   if (status === 'past') return null;
 
   return (
-    <div className={`rounded-xl p-6 shadow-lg border-2 h-full transition-all duration-300 ${
+    <div className={`rounded-xl p-6 shadow-lg border-2 h-full transition-all duration-300 flex flex-col justify-center ${
       status === 'ongoing' 
         ? 'glass-card dark:border-amber-500/50 light:!border-orange-500 light:!bg-orange-100' 
         : 'glass-card dark:border-sky-500/30 light:!border-blue-500 light:!bg-blue-600'
     }`}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className={`p-3 rounded-full ${
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+        <div className="flex items-center gap-4 w-full sm:w-auto">
+          <div className={`p-3 rounded-full flex-shrink-0 ${
             status === 'ongoing' 
               ? 'bg-amber-500/20 text-amber-500' 
               : 'bg-sky-500/20 text-sky-400 light:!text-white light:!bg-blue-700'
@@ -56,7 +56,7 @@ const MidtermCountdown = () => {
             {status === 'ongoing' ? <BookOpen className="w-6 h-6" /> : <Clock className="w-6 h-6" />}
           </div>
           <div>
-            <h3 className={`text-xl font-bold ${
+            <h3 className={`text-lg sm:text-xl font-bold ${
               status === 'ongoing' 
                 ? 'text-amber-500 dark:text-amber-400' 
                 : 'dark:text-sky-400 light:!text-white'
@@ -72,8 +72,8 @@ const MidtermCountdown = () => {
         </div>
         
         {status === 'upcoming' && (
-          <div className="text-right">
-            <div className="text-3xl font-mono font-bold dark:text-white light:!text-white">
+          <div className="text-center sm:text-right w-full sm:w-auto bg-black/10 sm:bg-transparent p-2 sm:p-0 rounded-lg sm:rounded-none">
+            <div className="text-2xl sm:text-3xl font-mono font-bold dark:text-white light:!text-white">
               {timeLeft}
             </div>
             <div className="text-xs dark:text-dark-text-muted light:!text-white/60 uppercase tracking-wider">
