@@ -39,6 +39,7 @@ import { MultiStepLoader as Loader } from './components/ui/multi-step-loader';
 import HeartTrail from './components/shared/HeartTrail';
 import PinkThemeManager from './components/shared/PinkThemeManager';
 import BearMascot from './components/shared/BearMascot';
+import NailongMascot from './components/shared/NailongMascot';
 import { hasSpecialEffects } from './utils/specialEffects';
 
 // Site-specific loading messages for the page-load overlay
@@ -614,6 +615,10 @@ function App() {
       {/* HeartTrail: only for users with specialEffects enabled */}
       {hasSpecialEffects(userData) && (
         <HeartTrail enabled color="#F88379" />
+      )}
+
+      {hasSpecialEffects(userData) && (
+        <NailongMascot />
       )}
 
       {/* Logout Confirmation Dialog */}
