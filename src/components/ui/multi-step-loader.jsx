@@ -72,6 +72,9 @@ export const MultiStepLoader = ({ loadingStates, loading, duration = 2000, loop 
       return;
     }
 
+
+
+
     // If this is the first time run, the sequence is handled by a dedicated effect below.
     if (isFirstTime) return;
 
