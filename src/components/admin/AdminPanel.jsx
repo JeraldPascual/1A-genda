@@ -23,7 +23,7 @@ import StudentDashboard from './StudentDashboard';
 import AttachmentList from '../shared/AttachmentList';
 import MarkdownEditor from '../shared/MarkdownEditor';
 import MarkdownDisplay from '../shared/MarkdownDisplay';
-import { exportTasksToPDF, exportStudentProgressToPDF, exportAnnouncementsToPDF } from '../../utils/pdfExport';
+// pdfExport is dynamically imported on-demand in export handlers
 import { uploadFile, formatFileSize, getFileIcon, validateAttachmentsSize } from '../../utils/fileUpload';
 
 const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
@@ -1255,7 +1255,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
             <h3 className="text-lg font-semibold text-dark-text-primary">All Global Tasks</h3>
             <div className="flex gap-2">
               <button
-                onClick={() => exportTasksToPDF(tasks)}
+                onClick={async () => { const { exportTasksToPDF } = await import('../../utils/pdfExport'); exportTasksToPDF(tasks); }}
                 className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
               >
                 <Download className="w-4 h-4" />
@@ -1415,7 +1415,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
             <h3 className="text-lg font-semibold dark:text-dark-text-primary light:text-light-text-primary">Active Announcements</h3>
             <div className="flex items-center gap-3">
               <button
-                onClick={() => exportAnnouncementsToPDF(announcements)}
+                onClick={async () => { const { exportAnnouncementsToPDF } = await import('../../utils/pdfExport'); exportAnnouncementsToPDF(announcements); }}
                 className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
               >
                 <Download className="w-4 h-4" />

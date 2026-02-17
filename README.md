@@ -42,11 +42,15 @@ A modern task management application for class administrators (P.I.O.) and stude
 |------------|---------|
 | React 19.2.0 | Frontend framework |
 | Vite 7.2.4 | Build tool and dev server |
-| Material-UI | Component library |
+| Material-UI 7.3.5 | Component library |
 | Tailwind CSS v4 | Styling framework |
 | Firebase 12.6.0 | Backend (Firestore + Auth) |
 | GSAP 3.13.0 | Animations |
 | lucide-react | Icon system |
+| idb 7.1.1 | IndexedDB wrapper for offline |
+| vite-plugin-pwa 1.2.0 | Service worker & offline support |
+| @vercel/analytics 1.6.1 | Web analytics |
+| @vercel/speed-insights 1.3.1 | Performance monitoring |
 
 ---
 
@@ -208,10 +212,11 @@ The application will be available at [http://localhost:5173](http://localhost:51
 
 ## Advanced Features
 
+- **Offline-First PWA**: Full offline support with IndexedDB caching, background sync, and service worker. Works completely offline after first load.
+- **SyncStatusBadge**: Fixed bottom-center toast showing offline/sync status with color-coded states.
 - **InfoBar**: Real-time weather, date, and time for SJDM, PH, using Open-Meteo API.
 - **GlobalSearch**: Search across tasks, announcements, and submissions with instant navigation.
 - **PomodoroTimer**: Built-in Pomodoro timer for productivity, with notifications.
-- **NetworkStatus**: Real-time online/offline detection with auto-reconnect banner.
 - **InstallPrompt**: Smart install prompt for PWA on iOS/Android, with localStorage-based dismissal.
 - **StudentModularDashboard**: Tabbed dashboard for students, with dynamic content (announcements, schedule, resources, analytics, Pomodoro, etc.).
 - **MarkdownDisplay**: Secure, styled markdown rendering with XSS protection and GitHub Flavored Markdown support.
@@ -222,6 +227,7 @@ The application will be available at [http://localhost:5173](http://localhost:51
 - **BearMascot**: Interactive 3D/2D animated mascot (We Bare Bears style) that encourages students and reacts to task completion.
 - **F1Car**: Interactive F1 racing car element with GSAP-powered drive-off animations.
 - **PinkThemeManager**: Specialized theme manager for the custom pink aesthetic mode.
+- **Bundle Optimization**: Code splitting with dynamic imports, lazy loading, and vendor chunks for optimal performance.
 
 ---
 

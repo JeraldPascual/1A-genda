@@ -11,14 +11,14 @@
  *
  * Avoid mutating tab state directly or bypassing the provided tab change logic to prevent navigation bugs.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Tabs, Tab, Box, Tooltip } from '@mui/material';
 import { Calendar, Megaphone, BookOpen, Send, TrendingUp, Clock } from 'lucide-react';
 import AnnouncementPanel from '../shared/AnnouncementPanel';
 import ScheduleTable from './ScheduleTable';
 import ResourceLinks from './ResourceLinks';
 import ContentSubmissionPanel from '../admin/ContentSubmissionPanel';
-import StudentAnalytics from './StudentAnalytics';
+const StudentAnalytics = lazy(() => import('./StudentAnalytics'));
 import PomodoroTimer from './PomodoroTimer';
 import { useAuth } from '../../context/AuthContext';
 import { getClassSettingsOffline } from '../../utils/offlineDataService';
@@ -128,7 +128,9 @@ const StudentModularDashboard = ({ userBatch }) => {
           <ContentSubmissionPanel />
         </TabPanel>
         <TabPanel value={activeTab} index={4} labelledby="dashboard-tab-4">
-          <StudentAnalytics />
+          <Suspense fallback={<div className="flex justify-center items-center py-12"><div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full" /></div>}>
+            <StudentAnalytics />
+          </Suspense>
         </TabPanel>
         <TabPanel value={activeTab} index={5} labelledby="dashboard-tab-5">
           <PomodoroTimer />

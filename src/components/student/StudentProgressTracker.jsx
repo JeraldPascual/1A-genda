@@ -10,7 +10,7 @@
 import { useState, useEffect } from 'react';
 import { getTasks, getUsers, getAllStudentProgressOffline, getTaskRevisionRequestsOffline, getContentSubmissionRequestsOffline } from '../../utils/offlineDataService';
 import { Users, CheckCircle, Circle, TrendingUp, FileEdit, Send, Download } from 'lucide-react';
-import { exportStudentProgressToPDF } from '../../utils/pdfExport';
+// pdfExport is dynamically imported on-demand
 
 const StudentProgressTracker = () => {
   const [students, setStudents] = useState([]);
@@ -201,8 +201,9 @@ const StudentProgressTracker = () => {
                   {/* Completion Rate */}
                   <div className="flex flex-col items-start lg:items-end justify-center gap-1" role="cell">
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         const studentProgress = progressData.filter(p => p.userId === student.uid);
+                        const { exportStudentProgressToPDF } = await import('../../utils/pdfExport');
                         exportStudentProgressToPDF(student, tasks, studentProgress);
                       }}
                       className="mb-2 px-2 py-1 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-600/30 text-emerald-400"

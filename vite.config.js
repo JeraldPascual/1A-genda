@@ -10,12 +10,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'favicon-192.png', 'favicon-512.png', 'robots.txt'],
       injectRegister: 'auto',
-      // Enable service worker in dev mode so offline works during development too
+      // Dev service worker disabled to prevent conflicts — test offline mode with `npm run build && npm run preview`
       devOptions: {
-        enabled: true,
-        type: 'module',
-        navigateFallback: '/index.html',
-        navigateFallbackAllowlist: [/^(?!\/__).*/],
+        enabled: false,
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
@@ -71,4 +68,33 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Firebase — used everywhere, cache once
+          'vendor-firebase': [
+            'firebase/app',
+            'firebase/auth',
+            'firebase/firestore',
+            'firebase/storage',
+          ],
+          // MUI — used across many components
+          'vendor-mui': [
+            '@mui/material',
+            '@emotion/react',
+            '@emotion/styled',
+          ],
+          // Recharts — only used by StudentAnalytics
+          'vendor-recharts': ['recharts'],
+          // PDF export — only used on-demand
+          'vendor-pdf': ['jspdf', 'jspdf-autotable'],
+          // GSAP — used for animations
+          'vendor-gsap': ['gsap'],
+          // Markdown rendering
+          'vendor-markdown': ['react-markdown', 'remark-gfm'],
+        },
+      },
+    },
+  },
 })

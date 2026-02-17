@@ -27,17 +27,19 @@ const AdminPanel = lazy(() => import('./components/admin/AdminPanel'));
 const StudentModularDashboard = lazy(() => import('./components/student/StudentModularDashboard'));
 const GlobalSearch = lazy(() => import('./components/shared/GlobalSearch'));
 const InstallPrompt = lazy(() => import('./components/shared/InstallPrompt'));
-const NetworkStatus = lazy(() => import('./components/NetworkStatus'));
 const InfoBar = lazy(() => import('./components/shared/InfoBar'));
+const SyncStatusBadge = lazy(() => import('./components/shared/SyncStatusBadge'));
 import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon, Search, Download } from 'lucide-react';
 import gsap from 'gsap';
 import muiTheme from './theme/muiTheme';
 import { getTasks } from './utils/offlineDataService';
-import { exportTasksToPDF } from './utils/pdfExport';
+// pdfExport is dynamically imported on-demand (see handleExportTasks)
 import { MultiStepLoader as Loader } from './components/ui/multi-step-loader';
 import HeartTrail from './components/shared/HeartTrail';
 import PinkThemeManager from './components/shared/PinkThemeManager';
 import BearMascot from './components/shared/BearMascot';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import NailongMascot from './components/shared/NailongMascot';
 import { hasSpecialEffects } from './utils/specialEffects';
 
@@ -181,7 +183,7 @@ function App() {
         duration: 0.6,
         stagger: 0.1,
         ease: 'back.out(1.7)',
-        clearProps: 'all', // Clear inline styles after animation
+        clearProps: 'transform', // Clear transform after animation so sticky works
       });
     }
   }, [user, userData]);
@@ -357,7 +359,8 @@ function App() {
   /**
    * Exports the current user's tasks to a PDF file.
    */
-  const handleExportTasks = () => {
+  const handleExportTasks = async () => {
+    const { exportTasksToPDF } = await import('./utils/pdfExport');
     exportTasksToPDF(tasks);
   };
 
@@ -447,18 +450,18 @@ function App() {
     <ThemeProvider theme={muiTheme}>
       <PinkThemeManager />
       <BearMascot />
+      <Suspense fallback={null}>
+        <SyncStatusBadge />
+      </Suspense>
       {/* Page-load loader overlay */}
       <Loader loadingStates={loadingStates} loading={pageLoading} duration={1800} forceRunOnce={forceLoaderOnce} onAnimationComplete={() => { setAnimationDone(true); setForceLoaderOnce(false); }} />
-      <div className="min-h-screen max-w-full">
-      {/* Header Group */}
+
+      {/* Sticky Header Group - must be outside any overflow containers */}
       <div className="sticky top-0 z-50 w-full">
         {/* Announcement Ticker */}
         <div className="overflow-x-hidden bg-background">
           <AnnouncementTicker key={`announcement-${refreshKey}`} />
         </div>
-
-        {/* Network status banner (online/offline) */}
-        <NetworkStatus />
 
         {/* Header */}
         <header
@@ -544,12 +547,12 @@ function App() {
             </div>
           </div>
         </header>
+        {/* InfoBar inside sticky group, below header */}
+        <InfoBar />
       </div>
 
-      {/* InfoBar below header for all users */}
-      <InfoBar />
-
-      {/* Main Content */}
+      {/* Main Content - wrapped for proper layout */}
+      <div className="min-h-screen">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 overflow-x-hidden">
         {/* Daily Quote */}
         <div className="mb-6">
@@ -766,6 +769,10 @@ function App() {
 
       {/* Install Prompt - Only shows on mobile */}
       {user && <InstallPrompt />}
+
+      {/* Vercel Analytics & Speed Insights - only active in production */}
+      <Analytics />
+      <SpeedInsights />
     </ThemeProvider>
   );
 }

@@ -20,6 +20,7 @@
 ## Developer Workflows
 - **Install:** `npm install` (see README for full stack)
 - **Dev server:** `npx vite --port=4000` (default port is 4000)
+- **Local testing:** `npm run build && npm run preview` (required for testing offline/PWA features since devOptions disabled)
 - **Lint:** `npx eslint .` (config in `eslint.config.js`)
 - **Test:** `npm run test` (setup with Vitest, see tasks.json or package.json)
 - **Build:** `npm run build`

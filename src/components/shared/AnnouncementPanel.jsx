@@ -11,7 +11,7 @@ import { useEffect, useState, useRef } from 'react';
 import { getActiveAnnouncementsOffline, createAnnouncementRevisionRequestOffline } from '../../utils/offlineDataService';
 import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X, Download, Paperclip, FileEdit, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, LinearProgress, IconButton, Typography } from '@mui/material';
-import { exportAnnouncementsToPDF } from '../../utils/pdfExport';
+// pdfExport is dynamically imported on-demand
 import { uploadFile, validateAttachmentsSize } from '../../utils/fileUpload';
 import { useAuth } from '../../context/AuthContext';
 import gsap from 'gsap';
@@ -47,7 +47,8 @@ const AnnouncementPanel = () => {
     loadAnnouncements();
   }, []);
 
-  const handleExportAnnouncements = () => {
+  const handleExportAnnouncements = async () => {
+    const { exportAnnouncementsToPDF } = await import('../../utils/pdfExport');
     exportAnnouncementsToPDF(announcements);
   };
 
