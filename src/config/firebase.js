@@ -1,7 +1,8 @@
 // Firebase Configuration
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -18,6 +19,34 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize services
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const storage = getStorage(app);
+
+// Initialize Firestore with persistent local cache for offline-first support.
+// Uses the modern API (replaces deprecated enableIndexedDbPersistence).
+// Multi-tab manager allows persistence across multiple browser tabs.
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+  }),
+  experimentalForceLongPolling: false, // Use WebSockets when online
+  experimentalAutoDetectLongPolling: true, // Auto-switch to long polling if WebSocket fails
+});
+
+// Suppress Firestore reconnection logging in production
+if (import.meta.env.PROD) {
+  const originalConsoleWarn = console.warn;
+  console.warn = (...args) => {
+    const message = args[0]?.toString() || '';
+    if (
+      message.includes('WebChannelConnection') ||
+      message.includes('transport errored') ||
+      message.includes('RPC') ||
+      message.includes('cleardot.gif')
+    ) {
+      return; // Suppress Firestore reconnection noise
+    }
+    originalConsoleWarn.apply(console, args);
+  };
+}
 
 export default app;

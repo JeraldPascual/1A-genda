@@ -57,11 +57,41 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
-        // Fetch additional user data from Firestore
-        const data = await getUserData(firebaseUser.uid);
-        setUserData(data);
-        // Update last login
-        await updateUserLastLogin(firebaseUser.uid);
+
+        // Try to restore cached userData from localStorage for instant offline rendering
+        try {
+          const cachedUserData = localStorage.getItem(`userData_${firebaseUser.uid}`);
+          if (cachedUserData) {
+            setUserData(JSON.parse(cachedUserData));
+          }
+        } catch {
+          // ignore parse errors
+        }
+
+        // Fetch fresh user data from Firestore with a timeout so offline doesn't hang forever.
+        // Firestore persistence will serve cached data when offline, but the first call
+        // after a cold start can be slow while the cache warms up.
+        try {
+          const fetchWithTimeout = Promise.race([
+            getUserData(firebaseUser.uid),
+            new Promise((resolve) => setTimeout(() => resolve(null), 5000)),
+          ]);
+          const data = await fetchWithTimeout;
+          if (data) {
+            setUserData(data);
+            // Cache for instant offline recovery on next load
+            try {
+              localStorage.setItem(`userData_${firebaseUser.uid}`, JSON.stringify(data));
+            } catch {
+              // storage full — non-critical
+            }
+          }
+        } catch (err) {
+          console.warn('Failed to fetch user data (offline?):', err.message);
+        }
+
+        // Update last login — fire-and-forget, never block auth
+        updateUserLastLogin(firebaseUser.uid).catch(() => {});
       } else {
         setUser(null);
         setUserData(null);

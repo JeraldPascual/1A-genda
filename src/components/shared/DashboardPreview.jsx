@@ -13,7 +13,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, Button } from '@mui/material';
 import { Calendar, Megaphone, Send, ChevronRight, Clock, MapPin } from 'lucide-react';
-import { getActiveAnnouncements, getContentSubmissionRequests } from '../../utils/firestore';
+import { getActiveAnnouncementsOffline, getContentSubmissionRequestsOffline } from '../../utils/offlineDataService';
 import { useAuth } from '../../context/AuthContext';
 
 const DashboardPreview = ({ onTabChange }) => {
@@ -43,11 +43,11 @@ const DashboardPreview = ({ onTabChange }) => {
   }, [user]);
 
   const loadData = async () => {
-    const announcementsData = await getActiveAnnouncements();
+    const { data: announcementsData } = await getActiveAnnouncementsOffline();
     setAnnouncements(announcementsData.slice(0, 5));
 
     if (user) {
-      const submissionsData = await getContentSubmissionRequests({ userId: user.uid });
+      const { data: submissionsData } = await getContentSubmissionRequestsOffline({ userId: user.uid });
       setSubmissions(submissionsData.slice(0, 5));
     }
   };

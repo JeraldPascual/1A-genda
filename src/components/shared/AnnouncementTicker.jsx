@@ -9,7 +9,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { getActiveAnnouncements } from '../../utils/firestore';
+import { getActiveAnnouncementsOffline } from '../../utils/offlineDataService';
 import { Megaphone, AlertTriangle, PartyPopper, X, Paperclip } from 'lucide-react';
 import AttachmentList from './AttachmentList';
 import MarkdownDisplay from './MarkdownDisplay';
@@ -21,7 +21,9 @@ const AnnouncementTicker = () => {
   const containerRef = useRef(null);
 
   const loadAnnouncements = async () => {
-    const data = await getActiveAnnouncements();
+    const { data } = await getActiveAnnouncementsOffline((update) => {
+      setAnnouncements(update.data);
+    });
     setAnnouncements(data);
   };
 

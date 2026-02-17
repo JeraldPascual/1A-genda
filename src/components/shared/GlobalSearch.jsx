@@ -14,7 +14,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { Search, X, Calendar, BookOpen, Megaphone, FileText } from 'lucide-react';
-import { getAllGlobalTasks, getActiveAnnouncements, getContentSubmissionRequests } from '../../utils/firestore';
+import { getTasks, getActiveAnnouncementsOffline, getContentSubmissionRequestsOffline } from '../../utils/offlineDataService';
 import { useAuth } from '../../context/AuthContext';
 
 const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
@@ -51,22 +51,22 @@ const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
   const loadAllData = async () => {
     setLoading(true);
     try {
-      const [tasksData, announcementsData, submissionsData] = await Promise.all([
-        getAllGlobalTasks(),
-        getActiveAnnouncements(),
-        getContentSubmissionRequests()
+      const [tasksResult, announcementsResult, submissionsResult] = await Promise.all([
+        getTasks(),
+        getActiveAnnouncementsOffline(),
+        getContentSubmissionRequestsOffline()
       ]);
 
       // Filter tasks by batch
       const userBatch = userData?.batch;
-      const filteredTasks = tasksData.filter(task =>
+      const filteredTasks = (tasksResult.data || []).filter(task =>
         !task.batch || task.batch === 'all' || task.batch === userBatch
       );
 
       setAllData({
         tasks: filteredTasks,
-        announcements: announcementsData,
-        submissions: submissionsData
+        announcements: announcementsResult.data || [],
+        submissions: submissionsResult.data || []
       });
     } catch (error) {
       console.error('Error loading search data:', error);

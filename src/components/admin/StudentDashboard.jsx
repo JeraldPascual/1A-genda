@@ -8,7 +8,7 @@
  * Avoid bypassing the provided data fetching logic or mutating state directly to ensure accurate statistics and UI stability.
  */
 import { useState, useEffect } from 'react';
-import { getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests, getAllGlobalTasks } from '../../utils/firestore';
+import { getUsers, getAllStudentProgressOffline, getTaskRevisionRequestsOffline, getContentSubmissionRequestsOffline, getTasks } from '../../utils/offlineDataService';
 
 const StudentDashboard = () => {
   const [students, setStudents] = useState([]);
@@ -30,13 +30,18 @@ const StudentDashboard = () => {
   const loadStudentData = async () => {
     setLoading(true);
     try {
-      const [allUsers, progressData, revisionData, submissionData, globalTasks] = await Promise.all([
-        getAllUsers(),
-        getAllStudentProgress(),
-        getTaskRevisionRequests(),
-        getContentSubmissionRequests(),
-        getAllGlobalTasks()
+      const [allUsersResult, progressResult, revisionResult, submissionResult, tasksResult] = await Promise.all([
+        getUsers(),
+        getAllStudentProgressOffline(),
+        getTaskRevisionRequestsOffline(),
+        getContentSubmissionRequestsOffline(),
+        getTasks()
       ]);
+      const allUsers = allUsersResult.data || [];
+      const progressData = progressResult.data || [];
+      const revisionData = revisionResult.data || [];
+      const submissionData = submissionResult.data || [];
+      const globalTasks = tasksResult.data || [];
       const studentUsers = allUsers.filter(u => u.role === 'student');
 
       const studentsWithProgress = studentUsers.map(student => {

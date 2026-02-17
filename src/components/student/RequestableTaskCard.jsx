@@ -16,7 +16,7 @@
 import { useState } from 'react';
 import { Card, CardContent, Button, Chip } from '@mui/material';
 import { Calendar, BookOpen, Send, CheckCircle, Clock, Upload, Paperclip, X as XIcon, Image as ImageIcon, File as FileIcon } from 'lucide-react';
-import { createTaskRequest } from '../../utils/firestore';
+import { createTaskCreationRequestOffline } from '../../utils/offlineDataService';
 import { uploadFile, formatFileSize } from '../../utils/fileUpload';
 
 const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
@@ -82,7 +82,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
   const handleRequestAccess = async () => {
     setRequesting(true);
     try {
-      const result = await createTaskRequest({
+      const result = await createTaskCreationRequestOffline({
         taskId: task.id,
         userId: userId,
         userBatch: userBatch,

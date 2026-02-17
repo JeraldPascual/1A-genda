@@ -10,7 +10,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, Button, TextField, MenuItem, Chip, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Plus, Send, Calendar, BookOpen, Bell, CheckCircle, Clock, X, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
-import { createContentSubmissionRequest, getContentSubmissionRequests } from '../../utils/firestore';
+import { createContentSubmissionRequestOffline, getContentSubmissionRequestsOffline } from '../../utils/offlineDataService';
 import { useAuth } from '../../context/AuthContext';
 import { uploadFile, formatFileSize, validateAttachmentsSize } from '../../utils/fileUpload';
 import MarkdownEditor from '../shared/MarkdownEditor';
@@ -56,8 +56,8 @@ const ContentSubmissionPanel = () => {
 
   const loadMyRequests = async () => {
     if (!user) return;
-    const requests = await getContentSubmissionRequests({ userId: user.uid });
-    setMyRequests(requests);
+    const { data: requests } = await getContentSubmissionRequestsOffline({ userId: user.uid });
+    setMyRequests(requests || []);
   };
 
   const resetForm = () => {
@@ -167,7 +167,7 @@ const ContentSubmissionPanel = () => {
         });
       }
 
-      const result = await createContentSubmissionRequest(requestData);
+      const result = await createContentSubmissionRequestOffline(requestData);
 
       if (result.success) {
         setSubmitSuccess(true);

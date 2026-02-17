@@ -8,7 +8,7 @@
  * Avoid bypassing the provided data fetching logic or mutating state directly to ensure accurate statistics and UI stability.
  */
 import { useState, useEffect } from 'react';
-import { getAllGlobalTasks, getAllUsers, getAllStudentProgress, getTaskRevisionRequests, getContentSubmissionRequests } from '../../utils/firestore';
+import { getTasks, getUsers, getAllStudentProgressOffline, getTaskRevisionRequestsOffline, getContentSubmissionRequestsOffline } from '../../utils/offlineDataService';
 import { Users, CheckCircle, Circle, TrendingUp, FileEdit, Send, Download } from 'lucide-react';
 import { exportStudentProgressToPDF } from '../../utils/pdfExport';
 
@@ -27,21 +27,21 @@ const StudentProgressTracker = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [usersData, tasksData, progressData, revisionData, submissionData] = await Promise.all([
-        getAllUsers(),
-        getAllGlobalTasks(),
-        getAllStudentProgress(),
-        getTaskRevisionRequests(),
-        getContentSubmissionRequests()
+      const [usersResult, tasksResult, progressResult, revisionResult, submissionResult] = await Promise.all([
+        getUsers(),
+        getTasks(),
+        getAllStudentProgressOffline(),
+        getTaskRevisionRequestsOffline(),
+        getContentSubmissionRequestsOffline()
       ]);
 
       // Filter only students
-      const studentUsers = usersData.filter(u => u.role === 'student');
+      const studentUsers = (usersResult.data || []).filter(u => u.role === 'student');
       setStudents(studentUsers);
-      setTasks(tasksData);
-      setProgressData(progressData);
-      setRevisionRequests(revisionData);
-      setContentSubmissions(submissionData);
+      setTasks(tasksResult.data || []);
+      setProgressData(progressResult.data || []);
+      setRevisionRequests(revisionResult.data || []);
+      setContentSubmissions(submissionResult.data || []);
     } catch (error) {
       console.error('Error loading data:', error);
     }

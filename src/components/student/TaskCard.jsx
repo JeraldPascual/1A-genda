@@ -20,7 +20,7 @@ import { createPortal } from 'react-dom';
 import { Card, CardContent, Button, Chip, TextField, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Menu, LinearProgress, Typography } from '@mui/material';
 import { Calendar, BookOpen, CheckCircle, ArrowRight, ArrowLeft, X, Edit3, AlertCircle, Bell, MoreVertical, Trash2, Copy, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import gsap from 'gsap';
-import { createTaskRevisionRequest } from '../../utils/firestore';
+import { createTaskRevisionRequestOffline } from '../../utils/offlineDataService';
 import { uploadFile, validateAttachmentsSize } from '../../utils/fileUpload';
 import { useAuth } from '../../context/AuthContext';
 import { hasSpecialEffects } from '../../utils/specialEffects';
@@ -248,7 +248,7 @@ const TaskCard = ({ task, onMoveTask, isAdmin, currentColumn, allColumns, userDa
         proposedChanges.dueDate = new Date(revisionForm.proposedDueDate);
       }
 
-      const result = await createTaskRevisionRequest({
+      const result = await createTaskRevisionRequestOffline({
         taskId: task.id,
         userId: user.uid,
         userBatch: userData?.batch || 'unknown',

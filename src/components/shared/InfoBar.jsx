@@ -8,6 +8,7 @@
  * Avoid hardcoding location or bypassing the fetchWeather helper to ensure maintainability and accuracy.
  */
 import { useEffect, useState } from 'react';
+import SyncStatusBadge from './SyncStatusBadge';
 
 // Helper to fetch weather for SJDM, PH (Open-Meteo API, no key needed)
 const fetchWeather = async () => {
@@ -47,12 +48,18 @@ export default function InfoBar() {
 
   return (
     <div
-      className="w-full bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 text-white flex flex-row justify-end items-center px-2 sm:px-6 py-1 shadow"
+      className="w-full bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 text-white flex flex-row justify-between items-center px-2 sm:px-6 py-1 shadow gap-3"
       style={{ minHeight: '2.25rem' }}
         aria-live="polite"
         aria-atomic="true"
     >
-      <div className="flex flex-row gap-3 items-center text-xs md:text-xs font-medium w-full justify-end">
+      {/* Sync Status Badge */}
+      <div className="flex-shrink-0">
+        <SyncStatusBadge />
+      </div>
+
+      {/* Weather, Date, Time */}
+      <div className="flex flex-row gap-3 items-center text-xs md:text-xs font-medium">
         <div className="flex items-center gap-1">
           <span role="img" aria-label="thermometer">🌡️</span>
           <span className="hidden sm:inline">SJDM:</span> {temp !== null ? `${temp.toFixed(1)}°C` : '--°C'}

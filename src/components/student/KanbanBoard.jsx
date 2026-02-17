@@ -12,12 +12,12 @@ import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, M
 import KanbanColumn from './KanbanColumn';
 import { useAuth } from '../../context/AuthContext';
 import {
-  getAllGlobalTasks,
-  getStudentProgress,
-  updateStudentProgress,
-  createTaskCreationRequest,
-  getTaskCreationRequests
-} from '../../utils/firestore';
+  getTasks,
+  getUserStudentProgress,
+  updateStudentProgressUpsert,
+  getTaskCreationRequests as getTaskCreationRequestsOffline,
+  createTaskCreationRequestOffline,
+} from '../../utils/offlineDataService';
 import { triggerHeartConfetti, triggerPinkFireworks, hasSpecialEffects } from '../../utils/specialEffects';
 import { PlusCircle, Upload, Paperclip, X as XIcon, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { uploadFile, formatFileSize } from '../../utils/fileUpload';
@@ -106,13 +106,14 @@ const KanbanBoard = () => {
   const loadTasks = async () => {
     setLoading(true);
     try {
-      const globalTasks = await getAllGlobalTasks();
+      const tasksResult = await getTasks();
+      const globalTasks = tasksResult.data || [];
 
       if (!isAdmin()) {
         // For students: merge global tasks with their progress
-        const progress = await getStudentProgress(user.uid);
+        const { data: progress } = await getUserStudentProgress(user.uid);
         const progressMap = {};
-        progress.forEach(p => {
+        (progress || []).forEach(p => {
           progressMap[p.taskId] = p.status;
         });
 
@@ -120,8 +121,8 @@ const KanbanBoard = () => {
 
         // Load task creation requests for 1A2 students
         if (userBatch === '1A2') {
-          const requests = await getTaskCreationRequests({ userId: user.uid });
-          setMyRequests(requests);
+          const { data: requests } = await getTaskCreationRequestsOffline({ userId: user.uid });
+          setMyRequests(requests || []);
         }
 
         // Filter tasks for user's batch or specific assignment
@@ -179,8 +180,8 @@ const KanbanBoard = () => {
     });
 
     try {
-      // Update Firestore
-      const result = await updateStudentProgress(user.uid, task.id, newColumn);
+      // Update via offline-first service
+      const result = await updateStudentProgressUpsert(user.uid, task.id, newColumn);
 
       if (result.success) {
         // Update local state
@@ -278,7 +279,7 @@ const KanbanBoard = () => {
       return;
     }
 
-    const result = await createTaskCreationRequest({
+    const result = await createTaskCreationRequestOffline({
       ...requestForm,
       batch: userData?.batch,
       userId: user.uid,

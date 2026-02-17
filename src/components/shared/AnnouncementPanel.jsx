@@ -8,7 +8,7 @@
  * Avoid bypassing the provided revision/export logic or mutating announcement state directly to prevent data and UI bugs.
  */
 import { useEffect, useState, useRef } from 'react';
-import { getActiveAnnouncements, createAnnouncementRevisionRequest } from '../../utils/firestore';
+import { getActiveAnnouncementsOffline, createAnnouncementRevisionRequestOffline } from '../../utils/offlineDataService';
 import { Megaphone, AlertTriangle, PartyPopper, Sparkles, ChevronDown, X, Download, Paperclip, FileEdit, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, LinearProgress, IconButton, Typography } from '@mui/material';
 import { exportAnnouncementsToPDF } from '../../utils/pdfExport';
@@ -37,7 +37,9 @@ const AnnouncementPanel = () => {
   const cardRefs = useRef([]);
 
   const loadAnnouncements = async () => {
-    const data = await getActiveAnnouncements();
+    const { data } = await getActiveAnnouncementsOffline((update) => {
+      setAnnouncements(update.data);
+    });
     setAnnouncements(data);
   };
 
@@ -140,7 +142,7 @@ const AnnouncementPanel = () => {
       }
     }
 
-    const result = await createAnnouncementRevisionRequest({
+    const result = await createAnnouncementRevisionRequestOffline({
       announcementId: revisionDialog.announcement.id,
       announcementTitle: revisionDialog.announcement.title,
       userId: user.uid,

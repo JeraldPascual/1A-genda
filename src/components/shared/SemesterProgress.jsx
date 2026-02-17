@@ -10,7 +10,7 @@
  * Returns null if class settings are not yet loaded.
  */
 import { useEffect, useState } from 'react';
-import { getClassSettings } from '../../utils/firestore';
+import { getClassSettingsOffline } from '../../utils/offlineDataService';
 import { Calendar, TrendingUp } from 'lucide-react';
 
 const SemesterProgress = () => {
@@ -19,13 +19,17 @@ const SemesterProgress = () => {
   const [settings, setSettings] = useState(null);
 
   const loadProgress = async () => {
-    const classSettings = await getClassSettings();
+    const { data: classSettings } = await getClassSettingsOffline((update) => {
+      if (update.data) setSettings(update.data);
+    });
     if (!classSettings) return;
 
     setSettings(classSettings);
 
-    const startDate = classSettings.semesterStartDate?.toDate() || new Date();
-    const endDate = classSettings.semesterEndDate?.toDate() || new Date();
+    const startDate = classSettings.semesterStartDate?.toDate?.()
+      || (classSettings.semesterStartDate ? new Date(classSettings.semesterStartDate) : new Date());
+    const endDate = classSettings.semesterEndDate?.toDate?.()
+      || (classSettings.semesterEndDate ? new Date(classSettings.semesterEndDate) : new Date());
     const today = new Date();
 
     const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));

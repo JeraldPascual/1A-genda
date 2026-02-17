@@ -21,7 +21,7 @@ import ContentSubmissionPanel from '../admin/ContentSubmissionPanel';
 import StudentAnalytics from './StudentAnalytics';
 import PomodoroTimer from './PomodoroTimer';
 import { useAuth } from '../../context/AuthContext';
-import { getClassSettings } from '../../utils/firestore';
+import { getClassSettingsOffline } from '../../utils/offlineDataService';
 
 // Minimal, single-definition component. Only the Resources badge is active.
 const StudentModularDashboard = ({ userBatch }) => {
@@ -46,10 +46,12 @@ const StudentModularDashboard = ({ userBatch }) => {
     const checkResources = async () => {
       if (!user) return;
       try {
-        const classSettings = await getClassSettings();
+        const { data: classSettings } = await getClassSettingsOffline();
         if (!mounted || !classSettings) return;
-        const resourcesUpdated = classSettings.resourcesUpdatedAt?.toMillis?.() || 0;
-        const lastLoginMillis = userData?.lastLogin?.toMillis?.() || 0;
+        const resourcesUpdated = classSettings.resourcesUpdatedAt?.toMillis?.()
+          || (classSettings.resourcesUpdatedAt ? new Date(classSettings.resourcesUpdatedAt).getTime() : 0);
+        const lastLoginMillis = userData?.lastLogin?.toMillis?.()
+          || (userData?.lastLogin ? new Date(userData.lastLogin).getTime() : 0);
         setHasResourceUpdates(resourcesUpdated > lastLoginMillis);
     } catch {
         // Silently ignore errors

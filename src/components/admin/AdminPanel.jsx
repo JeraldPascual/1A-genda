@@ -13,7 +13,8 @@
  */
 import { useState, useEffect } from 'react';
 import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem, LinearProgress, IconButton, Typography } from '@mui/material';
-import { createGlobalTask, createAnnouncement, getAllGlobalTasks, getActiveAnnouncements, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, getTaskCreationRequests, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, getTaskRevisionRequests, approveTaskRevisionRequest, rejectTaskRevisionRequest, getContentSubmissionRequests, approveContentSubmissionRequest, rejectContentSubmissionRequest, getAllStudentProgress, getAllUsers, getAnnouncementRevisionRequests, approveAnnouncementRevisionRequest, rejectAnnouncementRevisionRequest } from '../../utils/firestore';
+import { createGlobalTask, createAnnouncement, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, approveTaskRevisionRequest, rejectTaskRevisionRequest, approveContentSubmissionRequest, rejectContentSubmissionRequest, approveAnnouncementRevisionRequest, rejectAnnouncementRevisionRequest } from '../../utils/firestore';
+import { getTasks, getActiveAnnouncementsOffline, getTaskCreationRequests as getTaskCreationRequestsOffline, getTaskRevisionRequestsOffline, getContentSubmissionRequestsOffline, getAllStudentProgressOffline, getUsers, getAnnouncementRevisionRequestsOffline } from '../../utils/offlineDataService';
 import { useAuth } from '../../context/AuthContext';
 import { Timestamp } from 'firebase/firestore';
 import { PlusCircle, Megaphone, CheckCircle, AlertCircle, Shield, ListTodo, Trash2, Eye, Users, UserCheck, Zap, Target, Inbox, Edit, X, FileEdit, Send, Download, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
@@ -103,8 +104,8 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   }, [activeTab]);
 
   const loadUsers = async () => {
-    const data = await getAllUsers();
-    setUsers(data);
+    const { data } = await getUsers();
+    setUsers(data || []);
   };
 
   const loadOrphanedUsers = async () => {
@@ -114,38 +115,38 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
 
   const loadTaskRevisionRequests = async () => {
     setLoading(true);
-    const requests = await getTaskRevisionRequests();
-    setTaskRevisionRequests(requests);
+    const { data: requests } = await getTaskRevisionRequestsOffline();
+    setTaskRevisionRequests(requests || []);
     setLoading(false);
   };
 
   const loadAnnouncementRevisionRequests = async () => {
     setLoading(true);
-    const requests = await getAnnouncementRevisionRequests();
-    setAnnouncementRevisionRequests(requests);
+    const { data: requests } = await getAnnouncementRevisionRequestsOffline();
+    setAnnouncementRevisionRequests(requests || []);
     setLoading(false);
   };
 
   const loadContentSubmissionRequests = async () => {
     setLoading(true);
-    const requests = await getContentSubmissionRequests();
-    setContentSubmissionRequests(requests);
+    const { data: requests } = await getContentSubmissionRequestsOffline();
+    setContentSubmissionRequests(requests || []);
     setLoading(false);
   };
 
   const loadTasks = async () => {
-    const data = await getAllGlobalTasks();
-    setTasks(data);
+    const { data } = await getTasks();
+    setTasks(data || []);
   };
 
   const loadAnnouncements = async () => {
-    const data = await getActiveAnnouncements();
-    setAnnouncements(data);
+    const { data } = await getActiveAnnouncementsOffline();
+    setAnnouncements(data || []);
   };
 
   const loadTaskCreationRequests = async () => {
-    const data = await getTaskCreationRequests({ status: 'pending' });
-    setTaskCreationRequests(data);
+    const { data } = await getTaskCreationRequestsOffline({ status: 'pending' });
+    setTaskCreationRequests(data || []);
   };
 
   const handleDeleteTask = async (taskId) => {
@@ -1368,7 +1369,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                           </span>
                         )}
                         {task.dueDate && (
-                          <span>Due: {task.dueDate.toDate ? task.dueDate.toDate().toLocaleDateString() : 'N/A'}</span>
+                          <span>Due: {task.dueDate.toDate ? task.dueDate.toDate().toLocaleDateString() : new Date(task.dueDate).toLocaleDateString()}</span>
                         )}
                         {task.attachments && task.attachments.length > 0 && (
                           <span className="flex items-center gap-1 bg-sky-600 bg-opacity-20 text-sky-400 px-2 py-1 rounded border border-sky-600 border-opacity-30">

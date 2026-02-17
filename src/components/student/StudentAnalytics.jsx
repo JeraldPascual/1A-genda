@@ -11,7 +11,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Calendar, BookOpen, Target } from 'lucide-react';
-import { getAllGlobalTasks, getStudentProgress } from '../../utils/firestore';
+import { getTasks, getUserStudentProgress } from '../../utils/offlineDataService';
 import { useAuth } from '../../context/AuthContext';
 
 const StudentAnalytics = () => {
@@ -28,19 +28,19 @@ const StudentAnalytics = () => {
     const loadData = React.useCallback(async () => {
       setLoading(true);
       try {
-        const [tasksData, progressData] = await Promise.all([
-          getAllGlobalTasks(),
-          getStudentProgress(user.uid)
+        const [tasksResult, progressResult] = await Promise.all([
+          getTasks(),
+          getUserStudentProgress(user.uid)
         ]);
 
         // Filter tasks by batch
         const userBatch = userData?.batch;
-        const filteredTasks = tasksData.filter(task =>
+        const filteredTasks = (tasksResult.data || []).filter(task =>
           !task.batch || task.batch === 'all' || task.batch === userBatch
         );
 
         setTasks(filteredTasks);
-        setProgress(progressData);
+        setProgress(progressResult.data || []);
       } catch (error) {
         console.error('Error loading analytics data:', error);
       }

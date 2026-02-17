@@ -32,7 +32,7 @@ const InfoBar = lazy(() => import('./components/shared/InfoBar'));
 import { LogOut, RefreshCw, LayoutDashboard, Target, Sun, Moon, Search, Download } from 'lucide-react';
 import gsap from 'gsap';
 import muiTheme from './theme/muiTheme';
-import { getAllGlobalTasks } from './utils/firestore';
+import { getTasks } from './utils/offlineDataService';
 import { exportTasksToPDF } from './utils/pdfExport';
 import { MultiStepLoader as Loader } from './components/ui/multi-step-loader';
 import HeartTrail from './components/shared/HeartTrail';
@@ -318,6 +318,7 @@ function App() {
   /**
    * Loads all global tasks for the current student user (filtered by batch).
    * Sets resourcesReady to false while loading.
+   * Includes a timeout so offline/slow networks don't block the UI forever.
    * @returns {Promise<void>}
    */
   const loadTasks = async () => {
@@ -325,18 +326,28 @@ function App() {
       // mark resources as loading so the global loader waits
       setResourcesReady(false);
       try {
-        const tasksData = await getAllGlobalTasks();
-        const filteredTasks = tasksData.filter(task => {
-          // 1. Assigned to me?
-          if (task.assignedToUserId === user.uid) return true;
-          // 2. Assigned to someone else?
-          if (task.assignedToUserId) return false;
-          // 3. Global or matching batch?
-          return !task.batch || task.batch === 'all' || task.batch === userData.batch;
-        });
-        setTasks(filteredTasks);
+        // Race against a timeout so the UI always unblocks, even offline
+        const result = await Promise.race([
+          getTasks(),
+          new Promise((resolve) => setTimeout(() => resolve({ data: null }), 8000)),
+        ]);
+        const tasksData = result?.data;
+
+        if (tasksData && tasksData.length > 0) {
+          const filteredTasks = tasksData.filter(task => {
+            // 1. Assigned to me?
+            if (task.assignedToUserId === user.uid) return true;
+            // 2. Assigned to someone else?
+            if (task.assignedToUserId) return false;
+            // 3. Global or matching batch?
+            return !task.batch || task.batch === 'all' || task.batch === userData.batch;
+          });
+          setTasks(filteredTasks);
+        }
+      } catch (err) {
+        console.warn('Failed to load tasks (offline?):', err.message);
       } finally {
-        // resources finished (either success or fail)
+        // resources finished (either success, fail, or timeout)
         setResourcesReady(true);
       }
     }
