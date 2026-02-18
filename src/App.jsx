@@ -771,8 +771,12 @@ function App() {
       {user && <InstallPrompt />}
 
       {/* Vercel Analytics & Speed Insights - only active in production */}
-      <Analytics />
-      <SpeedInsights />
+      {import.meta.env.PROD && (
+        <>
+          <Analytics />
+          <SpeedInsights />
+        </>
+      )}
     </ThemeProvider>
   );
 }

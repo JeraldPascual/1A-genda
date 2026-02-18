@@ -1456,6 +1456,11 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
                       >
                         {announcement.type}
                       </span>
+                      {announcement.createdAt && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-400 whitespace-nowrap">
+                          {new Date(announcement.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                      )}
                       {announcement.attachments && announcement.attachments.length > 0 && (
                         <span className="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 flex items-center gap-1">
                           <Paperclip className="w-3 h-3" />

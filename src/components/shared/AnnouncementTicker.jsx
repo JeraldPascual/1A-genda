@@ -138,6 +138,11 @@ const AnnouncementTicker = () => {
                 <span className="font-semibold text-sm mr-2 flex-shrink-0">
                   {announcement.title}
                 </span>
+                {announcement.createdAt && (
+                  <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full mr-2">
+                    {new Date(announcement.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                )}
                 <span className="text-xs opacity-95">
                   Click to view details
                 </span>
@@ -184,12 +189,6 @@ const AnnouncementTicker = () => {
                   <h3 className={`text-2xl font-bold ${getAnnouncementTextColor(selectedAnnouncement.type)} wrap-break-word`}>
                     {selectedAnnouncement.title}
                   </h3>
-                  {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
-                    <span className="text-xs font-semibold px-2 py-1 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center gap-1">
-                      <Paperclip className="w-3 h-3" />
-                      {selectedAnnouncement.attachments.length}
-                    </span>
-                  )}
                   <span className={`text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap ${
                     selectedAnnouncement.type === 'urgent'
                       ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
@@ -199,6 +198,17 @@ const AnnouncementTicker = () => {
                   }`}>
                     {selectedAnnouncement.type.toUpperCase()}
                   </span>
+                  {selectedAnnouncement.createdAt && (
+                    <span className="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap bg-slate-500/20 text-slate-400 border border-slate-500/30">
+                      {new Date(selectedAnnouncement.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  )}
+                  {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
+                    <span className="text-xs font-semibold px-2 py-1 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center gap-1">
+                      <Paperclip className="w-3 h-3" />
+                      {selectedAnnouncement.attachments.length}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

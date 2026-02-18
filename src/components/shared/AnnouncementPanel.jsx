@@ -372,6 +372,11 @@ const AnnouncementPanel = () => {
                   }`}>
                     {selectedAnnouncement.type.toUpperCase()}
                   </span>
+                  {selectedAnnouncement.createdAt && (
+                    <span className="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap bg-slate-500/20 text-slate-400 border border-slate-500/30">
+                      {new Date(selectedAnnouncement.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  )}
                   {selectedAnnouncement.attachments && selectedAnnouncement.attachments.length > 0 && (
                     <span className="text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center gap-1">
                       <Paperclip className="w-3 h-3" />
@@ -651,6 +656,11 @@ const AnnouncementPanel = () => {
                         }`}>
                           {announcement.type.toUpperCase()}
                         </span>
+                        {announcement.createdAt && (
+                          <span className="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap dark:bg-slate-500/20 light:!bg-blue-700 dark:text-slate-300 light:!text-white/80 border dark:border-slate-500/30 light:!border-blue-500">
+                            {new Date(announcement.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </span>
+                        )}
                         {announcement.attachments && announcement.attachments.length > 0 && (
                           <span className="text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap dark:bg-purple-500/20 light:!bg-blue-700 dark:text-purple-400 light:!text-white border dark:border-purple-500/30 light:!border-blue-500 flex items-center gap-1">
                             <Paperclip className="w-3 h-3" />

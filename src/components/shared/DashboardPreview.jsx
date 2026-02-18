@@ -118,19 +118,26 @@ const DashboardPreview = ({ onTabChange }) => {
                     }
                   }}
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex flex-col gap-1.5">
                     <h4 className="font-semibold text-sm dark:text-dark-text-primary light:text-light-text-primary line-clamp-1">
                       {announcement.title}
                     </h4>
-                    <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${
-                      announcement.type === 'urgent'
-                        ? 'dark:bg-rose-500/20 light:!bg-blue-700 dark:text-rose-400 light:text-light-text-primary'
-                        : announcement.type === 'celebration'
-                        ? 'dark:bg-emerald-500/20 light:!bg-blue-700 dark:text-emerald-400 light:text-light-text-primary'
-                        : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary'
-                    }`}>
-                      {announcement.type.toUpperCase()}
-                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${
+                        announcement.type === 'urgent'
+                          ? 'dark:bg-rose-500/20 light:!bg-blue-700 dark:text-rose-400 light:text-light-text-primary'
+                          : announcement.type === 'celebration'
+                          ? 'dark:bg-emerald-500/20 light:!bg-blue-700 dark:text-emerald-400 light:text-light-text-primary'
+                          : 'dark:bg-sky-500/20 light:!bg-blue-700 dark:text-sky-400 light:text-light-text-primary'
+                      }`}>
+                        {announcement.type.toUpperCase()}
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-full whitespace-nowrap dark:bg-slate-500/20 light:!bg-blue-600 dark:text-slate-300 light:!text-white font-medium border dark:border-slate-500/30 light:!border-blue-400">
+                        {announcement.createdAt
+                          ? new Date(announcement.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                          : 'No date'}
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))

@@ -508,16 +508,28 @@ export const createAnnouncementRevisionRequestOffline = async (requestData) => {
 
 /**
  * Get only active announcements (local-first).
- * Filters by isActive===true after fetching.
+ * Filters by isActive===true after fetching and sorts by createdAt desc.
  * @param {Function} [onUpdate]
  */
 export const getActiveAnnouncementsOffline = async (onUpdate) => {
   const result = await getAnnouncements((update) => {
     const active = update.data.filter(a => a.isActive !== false);
-    if (onUpdate) onUpdate({ data: active, source: update.source });
+    // Sort by createdAt descending (newest first) for both cache and server
+    const sorted = active.sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
+    if (onUpdate) onUpdate({ data: sorted, source: update.source });
   });
   const active = result.data.filter(a => a.isActive !== false);
-  return { data: active, source: result.source };
+  // Sort cached data as well
+  const sorted = active.sort((a, b) => {
+    const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return bTime - aTime;
+  });
+  return { data: sorted, source: result.source };
 };
 
 // ──── Update Student Progress (upsert-style, matching firestore.js) ──
