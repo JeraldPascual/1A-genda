@@ -1,6 +1,6 @@
 # 1A-genda - Class Management System
 
-A modern task management application for class administrators (P.I.O.) and students. Built with React, Firebase, Material-UI, GSAP, and Tailwind CSS.
+A modern, offline-first task management PWA for class administrators (P.I.O.) and students. Built with React, Firebase, Material-UI, GSAP, and Tailwind CSS.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React](https://img.shields.io/badge/React-19.2.0-61dafb.svg)
@@ -8,9 +8,15 @@ A modern task management application for class administrators (P.I.O.) and stude
 
 ## Overview
 
-1A-genda is a class task management system with an intuitive Kanban-style board. P.I.O. administrators create and manage tasks and announcements for batches 1A1 and 1A2, while students track their individual progress without affecting the global board state.
+1A-genda is an offline-first class task management system with an intuitive Kanban board. P.I.O. administrators create and manage tasks and announcements for batches 1A1 and 1A2, while students track their individual progress with full offline support.
 
 **Live Demo:** [https://www.1agenda.tech](https://www.1agenda.tech)
+
+**Key Highlights:**
+- Progressive Web App (PWA) with full offline support
+- Auto-sync when online with background queue
+- Optimized bundle size (257kB main, -81% from initial)
+- Real-time analytics and progress tracking
 
 ## Key Features
 
@@ -54,71 +60,14 @@ A modern task management application for class administrators (P.I.O.) and stude
 
 ---
 
-## Installation
+## Installation & Quick Start
 
 ### Prerequisites
 - Node.js 16+ and npm
 - Firebase account (free tier)
 - Git
 
-### Step 1: Clone the Repository
-```bash
-git clone https://github.com/JeraldPascual/1A-genda.git
-cd 1A-genda
-```
-
-### Step 2: Install Dependencies
-```bash
-npm install
-```
-
-This will install all required packages including:
-- React 19.2.0
-- Firebase 12.6.0
-- Material-UI v7
-- Tailwind CSS v4
-- GSAP 3.13.0
-- Vite 7.2.4
-- And all other dependencies
-
-### Step 3: Environment Configuration
-Copy the example environment file:
-```bash
-cp .env.example .env
-```
-
-Open `.env` and add your Firebase credentials:
-```env
-VITE_FIREBASE_API_KEY=your_api_key_here
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
-VITE_ADMIN_EMAIL=your-admin@email.com
-```
-
-### Step 4: Firebase Setup
-Follow the detailed Firebase setup section below to:
-- Create your Firebase project
-- Enable authentication
-- Set up Firestore database
-- Apply security rules
-- Create required indexes
-
-### Step 5: Run Development Server
-```bash
-npm run dev
-```
-
-The application will be available at [http://localhost:5173](http://localhost:5173)
-
----
-
-## Quick Start
-
-### Local Development
+### Setup Steps
 
 1. **Clone the repository**
    ```bash
@@ -138,7 +87,7 @@ The application will be available at [http://localhost:5173](http://localhost:51
    cp .env.example .env
    ```
 
-   Edit `.env` with Firebase credentials and admin email:
+   Edit `.env` with your Firebase credentials (see `.env.example` for reference):
    ```env
    VITE_FIREBASE_API_KEY=your_api_key
    VITE_FIREBASE_AUTH_DOMAIN=your_domain
@@ -150,19 +99,23 @@ The application will be available at [http://localhost:5173](http://localhost:51
    VITE_ADMIN_EMAIL=admin@example.com
    ```
 
-4. **Set up Firebase** (Detailed steps below)
+4. **Set up Firebase** (See Firebase Setup section below)
    - Create project at [Firebase Console](https://console.firebase.google.com/)
    - Enable Email/Password Authentication
    - Create Firestore Database
-   - Apply security rules
-   - Create required indexes
+   - Apply security rules from `firestore.rules`
+   - Create required indexes from `firestore.indexes.json`
 
 5. **Run development server**
    ```bash
    npm run dev
    ```
-
    Open [http://localhost:5173](http://localhost:5173)
+
+6. **Test offline/PWA features** (production build required)
+   ```bash
+   npm run build && npm run preview
+   ```
 
 
 ---
@@ -209,116 +162,22 @@ The application will be available at [http://localhost:5173](http://localhost:51
 
 ---
 
-
 ## Advanced Features
 
 - **Offline-First PWA**: Full offline support with IndexedDB caching, background sync, and service worker. Works completely offline after first load.
 - **SyncStatusBadge**: Fixed bottom-center toast showing offline/sync status with color-coded states.
+- **Bundle Optimization**: Code splitting with dynamic imports, lazy loading, and vendor chunks (-81% bundle size reduction).
 - **InfoBar**: Real-time weather, date, and time for SJDM, PH, using Open-Meteo API.
-- **GlobalSearch**: Search across tasks, announcements, and submissions with instant navigation.
-- **PomodoroTimer**: Built-in Pomodoro timer for productivity, with notifications.
-- **InstallPrompt**: Smart install prompt for PWA on iOS/Android, with localStorage-based dismissal.
-- **StudentModularDashboard**: Tabbed dashboard for students, with dynamic content (announcements, schedule, resources, analytics, Pomodoro, etc.).
+- **GlobalSearch**: Search across tasks, announcements, and submissions with instant navigation (Ctrl+K).
+- **PomodoroTimer**: Built-in Pomodoro timer for productivity with notifications.
+- **InstallPrompt**: Smart PWA install prompt for iOS/Android with localStorage-based dismissal.
 - **MarkdownDisplay**: Secure, styled markdown rendering with XSS protection and GitHub Flavored Markdown support.
-- **LinkifiedText**: Auto-linking of URLs in text, with safe external link handling.
-- **AttachmentList**: Fullscreen image viewer, download menu, and support for images, PDFs, Office docs, text, and ZIP files.
+- **AttachmentList**: Fullscreen image viewer, download menu, support for images, PDFs, Office docs, text, and ZIP files.
 - **AnnouncementTicker**: GSAP-powered infinite scroll for announcements, color-coded by type.
 - **Custom Theming**: Tailwind and Material-UI integration, dark/light mode, persistent user preference.
-- **BearMascot**: Interactive 3D/2D animated mascot (We Bare Bears style) that encourages students and reacts to task completion.
-- **F1Car**: Interactive F1 racing car element with GSAP-powered drive-off animations.
-- **PinkThemeManager**: Specialized theme manager for the custom pink aesthetic mode.
-- **Bundle Optimization**: Code splitting with dynamic imports, lazy loading, and vendor chunks for optimal performance.
+- **Special Effects**: User-targeted animations (confetti, mascots, heart trails) for enhanced engagement.
 
----
-
-## Component Architecture
-
-### Main Components
-
-**AdminPanel.jsx** - Admin control center with tabs:
-- Student Progress Tracker
-- Student Dashboard
-- Create Tasks
-- View/Edit/Delete Tasks
-- Create Announcements
-- View/Delete Announcements
-- Task Revision Requests (Approve/Reject)
-- Content Submissions (Approve/Reject)
-- Utilities (Clean orphaned data)
-
-**KanbanBoard.jsx** - Main task board:
-- Two-column layout (To Do → Completed)
-- Personal progress tracking for students
-- Task completion with confetti animation
-- Content submission panel for 1A2 batch
-
-**AnnouncementTicker.jsx** - Scrolling announcements:
-- GSAP infinite scroll animation
-- Color-coded by type (Info/Urgent/Celebration)
-- Auto-refreshes on new announcements
-- Attachment indicators with file count badges
-
-**AnnouncementPanel.jsx** - Announcement display:
-- Full announcement cards with attachment preview
-- Fullscreen image viewer with portal rendering
-- Download functionality for all file types
-- Three-dot menu for download options
-
-**AttachmentList.jsx** - File attachment display:
-- Full-size image display with aspect ratio preservation
-- Clickable images for fullscreen popup view
-- Download menu for images and documents
-- Support for images, PDFs, Office docs, text, ZIP files
-
-**StudentProgressTracker.jsx** - Admin view of all students:
-- Task completion counts
-- Request submission counts
-- Batch filtering
-- Individual student details
-
-**StudentDashboard.jsx** - Demographics overview:
-- Total students by batch
-- Completion statistics
-- Request activity metrics
-
-**ContentSubmissionPanel.jsx** - Student submission interface:
-- Create task proposals with file attachments
-- Create announcement suggestions with media uploads
-- View submission history with attachment indicators
-- See admin feedback and approval status
-- Upload progress tracking for file submissions
-
-**TaskCard.jsx** / **RequestableTaskCard.jsx**:
-- Task details display
-- Priority indicators
-- Due date formatting
-- Action buttons (Complete, Revise, etc.)
-
-**BearMascot.jsx** - Interactive mascot:
-- Animated stack of three bears
-- Responds to "allTasksCompleted" events with celebration
-- Interactive hover and click states with speech bubbles
-
-**F1Car.jsx** - Decorative element:
-- SVG-based F1 car visualization
-- Interactive GSAP animations on click
-
-**PinkThemeManager.jsx** - Theme Logic:
-- Dedicated manager for Pink theme specific styles
-- Handles theme persistence and application
-
-### Context Providers
-
-**AuthContext** - Authentication state:
-- User login/logout
-- Role detection (admin/student)
-- User data management
-- Firebase auth integration
-
-**ThemeContext** - Theme management:
-- Dark/Light mode toggle
-- Persistent theme preference
-- Dynamic theme switching
+**For detailed component architecture and data flow, see [`llm-docs/ARCHITECTURE.md`](./llm-docs/ARCHITECTURE.md).**
 
 
 ---
@@ -365,18 +224,14 @@ The application will be available at [http://localhost:5173](http://localhost:51
 
 ## Contributing
 
-### How to Contribute
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+We welcome contributions! Please see [`CONTRIBUTING.md`](./CONTRIBUTING.md) for:
+- Quick start guide for contributors
+- Project structure and key files
+- Workflow and conventions (branching, commits, PRs)
+- Pull request checklist
+- Recent improvements and future roadmap
 
-### Development Guidelines
-- Follow existing code style and formatting
-- Test all changes thoroughly before submitting
-- Update README if adding new features
-- Include comments for complex logic
+**For AI coding agents:** See [`.github/copilot-instructions.md`](.github/copilot-instructions.md) for project-specific guidelines.
 
 ---
 
@@ -409,5 +264,3 @@ For AI coding agents, see [`.github/copilot-instructions.md`](.github/copilot-in
 ---
 
 **1A-genda** - Streamlining class management, one task at a time.
-
-

@@ -19,6 +19,10 @@ Thank you for your interest in contributing! This guide will help you get starte
    ```bash
    npx vite --port=4000
    ```
+   **IMPORTANT:** To test offline/PWA features, use production build:
+   ```bash
+   npm run build && npm run preview
+   ```
 4. **Lint & format:**
    ```bash
    npx eslint .
@@ -84,22 +88,19 @@ Thank you for your interest in contributing! This guide will help you get starte
 
 - For questions, open a [GitHub Discussion](https://github.com/JeraldPascual/1A-genda/discussions) or create an issue.
 - See `.github/copilot-instructions.md` for AI agent guidelines.
+- See `llm-docs/` for detailed architecture, feature map, and component connections.
 
 ---
 
-##  Potential Improvements & Roadmap
+##  Recent Improvements (v2.1.0)
 
-See below for ideas and future features. PRs welcome!
+- **Offline-First Architecture:** Full IndexedDB caching + background sync via `offlineDataService.js` and `operationQueue.js`
+- **Bundle Optimization:** Main bundle reduced from 1,364kB → 257kB (-81%) with code splitting and lazy loading
+- **Vercel Analytics:** Web analytics + speed insights integration
+- **Service Worker:** Auto-update without user intervention (`skipWaiting: true` + `clientsClaim: true`)
+- **Sync Status UI:** Auto-dismissing toast for offline/syncing states via `SyncStatusBadge`
+- **PWA Enhancements:** Install prompt, manifest, runtime caching for fonts/APIs
 
-### Potential Improvements (Non-breaking)
-- **Code Quality:** Refactor repeated logic, add JSDoc/types, increase test coverage, use ESLint/Prettier.
-- **Performance:** Virtualize large lists, debounce expensive ops.
-- **Accessibility:** Audit ARIA/keyboard, ensure color contrast.
-- **Dev Experience:** Add Husky, Storybook, CI, coverage.
-- **Docs:** Expand README, troubleshooting.
-- **PWA:** Improve offline/background sync.
-- **Error Handling:** Centralize error boundaries/messages.
-- **Security:** Harden Firestore rules, sanitize user content.
+---
 
-### Possible Features (Future Roadmap)
-- Calendar view, push notifications, batch messaging, analytics dashboard, role management, mobile app, custom themes, integrations (Google Classroom, Notion, etc.)
+**Thank you for contributing to 1A-genda!**

@@ -25,14 +25,18 @@ This directory contains guidance, architecture documentation, and reusable promp
 - **Stack:** React 19 + Vite 7 + Firebase 12 + Tailwind CSS 4 + MUI 7
 - **Database:** Firestore (users, globalTasks, studentProgress, announcements, etc.)
 - **Auth:** Firebase Authentication
-- **Special Effects:** User-targeted via `specialEffects: true` in Firestore
-- **PWA:** Service worker + manifest already in place
+- **Offline:** Full offline-first PWA with IndexedDB caching + background sync
+- **PWA:** Service worker (vite-plugin-pwa 1.2.0) + manifest + install prompt
+- **Analytics:** Vercel Analytics + Speed Insights
 - **Styling:** Dual system (Tailwind + MUI), dark/light mode via CSS variables
+- **Special Effects:** User-targeted via `specialEffects: true` in Firestore
 
 ## Critical Conventions
 
 1. Never mutate props or state directly—use context and callbacks
-2. All file uploads use base64 (max 2MB) via `utils/fileUpload.js`
-3. All Firestore operations go through `utils/firestore.js`
-4. Special effects are only for users with `specialEffects: true`
-5. Use `MarkdownEditor` for input and `MarkdownDisplay` for output
+2. All file uploads use base64 (max 5MB) via `utils/fileUpload.js`
+3. All Firestore operations go through `utils/firestore.js` AND `utils/offlineDataService.js` (offline-first layer)
+4. All writes go through `utils/operationQueue.js` for offline queuing
+5. Special effects are only for users with `specialEffects: true`
+6. Use `MarkdownEditor` for input and `MarkdownDisplay` for output
+7. Always test offline mode with `npm run build && npm run preview` (not `npm run dev`)

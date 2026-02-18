@@ -28,10 +28,8 @@ dist-ssr
 *.sln
 *.sw?
 .env
-.env.example
 
 # Project docs to ignore
 FUTURE_UPDATES.md
 SHADCN_SETUP.md
-llm-docs/NATIVE_APP_ROADMAP.md
 SEO_CHECKLIST.md
