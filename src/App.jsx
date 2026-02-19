@@ -371,6 +371,7 @@ function App() {
     if (user && !isAdmin()) {
       loadTasks();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, userData, isAdmin]);
 
   // Watch auth transitions (login/logout) and show loader during auth transitions
@@ -407,6 +408,7 @@ function App() {
     }
 
     prevUserRef.current = user;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, userData, isAdmin]);
 
 

@@ -115,7 +115,7 @@ export const MultiStepLoader = ({ loadingStates, loading, duration = 2000, loop 
     try {
       const seen = localStorage.getItem('msl_seen_v1');
       setIsFirstTime(!seen);
-    } catch (e) {
+    } catch (_e) {
       setIsFirstTime(false);
     } finally {
       setIsFirstTimeKnown(true);
@@ -154,7 +154,7 @@ export const MultiStepLoader = ({ loadingStates, loading, duration = 2000, loop 
       if (!mounted) return;
       try {
         localStorage.setItem('msl_seen_v1', '1');
-      } catch (e) {
+      } catch (_e) {
         // ignore
       }
 
@@ -172,6 +172,7 @@ export const MultiStepLoader = ({ loadingStates, loading, duration = 2000, loop 
     return () => {
       mounted = false;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, isFirstTime, loadingStates, duration, onAnimationComplete]);
 
   // Prevent background scrolling while loader is visible

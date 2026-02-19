@@ -107,7 +107,7 @@ const fileToBase64 = (file) => {
  * @param {string} storagePath - The storage path of the file
  * @returns {Promise<{success: boolean, error?: string}>}
  */
-export const deleteFile = async (storagePath) => {
+export const deleteFile = async (_storagePath) => {
   // For base64 storage, files are deleted when removed from Firestore
   return { success: true };
 };

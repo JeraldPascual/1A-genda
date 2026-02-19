@@ -30,7 +30,6 @@ const DEFAULT_COLOR = '#F88379'; // Carnation pink
  *   enabled: boolean (should render trail)
  */
 export default function HeartTrail({
-  shapePath = HEART_PATH,
   color = DEFAULT_COLOR,
   size = 18,
   fadeDuration = 900,
@@ -84,7 +83,7 @@ export default function HeartTrail({
       trail.current = trail.current.filter(
         (pt) => now - pt.time < fadeDuration
       );
-      trail.current.forEach((pt, i) => {
+      trail.current.forEach((pt) => {
         const age = now - pt.time;
         const opacity = 0.3 * (1 - age / fadeDuration);
         if (opacity > 0) {

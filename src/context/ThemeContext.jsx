@@ -16,6 +16,7 @@ const ThemeContext = createContext();
  * Throws if used outside a ThemeProvider.
  * @returns {ThemeContextValue}
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {

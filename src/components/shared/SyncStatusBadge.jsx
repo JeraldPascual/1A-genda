@@ -16,6 +16,7 @@ export default function SyncStatusBadge() {
   // Track when we come back online from offline
   useEffect(() => {
     if (!isOnline) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setWasOffline(true);
       setShowOfflineBadge(true); // Show offline badge when going offline
     }
@@ -31,6 +32,7 @@ export default function SyncStatusBadge() {
   // Show "Synced" briefly after sync completes
   useEffect(() => {
     if (lastSyncTime && isOnline && pendingCount === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowSynced(true);
       const timer = setTimeout(() => setShowSynced(false), 3000);
       return () => clearTimeout(timer);

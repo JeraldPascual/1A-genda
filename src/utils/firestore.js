@@ -476,7 +476,7 @@ export const approveTaskCreationRequest = async (requestId, requestData) => {
   }
 };
 
-export const rejectTaskCreationRequest = async (requestId, adminNote = '') => {
+export const rejectTaskCreationRequest = async (requestId, _adminNote = '') => {
   try {
     // Delete rejected request immediately to clean up Firestore
     await deleteDoc(doc(db, 'taskCreationRequests', requestId));
@@ -565,7 +565,7 @@ export const approveTaskRevisionRequest = async (requestId, requestData) => {
   }
 };
 
-export const rejectTaskRevisionRequest = async (requestId, adminNote = '') => {
+export const rejectTaskRevisionRequest = async (requestId, _adminNote = '') => {
   try {
     // Delete rejected request immediately to clean up Firestore
     await deleteDoc(doc(db, 'taskRevisionRequests', requestId));
@@ -692,7 +692,7 @@ export const approveContentSubmissionRequest = async (requestId, requestData) =>
   }
 };
 
-export const rejectContentSubmissionRequest = async (requestId, adminNote = '') => {
+export const rejectContentSubmissionRequest = async (requestId, _adminNote = '') => {
   try {
     // Delete rejected submission immediately to clean up Firestore
     await deleteDoc(doc(db, 'contentSubmissionRequests', requestId));

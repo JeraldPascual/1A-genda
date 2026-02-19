@@ -13,8 +13,8 @@
  */
 import { useState, useEffect } from 'react';
 import { Tabs, Tab, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem, LinearProgress, IconButton, Typography } from '@mui/material';
-import { createGlobalTask, createAnnouncement, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, deleteUserDocument, approveTaskRevisionRequest, rejectTaskRevisionRequest, approveContentSubmissionRequest, rejectContentSubmissionRequest, approveAnnouncementRevisionRequest, rejectAnnouncementRevisionRequest } from '../../utils/firestore';
-import { getTasks, getActiveAnnouncementsOffline, getTaskCreationRequests as getTaskCreationRequestsOffline, getTaskRevisionRequestsOffline, getContentSubmissionRequestsOffline, getAllStudentProgressOffline, getUsers, getAnnouncementRevisionRequestsOffline } from '../../utils/offlineDataService';
+import { createGlobalTask, createAnnouncement, deleteGlobalTask, deactivateAnnouncement, updateGlobalTask, updateAnnouncement, approveTaskCreationRequest, rejectTaskCreationRequest, deleteStudentProgress, deleteUserTaskCreationRequests, getAllUserIdsWithData, approveTaskRevisionRequest, rejectTaskRevisionRequest, approveContentSubmissionRequest, rejectContentSubmissionRequest, approveAnnouncementRevisionRequest, rejectAnnouncementRevisionRequest } from '../../utils/firestore';
+import { getTasks, getActiveAnnouncementsOffline, getTaskCreationRequests as getTaskCreationRequestsOffline, getTaskRevisionRequestsOffline, getContentSubmissionRequestsOffline, getUsers, getAnnouncementRevisionRequestsOffline } from '../../utils/offlineDataService';
 import { useAuth } from '../../context/AuthContext';
 import { Timestamp } from 'firebase/firestore';
 import { PlusCircle, Megaphone, CheckCircle, AlertCircle, Shield, ListTodo, Trash2, Eye, Users, UserCheck, Zap, Target, Inbox, Edit, X, FileEdit, Send, Download, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
@@ -24,7 +24,7 @@ import AttachmentList from '../shared/AttachmentList';
 import MarkdownEditor from '../shared/MarkdownEditor';
 import MarkdownDisplay from '../shared/MarkdownDisplay';
 // pdfExport is dynamically imported on-demand in export handlers
-import { uploadFile, formatFileSize, getFileIcon, validateAttachmentsSize } from '../../utils/fileUpload';
+import { uploadFile, formatFileSize, validateAttachmentsSize } from '../../utils/fileUpload';
 
 const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
   const { user } = useAuth();
@@ -247,7 +247,7 @@ const AdminPanel = ({ onTaskCreated, onAnnouncementCreated }) => {
         } else {
           setMessage({ type: 'error', text: `Failed to upload ${file.name}: ${result.error}` });
         }
-      } catch (error) {
+      } catch (_error) {
         setMessage({ type: 'error', text: `Error uploading ${file.name}` });
       }
     }

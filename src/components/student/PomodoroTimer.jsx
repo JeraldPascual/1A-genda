@@ -7,7 +7,7 @@
  *
  * Avoid mutating timer state directly or bypassing the provided timer logic to prevent timing bugs.
  */
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, RotateCcw, Clock, Coffee, Briefcase } from 'lucide-react';
 
 const PomodoroTimer = () => {
@@ -21,31 +21,7 @@ const PomodoroTimer = () => {
   const WORK_TIME = 25 * 60; // 25 minutes
   const BREAK_TIME = 5 * 60; // 5 minutes
 
-  useEffect(() => {
-    if (isRunning) {
-      intervalRef.current = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            handleTimerComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [isRunning]);
-
-  const handleTimerComplete = () => {
+  const handleTimerComplete = useCallback(() => {
     setIsRunning(false);
 
     // Show notification
@@ -71,7 +47,32 @@ const PomodoroTimer = () => {
     setTimeout(() => {
       notificationShownRef.current = false;
     }, 1000);
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
+
+  useEffect(() => {
+    if (isRunning) {
+      intervalRef.current = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            handleTimerComplete();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isRunning, handleTimerComplete]);
 
   const showNotification = () => {
     if ('Notification' in window && Notification.permission === 'granted') {

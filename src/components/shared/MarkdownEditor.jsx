@@ -84,14 +84,14 @@ const MarkdownEditor = ({
 
   // Markdown preview custom components
   const markdownComponents = {
-    h1: ({node, ...props}) => <h1 className="text-2xl font-bold mb-3 mt-4" style={{ color: 'var(--color-primary)' }} {...props} />,
-    h2: ({node, ...props}) => <h2 className="text-xl font-bold mb-2 mt-3" style={{ color: 'var(--color-primary)' }} {...props} />,
-    h3: ({node, ...props}) => <h3 className="text-lg font-bold mb-1 mt-2" style={{ color: 'var(--color-primary)' }} {...props} />,
-    code: ({node, inline, ...props}) =>
+    h1: ({node: _node, ...props}) => <h1 className="text-2xl font-bold mb-3 mt-4" style={{ color: 'var(--color-primary)' }} {...props} />,
+    h2: ({node: _node, ...props}) => <h2 className="text-xl font-bold mb-2 mt-3" style={{ color: 'var(--color-primary)' }} {...props} />,
+    h3: ({node: _node, ...props}) => <h3 className="text-lg font-bold mb-1 mt-2" style={{ color: 'var(--color-primary)' }} {...props} />,
+    code: ({node: _node, inline, ...props}) =>
       inline ? <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded" {...props} /> : <pre className="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-x-auto"><code {...props} /></pre>,
-    a: ({node, ...props}) => <a className="markdown-link" target="_blank" rel="noopener noreferrer" {...props} />,
-    ul: ({node, ...props}) => <ul className="list-disc pl-6 my-2" {...props} />,
-    ol: ({node, ...props}) => <ol className="list-decimal pl-6 my-2" {...props} />,
+    a: ({node: _node, ...props}) => <a className="markdown-link" target="_blank" rel="noopener noreferrer" {...props} />,
+    ul: ({node: _node, ...props}) => <ul className="list-disc pl-6 my-2" {...props} />,
+    ol: ({node: _node, ...props}) => <ol className="list-decimal pl-6 my-2" {...props} />,
   };
 
   // Handle text change and update history

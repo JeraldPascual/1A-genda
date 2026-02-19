@@ -101,6 +101,7 @@ const KanbanBoard = () => {
     if (user && userData) {
       loadTasks();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, userData]);
 
   const loadTasks = async () => {
@@ -228,7 +229,7 @@ const KanbanBoard = () => {
     if (!lastMove || isAdmin()) return;
 
     try {
-      const result = await updateStudentProgress(user.uid, lastMove.taskId, lastMove.oldColumn);
+      const result = await updateStudentProgressUpsert(user.uid, lastMove.taskId, lastMove.oldColumn);
 
       if (result.success) {
         setTasks(prevTasks =>
@@ -294,8 +295,8 @@ const KanbanBoard = () => {
 
       // Reload requests immediately
       if (userData?.batch === '1A2') {
-        const requests = await getTaskCreationRequests({ userId: user.uid });
-        setMyRequests(requests);
+        const { data: requests } = await getTaskCreationRequestsOffline({ userId: user.uid });
+        setMyRequests(requests || []);
       }
     } else {
       alert('Failed to submit request: ' + result.error);

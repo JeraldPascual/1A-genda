@@ -114,6 +114,7 @@ export const SyncProvider = ({ children }) => {
  *
  * @returns {{ pendingCount:number, isSyncing:boolean, lastSyncTime:number|null, isOnline:boolean, manualSync:()=>Promise, refreshPendingCount:()=>Promise }}
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useSync = () => {
   const ctx = useContext(SyncContext);
   if (!ctx) {

@@ -27,13 +27,11 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
   const [attachments, setAttachments] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadError, setUploadError] = useState('');
 
   const handleFileUpload = async (event) => {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
 
-    setUploadError('');
     setUploading(true);
     const uploadedFiles = [];
     const failedFiles = [];
@@ -63,7 +61,7 @@ const RequestableTaskCard = ({ task, userBatch, userId, existingRequest }) => {
 
     if (failedFiles.length > 0) {
       const errorMsg = `Failed to upload ${failedFiles.length} file(s):\n${failedFiles.map(f => `• ${f.name}: ${f.reason}`).join('\n')}`;
-      setUploadError(errorMsg);
+      alert(errorMsg);
     }
 
     if (uploadedFiles.length > 0) {

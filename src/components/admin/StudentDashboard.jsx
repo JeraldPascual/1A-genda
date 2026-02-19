@@ -23,10 +23,6 @@ const StudentDashboard = () => {
     totalContentSubmissions: 0
   });
 
-  useEffect(() => {
-    loadStudentData();
-  }, []);
-
   const loadStudentData = async () => {
     setLoading(true);
     try {
@@ -97,6 +93,11 @@ const StudentDashboard = () => {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadStudentData();
+  }, []);
 
   const formatDate = (timestamp) => {
     if (!timestamp) return 'N/A';

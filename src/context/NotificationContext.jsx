@@ -16,6 +16,7 @@ const NotificationContext = createContext(null);
  * Throws if used outside a NotificationProvider.
  * @returns {NotificationContextValue}
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useNotification = () => {
   const ctx = useContext(NotificationContext);
   if (!ctx) throw new Error('useNotification must be used within NotificationProvider');

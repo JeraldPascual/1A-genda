@@ -23,20 +23,21 @@ import PomodoroTimer from './PomodoroTimer';
 import { useAuth } from '../../context/AuthContext';
 import { getClassSettingsOffline } from '../../utils/offlineDataService';
 
+// TabPanel must be defined outside the component to avoid recreation on every render
+const TabPanel = ({ children, value, index, labelledby }) => (
+  <div
+    role="tabpanel"
+    hidden={value !== index}
+    id={`dashboard-tabpanel-${index}`}
+    aria-labelledby={labelledby || `dashboard-tab-${index}`}
+    tabIndex={0}
+  >
+    {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+  </div>
+);
+
 // Minimal, single-definition component. Only the Resources badge is active.
 const StudentModularDashboard = ({ userBatch }) => {
-    // TabPanel component for accessible tab content
-    const TabPanel = ({ children, value, index, labelledby }) => (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`dashboard-tabpanel-${index}`}
-        aria-labelledby={labelledby || `dashboard-tab-${index}`}
-        tabIndex={0}
-      >
-        {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-      </div>
-    );
   const [activeTab, setActiveTab] = useState(0);
   const { user, userData } = useAuth();
   const [hasResourceUpdates, setHasResourceUpdates] = useState(false);

@@ -191,26 +191,6 @@ const AnnouncementPanel = () => {
     });
   }, [announcements]);
 
-  const isLongDescription = (text) => {
-    return text && text.length > 150;
-  };
-
-  const truncateText = (text, maxLength = 150) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
-  };
-
-  const getAnnouncementStyle = (type) => {
-    switch (type) {
-      case 'urgent':
-        return 'bg-gradient-to-br from-rose-600/20 via-red-600/15 to-rose-600/20 border-rose-500/40 shadow-rose-500/20';
-      case 'celebration':
-        return 'bg-gradient-to-br from-emerald-600/20 via-green-600/15 to-emerald-600/20 border-emerald-500/40 shadow-emerald-500/20';
-      default:
-        return 'bg-gradient-to-br from-sky-600/20 via-blue-600/15 to-sky-600/20 border-sky-500/40 shadow-sky-500/20';
-    }
-  };
-
   const getAnnouncementIcon = (type) => {
     switch (type) {
       case 'urgent': return <AlertTriangle className="w-6 h-6" />;

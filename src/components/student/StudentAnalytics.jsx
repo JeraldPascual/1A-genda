@@ -49,6 +49,7 @@ const StudentAnalytics = () => {
 
     useEffect(() => {
       if (user && userData) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         loadData();
       }
     }, [user, userData, loadData]);

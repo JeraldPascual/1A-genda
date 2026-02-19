@@ -74,14 +74,6 @@ const StudentProgressTracker = () => {
     return Math.round((completedTasks / studentTasks.length) * 100);
   };
 
-  const getStudentRevisionRequests = (studentId) => {
-    return revisionRequests.filter(req => req.userId === studentId);
-  };
-
-  const getStudentContentSubmissions = (studentId) => {
-    return contentSubmissions.filter(req => req.userId === studentId);
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">

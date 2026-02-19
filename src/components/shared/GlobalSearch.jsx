@@ -12,7 +12,7 @@
  *
  * Avoid direct DOM manipulation or bypassing the provided navigation callbacks to prevent navigation bugs.
  */
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, X, Calendar, BookOpen, Megaphone, FileText } from 'lucide-react';
 import { getTasks, getActiveAnnouncementsOffline, getContentSubmissionRequestsOffline } from '../../utils/offlineDataService';
 import { useAuth } from '../../context/AuthContext';
@@ -37,18 +37,7 @@ const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
     onClose();
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      loadAllData();
-      // Focus input when opened
-      setTimeout(() => inputRef.current?.focus(), 100);
-    } else {
-      setSearchQuery('');
-      setResults({ tasks: [], announcements: [], submissions: [] });
-    }
-  }, [isOpen]);
-
-  const loadAllData = async () => {
+  const loadAllData = useCallback(async () => {
     setLoading(true);
     try {
       const [tasksResult, announcementsResult, submissionsResult] = await Promise.all([
@@ -72,10 +61,23 @@ const GlobalSearch = ({ isOpen, onClose, onNavigate }) => {
       console.error('Error loading search data:', error);
     }
     setLoading(false);
-  };
+  }, [userData]);
+
+  useEffect(() => {
+    if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      loadAllData();
+      // Focus input when opened
+      setTimeout(() => inputRef.current?.focus(), 100);
+    } else {
+      setSearchQuery('');
+      setResults({ tasks: [], announcements: [], submissions: [] });
+    }
+  }, [isOpen, loadAllData]);
 
   useEffect(() => {
     if (!searchQuery.trim()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResults({ tasks: [], announcements: [], submissions: [] });
       return;
     }

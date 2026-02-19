@@ -10,7 +10,7 @@
  *
  * Avoid hardcoding schedule data outside the preview or bypassing AuthContext to prevent data mismatches and bugs.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, Button } from '@mui/material';
 import { Calendar, Megaphone, Send, ChevronRight, Clock, MapPin } from 'lucide-react';
 import { getActiveAnnouncementsOffline, getContentSubmissionRequestsOffline } from '../../utils/offlineDataService';
@@ -38,11 +38,7 @@ const DashboardPreview = ({ onTabChange }) => {
     ],
   };
 
-  useEffect(() => {
-    loadData();
-  }, [user]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const { data: announcementsData } = await getActiveAnnouncementsOffline();
     setAnnouncements(announcementsData.slice(0, 5));
 
@@ -50,7 +46,12 @@ const DashboardPreview = ({ onTabChange }) => {
       const { data: submissionsData } = await getContentSubmissionRequestsOffline({ userId: user.uid });
       setSubmissions(submissionsData.slice(0, 5));
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadData();
+  }, [loadData]);
 
   const getStatusColor = (status) => {
     switch (status) {

@@ -22,6 +22,7 @@ const InstallPrompt = () => {
     const iOS = /iphone|ipad|ipod/.test(userAgent);
     const android = /android/.test(userAgent);
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsIOS(iOS);
     setIsAndroid(android);
 

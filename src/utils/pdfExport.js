@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import 'jspdf-autotable';
 
 // Export all tasks to PDF (simple version)
 export const exportTasksToPDF = (tasks) => {
@@ -159,7 +159,7 @@ export const exportAnnouncementsToPDF = (announcements) => {
   const pageHeight = doc.internal.pageSize.height;
   const marginBottom = 25;
 
-  announcements.forEach((announcement, index) => {
+  announcements.forEach((announcement) => {
     // Type badge color
     let typeColor = [59, 130, 246]; // Blue for info
     if (announcement.type === 'urgent') typeColor = [239, 68, 68]; // Red
@@ -207,7 +207,7 @@ export const exportAnnouncementsToPDF = (announcements) => {
     doc.setFont(undefined, 'normal');
 
     // Manually render each line to control spacing better
-    messageLines.forEach((line, idx) => {
+    messageLines.forEach((line) => {
       if (yPosition > pageHeight - marginBottom) {
         doc.addPage();
         yPosition = 20;

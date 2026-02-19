@@ -7,7 +7,7 @@
  *
  * Avoid mutating form state directly or bypassing the provided upload and submission logic to prevent bugs and data loss.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, Button, TextField, MenuItem, Chip, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Plus, Send, Calendar, BookOpen, Bell, CheckCircle, Clock, X, Upload, Paperclip, Image as ImageIcon, File as FileIcon } from 'lucide-react';
 import { createContentSubmissionRequestOffline, getContentSubmissionRequestsOffline } from '../../utils/offlineDataService';
@@ -28,7 +28,6 @@ const ContentSubmissionPanel = () => {
   const [attachments, setAttachments] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadError, setUploadError] = useState('');
 
   const [formData, setFormData] = useState({
     contentType: 'task',
@@ -47,18 +46,19 @@ const ContentSubmissionPanel = () => {
     reason: '',
   });
 
+  const loadMyRequests = useCallback(async () => {
+    if (!user) return;
+    const { data: requests } = await getContentSubmissionRequestsOffline({ userId: user.uid });
+    setMyRequests(requests || []);
+  }, [user]);
+
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadMyRequests();
     // Poll for updates every 5 seconds to see status changes from admin
     const interval = setInterval(loadMyRequests, 5000);
     return () => clearInterval(interval);
-  }, [user]);
-
-  const loadMyRequests = async () => {
-    if (!user) return;
-    const { data: requests } = await getContentSubmissionRequestsOffline({ userId: user.uid });
-    setMyRequests(requests || []);
-  };
+  }, [loadMyRequests]);
 
   const resetForm = () => {
     setFormData({
@@ -95,7 +95,7 @@ const ContentSubmissionPanel = () => {
         } else {
           alert(`Failed to upload ${file.name}: ${result.error}`);
         }
-      } catch (error) {
+      } catch (_error) {
         alert(`Error uploading ${file.name}`);
       }
     }

@@ -43,6 +43,7 @@ const SemesterProgress = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadProgress();
   }, []);
 

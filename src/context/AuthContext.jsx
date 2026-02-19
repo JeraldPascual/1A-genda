@@ -9,7 +9,7 @@ import {
 } from 'firebase/auth';
 import { setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { getUserData, createUserDocument, updateUserLastLogin, getUserByEmail } from '../utils/firestore';
+import { getUserData, createUserDocument, updateUserLastLogin } from '../utils/firestore';
 
 
 /**
@@ -33,6 +33,7 @@ const AuthContext = createContext({});
  * Throws if used outside an AuthProvider.
  * @returns {AuthContextValue}
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
