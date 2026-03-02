@@ -1,10 +1,18 @@
-# 1A-genda - Class Management System
+<div align="center">
+  <img src="https://www.1agenda.tech/favicon.svg" alt="1A-genda logo" width="80" height="80" />
+  <h1>1A-genda</h1>
+  <p>A modern, offline-first task management PWA for class administrators (P.I.O.) and students.<br/>Built with React, Firebase, Material-UI, GSAP, and Tailwind CSS.</p>
 
-A modern, offline-first task management PWA for class administrators (P.I.O.) and students. Built with React, Firebase, Material-UI, GSAP, and Tailwind CSS.
-
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![React](https://img.shields.io/badge/React-19.2.0-61dafb.svg)
-![Firebase](https://img.shields.io/badge/Firebase-12.6.0-orange.svg)
+  <!-- Badges -->
+  [![CI](https://github.com/JeraldPascual/1A-genda/actions/workflows/ci.yml/badge.svg)](https://github.com/JeraldPascual/1A-genda/actions/workflows/ci.yml)
+  [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+  [![React](https://img.shields.io/badge/React-19.2.0-61dafb?logo=react&logoColor=white)](https://react.dev)
+  [![Firebase](https://img.shields.io/badge/Firebase-12.6.0-orange?logo=firebase&logoColor=white)](https://firebase.google.com)
+  [![Vite](https://img.shields.io/badge/Vite-7.2.4-646cff?logo=vite&logoColor=white)](https://vitejs.dev)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+  [![PWA](https://img.shields.io/badge/PWA-enabled-5a0fc8?logo=googlechrome&logoColor=white)](https://www.1agenda.tech)
+  [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen?logo=vercel&logoColor=white)](https://www.1agenda.tech)
+</div>
 
 ## Overview
 
